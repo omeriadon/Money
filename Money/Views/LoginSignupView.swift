@@ -33,7 +33,7 @@ struct LoginSignupView: View {
 							.multilineTextAlignment(.center)
 					}
 
-					GlassEffectContainer(spacing: 10) {
+					VStack(spacing: 20) {
 						Button {} label: {
 							Text("Sign Up")
 								.padding()
