@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A7C7AEC52F1CCDF700EDD160 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = A7C7AEC42F1CCDF700EDD160 /* Defaults */; };
+		A7C7AEC72F1CCDF700EDD160 /* DefaultsMacros in Frameworks */ = {isa = PBXBuildFile; productRef = A7C7AEC62F1CCDF700EDD160 /* DefaultsMacros */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		A7B9C9B72F1B905400529CE2 /* Money.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Money.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +28,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A7C7AEC52F1CCDF700EDD160 /* Defaults in Frameworks */,
+				A7C7AEC72F1CCDF700EDD160 /* DefaultsMacros in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +72,8 @@
 			);
 			name = Money;
 			packageProductDependencies = (
+				A7C7AEC42F1CCDF700EDD160 /* Defaults */,
+				A7C7AEC62F1CCDF700EDD160 /* DefaultsMacros */,
 			);
 			productName = Money;
 			productReference = A7B9C9B72F1B905400529CE2 /* Money.app */;
@@ -94,6 +103,9 @@
 			);
 			mainGroup = A7B9C9AE2F1B905400529CE2;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A7C7AEC32F1CCDF700EDD160 /* XCRemoteSwiftPackageReference "Defaults" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A7B9C9B82F1B905400529CE2 /* Products */;
 			projectDirPath = "";
@@ -351,6 +363,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A7C7AEC32F1CCDF700EDD160 /* XCRemoteSwiftPackageReference "Defaults" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/Defaults";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.0.6;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A7C7AEC42F1CCDF700EDD160 /* Defaults */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A7C7AEC32F1CCDF700EDD160 /* XCRemoteSwiftPackageReference "Defaults" */;
+			productName = Defaults;
+		};
+		A7C7AEC62F1CCDF700EDD160 /* DefaultsMacros */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A7C7AEC32F1CCDF700EDD160 /* XCRemoteSwiftPackageReference "Defaults" */;
+			productName = DefaultsMacros;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A7B9C9AF2F1B905400529CE2 /* Project object */;
 }
