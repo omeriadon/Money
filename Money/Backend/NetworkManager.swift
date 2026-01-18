@@ -105,13 +105,10 @@ final class NetworkManager: ObservableObject {
 			throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: message])
 		}
 
-		// Decode the response
 		let decoded = try JSONDecoder().decode(UserLoginResponse.self, from: data)
 
-		// Return true immediately
 		let success = true
 
-		// Update NetworkManager after 1 second
 		Task { @MainActor in
 			try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
 			self.token = decoded.token
