@@ -5,8 +5,8 @@
 //  Created by Adon Omeri on 17/1/2026.
 //
 
-import SwiftUI
 import Defaults
+import SwiftUI
 
 @main
 struct MoneyApp: App {
@@ -15,14 +15,17 @@ struct MoneyApp: App {
 
 	var body: some Scene {
 		WindowGroup {
-			if isLoggedIn {
-				ContentView()
-					.environmentObject(networkManager)
+			NavigationStack {
+				if isLoggedIn {
+					ContentView()
+						.environmentObject(networkManager)
+						.transition(.blurReplace)
 
-			} else {
-				LoginSignupView()
-					.environmentObject(networkManager)
-
+				} else {
+					LoginSignupView()
+						.environmentObject(networkManager)
+						.transition(.blurReplace)
+				}
 			}
 		}
 	}
