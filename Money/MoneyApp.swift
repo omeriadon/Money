@@ -25,6 +25,7 @@ struct MoneyApp: App {
 						.transition(.blurReplace)
 				}
 			}
+			.animation(.easeInOut, value: networkManager.token)
 			.fontDesign(.monospaced)
 		}
 	}

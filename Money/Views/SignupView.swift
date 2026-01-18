@@ -110,11 +110,8 @@ struct SignupView: View {
 								withAnimation {
 									isSuccess = true
 								}
-
-								try? await Task.sleep(nanoseconds: 1_000_000_000)
-								withAnimation {
-									isSuccess = false
-									isLoading = false
+								Task {
+									try await Task.sleep(nanoseconds: 1_000_000_000)
 									dismiss()
 								}
 							} else {

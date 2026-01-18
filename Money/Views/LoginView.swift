@@ -73,13 +73,15 @@ struct LoginView: View {
 							)
 
 							if success {
-								withAnimation { isSuccess = true }
-								try? await Task.sleep(nanoseconds: 1_000_000_000)
 								withAnimation {
-									isSuccess = false
-									isLoading = false
+									isSuccess = true
+								}
+								
+								Task {
+									try await Task.sleep(nanoseconds: 1_000_000_000)
 									dismiss()
 								}
+
 							} else {
 								isLoading = false
 							}
@@ -126,7 +128,7 @@ struct LoginView: View {
 	var progressView: some View {
 		if isSuccess {
 			Image(systemName: "checkmark")
-				.imageScale(.large)
+				.scaleEffect(2)
 				.tint(.accent)
 				.transition(.blurReplace)
 		} else {

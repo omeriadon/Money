@@ -58,9 +58,13 @@ final class NetworkManager: ObservableObject {
 		}
 
 		let decoded = try JSONDecoder().decode(UserLoginResponse.self, from: data)
-		self.token = decoded.token
+
+		Task {
+			try await Task.sleep(nanoseconds: 2_000_000_000)
+			token = decoded.token
+		}
 		self.email = decoded.user.email
-		self.firstName = decoded.user.firstName
+		firstName = decoded.user.firstName
 
 		return true
 	}
