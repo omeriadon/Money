@@ -90,7 +90,7 @@ struct SignupView: View {
 					Text("OK")
 				}
 			}, message: { Text(alertMessage) })
-			.blur(radius: isLoading ? 20 : 0)
+			.blur(radius: isLoading ? 10 : 0)
 			.animation(.easeInOut, value: isLoading)
 			.safeAreaBar(edge: .bottom, alignment: .center, spacing: 30) {
 				Button {
@@ -136,7 +136,7 @@ struct SignupView: View {
 				}
 				.buttonStyle(.glassProminent)
 				.padding(.bottom)
-				.blur(radius: isLoading ? 20 : 0)
+				.blur(radius: isLoading ? 10 : 0)
 				.disabled(!canSubmit)
 			}
 
