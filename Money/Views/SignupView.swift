@@ -115,6 +115,7 @@ struct SignupView: View {
 								withAnimation {
 									isSuccess = false
 									isLoading = false
+									dismiss()
 								}
 							} else {
 								isLoading = false

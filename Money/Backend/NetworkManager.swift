@@ -24,7 +24,8 @@ final class NetworkManager: ObservableObject {
 		firstName = Defaults[.userFirstName]
 	}
 
-	func login(email: String, password: String) async throws {
+	@MainActor
+	func login(email: String, password: String) async throws -> Bool {
 		let url = URL(string: "https://money.adonis.pt/users/login")!
 		var request = URLRequest(url: url)
 		request.httpMethod = "POST"
@@ -35,16 +36,33 @@ final class NetworkManager: ObservableObject {
 
 		let (data, response) = try await URLSession.shared.data(for: request)
 
-		guard let httpResponse = response as? HTTPURLResponse,
-		      httpResponse.statusCode == 200
-		else {
+		guard let httpResponse = response as? HTTPURLResponse else {
 			throw URLError(.badServerResponse)
 		}
 
+		guard (200 ... 299).contains(httpResponse.statusCode) else {
+			let message: String
+			if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+			   let error = json["error"] as? String
+			{
+				message = error
+			} else {
+				switch httpResponse.statusCode {
+					case 400: message = "Bad request"
+					case 401: message = "Invalid credentials"
+					case 404: message = "User not found"
+					default: message = "\(httpResponse.statusCode)"
+				}
+			}
+			throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: message])
+		}
+
 		let decoded = try JSONDecoder().decode(UserLoginResponse.self, from: data)
-		token = decoded.token.value
+		self.token = decoded.token
 		self.email = decoded.user.email
-		firstName = decoded.user.firstName
+		self.firstName = decoded.user.firstName
+
+		return true
 	}
 
 	func signup(firstName: String, email: String, password: String) async throws -> Bool {
@@ -92,7 +110,7 @@ final class NetworkManager: ObservableObject {
 		// Update NetworkManager after 1 second
 		Task { @MainActor in
 			try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
-			self.token = decoded.token.value
+			self.token = decoded.token
 			self.email = decoded.user.email
 			self.firstName = decoded.user.firstName
 		}
