@@ -91,16 +91,9 @@ struct HomeView: View {
 				ToolbarSpacer(placement: .topBarTrailing)
 
 				ToolbarItem(placement: .topBarTrailing) {
-					Button {
-						Task {
-							await loadTransactions()
-						}
-					} label: {
-						Image(systemName: iconName)
-							.contentTransition(.symbolEffect(.replace))
+					RefreshButton(isLoading: $isLoading, showSuccess: $showSuccess) {
+						await loadTransactions()
 					}
-					.animation(.easeInOut, value: "\(isLoading)\(showSuccess)")
-					.disabled(isLoading)
 				}
 			}
 			.sheet(isPresented: $showAddTransaction, onDismiss: { Task { await loadTransactions() }}) {
@@ -113,11 +106,6 @@ struct HomeView: View {
 	}
 
 	func loadTransactions() async {
-		await MainActor.run {
-			isLoading = true
-			showSuccess = false
-		}
-
 		do {
 			let fetched = try await networkManager.fetchTransactions()
 
@@ -147,16 +135,7 @@ struct HomeView: View {
 					modelContext.insert(entity)
 				}
 			}
-
-			isLoading = false
-			showSuccess = true
-
-			try? await Task.sleep(for: .seconds(1.5))
-
-			showSuccess = false
-
 		} catch {
-			isLoading = false
 			errorMessage = error.localizedDescription
 		}
 	}

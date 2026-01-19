@@ -55,8 +55,10 @@ struct TransactionDetailView: View {
 				}
 			}
 			.toolbar {
-				ToolbarItem(placement: .topBarLeading) {
-					Button(role: .cancel) { dismiss() }
+				if isNew {
+					ToolbarItem(placement: .topBarLeading) {
+						Button(role: .cancel) { dismiss() }
+					}
 				}
 
 				ToolbarItem(placement: .topBarTrailing) {
@@ -72,7 +74,11 @@ struct TransactionDetailView: View {
 					.disabled(
 						isLoading ||
 							title.isEmpty ||
-							change == (transaction != nil ? Double(transaction!.change) : 0)
+							(transaction != nil &&
+								title == transaction!.title &&
+								description == transaction!.desc &&
+								change == transaction!.change &&
+								importance == transaction!.importance)
 					)
 					.buttonStyle(.glassProminent)
 				}
@@ -167,9 +173,34 @@ struct TransactionDetailView: View {
 					id: t.id,
 					change: newChange != Int(oldChange) ? newChange : nil,
 					title: title != t.title ? title : nil,
-					description: description != (t.desc) ? description : nil,
+					description: description != t.desc ? description : nil,
 					importance: importance != t.importance ? importance : nil
 				)
+			}
+
+			let fetched = try await networkManager.fetchTransactions()
+
+			let request = FetchDescriptor<Transaction>(sortBy: [SortDescriptor(\.dateCreated, order: .forward)])
+			let existingTransactions = try modelContext.fetch(request)
+
+			for t in fetched {
+				if let existing = existingTransactions.first(where: { $0.id == t.id }) {
+					existing.change = t.change
+					existing.title = t.title
+					existing.desc = t.description
+					existing.importance = t.importance
+					existing.dateCreated = t.dateCreated
+				} else {
+					let entity = Transaction(
+						id: t.id,
+						change: t.change,
+						title: t.title,
+						desc: t.description,
+						importance: t.importance,
+						dateCreated: t.dateCreated
+					)
+					modelContext.insert(entity)
+				}
 			}
 
 			isLoading = false
