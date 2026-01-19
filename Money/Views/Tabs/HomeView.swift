@@ -24,15 +24,44 @@ struct HomeView: View {
 	@State private var isLoading = false
 	@State private var errorMessage: String?
 
+	@State var showAddTransaction = false
+	@State var positive = false
+
 	var body: some View {
 		NavigationStack {
 			VStack {
 				Text(total.formatted(.currency(code: "AUD")))
 					.font(.largeTitle.scaled(by: 2))
 					.contentTransition(.numericText())
+					.task(id: showAddTransaction, priority: .userInitiated) {
+						await loadTransactions()
+					}
 			}
-			.task {
-				await loadTransactions()
+			.toolbar { toolbarContent }
+			.toolbar {
+				ToolbarItem(placement: .topBarTrailing) {
+					Button {
+						positive = true
+						showAddTransaction = true
+					} label: {
+						Label("Add Transaction", systemImage: "plus")
+					}
+				}
+				ToolbarItem(placement: .topBarTrailing) {
+					Button {
+						positive = false
+						showAddTransaction = true
+					} label: {
+						Label("Add Transaction", systemImage: "minus")
+					}
+				}
+			}
+
+			.sheet(isPresented: $showAddTransaction) {
+				AddTransactionView(positive: positive)
+					.environmentObject(networkManager)
+					.presentationDetents([.medium, .large])
+					.presentationDragIndicator(.hidden)
 			}
 		}
 	}

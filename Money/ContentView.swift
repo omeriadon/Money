@@ -11,48 +11,26 @@ struct ContentView: View {
 	@EnvironmentObject var networkManager: NetworkManager
 
 	var body: some View {
-		NavigationStack {
-			TabView {
-				Tab {
-					HomeView()
-						.environmentObject(networkManager)
-				} label: {
-					Label("Money", systemImage: "house")
-				}
-				Tab {
-					ListView()
-						.environmentObject(networkManager)
-				} label: {
-					Label("Transactions", systemImage: "mail.stack")
-				}
-				Tab {
-					SettingsView()
-						.environmentObject(networkManager)
-				} label: {
-					Label("Settings", systemImage: "gearshape")
-				}
+		TabView {
+			Tab {
+				HomeView()
+					.environmentObject(networkManager)
+
+			} label: {
+				Label("Money", systemImage: "house")
 			}
-			.toolbar {
-				ToolbarItem(placement: .title) {
-					Text("Money")
-				}
-				ToolbarItem(placement: .topBarLeading) {
-					HStack {
-						LinearGradient(
-							colors: [Color.yellow, Color.yellow.opacity(0.8)],
-							startPoint: .top,
-							endPoint: .bottom
-						)
-						.mask(
-							Image("Logo")
-								.renderingMode(.template)
-								.resizable()
-								.aspectRatio(contentMode: .fit)
-						)
-						.frame(width: 35, height: 35)
-					}
-				}
-				.sharedBackgroundVisibility(.hidden)
+			Tab {
+				ListView()
+					.environmentObject(networkManager)
+
+			} label: {
+				Label("Transactions", systemImage: "mail.stack")
+			}
+			Tab {
+				SettingsView()
+					.environmentObject(networkManager)
+			} label: {
+				Label("Settings", systemImage: "gearshape")
 			}
 		}
 	}
@@ -60,4 +38,29 @@ struct ContentView: View {
 
 #Preview {
 	ContentView()
+}
+
+@ToolbarContentBuilder
+var toolbarContent: some ToolbarContent {
+	ToolbarItem(placement: .title) {
+		Text("Money")
+	}
+
+	ToolbarItem(placement: .topBarLeading) {
+		HStack {
+			LinearGradient(
+				colors: [Color.yellow, Color.yellow.opacity(0.8)],
+				startPoint: .top,
+				endPoint: .bottom
+			)
+			.mask(
+				Image("Logo")
+					.renderingMode(.template)
+					.resizable()
+					.aspectRatio(contentMode: .fit)
+			)
+			.frame(width: 35, height: 35)
+		}
+	}
+	.sharedBackgroundVisibility(.hidden)
 }

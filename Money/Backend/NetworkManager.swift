@@ -159,12 +159,63 @@ final class NetworkManager: ObservableObject {
 		let success = true
 
 		Task { @MainActor in
-			try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
+			try? await Task.sleep(nanoseconds: 1_000_000_000)
 			self.token = decoded.token
 			self.email = decoded.user.email
 			self.firstName = decoded.user.firstName
 		}
 
 		return success
+	}
+
+	func createTransaction(
+		change: Double,
+		title: String,
+		description: String,
+		importance: Importance
+	) async throws -> [TransactionResponse] {
+		guard let token = token else {
+			throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Not authenticated"])
+		}
+
+		let url = URL(string: "https://money.adonis.pt/transactions")!
+		var request = URLRequest(url: url)
+		request.httpMethod = "POST"
+		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+		let body: [String: Any] = [
+			"change": change,
+			"title": title,
+			"description": description,
+			"importance": importance.rawValue,
+		]
+		request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+		let (data, response) = try await URLSession.shared.data(for: request)
+
+		guard let httpResponse = response as? HTTPURLResponse else {
+			throw URLError(.badServerResponse)
+		}
+
+		guard (200 ... 299).contains(httpResponse.statusCode) else {
+			let message: String
+			if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+			   let error = json["error"] as? String
+			{
+				message = error
+			} else {
+				switch httpResponse.statusCode {
+					case 400: message = "Bad request"
+					case 401: message = "Unauthorized"
+					case 404: message = "Not found"
+					case 409: message = "Conflict"
+					default: message = "\(httpResponse.statusCode)"
+				}
+			}
+			throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: message])
+		}
+
+		return try await fetchTransactions()
 	}
 }

@@ -20,6 +20,8 @@ struct ListView: View {
 					Text(transaction.title)
 				}
 			}
+			.toolbar { toolbarContent }
+
 			
 		}
     }

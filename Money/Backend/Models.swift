@@ -15,8 +15,27 @@ struct CurrentUser: Codable, Defaults.Serializable {
 	let token: String
 }
 
-enum Importance: String, Codable {
+enum Importance: String, Codable, CaseIterable, Identifiable {
 	case essential, leisure, investment, reward, emergent, occasional
+	
+	var id: String { self.rawValue }
+	
+	var symbol: String {
+		switch self {
+		case .essential:
+			"carrot"
+		case .leisure:
+			"scooter"
+		case .investment:
+			"banknote"
+		case .reward:
+			"star"
+		case .emergent:
+			"cross.case"
+		case .occasional:
+			"calendar"
+		}
+	}
 }
 
 @Model
