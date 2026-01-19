@@ -121,16 +121,31 @@ struct HomeView: View {
 		do {
 			let fetched = try await networkManager.fetchTransactions()
 
-			for t in fetched where !transactions.contains(where: { $0.id == t.id }) {
-				let entity = Transaction(
-					id: t.id,
-					change: t.change,
-					title: t.title,
-					desc: t.description,
-					importance: t.importance,
-					dateCreated: t.dateCreated
-				)
-				modelContext.insert(entity)
+			for t in fetched {
+				if let existing = transactions.first(where: { $0.id == t.id }) {
+					if existing.change != t.change ||
+						existing.title != t.title ||
+						existing.desc != t.description ||
+						existing.importance != t.importance ||
+						existing.dateCreated != t.dateCreated
+					{
+						existing.change = t.change
+						existing.title = t.title
+						existing.desc = t.description
+						existing.importance = t.importance
+						existing.dateCreated = t.dateCreated
+					}
+				} else {
+					let entity = Transaction(
+						id: t.id,
+						change: t.change,
+						title: t.title,
+						desc: t.description,
+						importance: t.importance,
+						dateCreated: t.dateCreated
+					)
+					modelContext.insert(entity)
+				}
 			}
 
 			isLoading = false
