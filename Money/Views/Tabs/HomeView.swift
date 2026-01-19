@@ -45,7 +45,10 @@ struct HomeView: View {
 		NavigationStack {
 			VStack {
 				Text(total.formatted(.currency(code: "AUD")))
-					.font(.largeTitle.scaled(by: 2))
+					.padding(.horizontal)
+					.font(.system(size: 300))
+					.lineLimit(1)
+					.minimumScaleFactor(0.01)
 					.contentTransition(.numericText())
 					.task {
 						if !didSyncOnce {
@@ -53,6 +56,26 @@ struct HomeView: View {
 							await loadTransactions()
 						}
 					}
+			}
+			.frame(maxWidth: .infinity, maxHeight: .infinity)
+			.ignoresSafeArea()
+			.background {
+				if total < 0 {
+					Rectangle()
+						.fill(
+							LinearGradient(
+								stops: [
+									.init(color: Color.red, location: 0),
+									.init(color: Color.red.opacity(0.0), location: 1),
+								],
+								startPoint: .top,
+								endPoint: .bottom
+							)
+						)
+						.ignoresSafeArea()
+				} else {
+					Color.clear
+				}
 			}
 			.toolbar { toolbarContent }
 			.toolbar {
@@ -74,10 +97,6 @@ struct HomeView: View {
 						}
 					} label: {
 						Image(systemName: iconName)
-//							.symbolEffect(
-//								.rotate.byLayer,
-//								value: isLoading
-//							)
 							.contentTransition(.symbolEffect(.replace))
 					}
 					.animation(.easeInOut, value: "\(isLoading)\(showSuccess)")

@@ -86,17 +86,16 @@ struct AddTransactionView: View {
 				.multilineTextAlignment(.trailing)
 				.focused($focusedField, equals: .amount)
 				.onSubmit {
-					updateChange()
 					focusedField = nil
+				}
+				.onChange(of: amount) {
+					updateChange()
 				}
 				.frame(maxWidth: 150)
 				.padding(5)
-				.glassEffect(.clear.tint(isPositive ? .green : .red).interactive(), in: RoundedRectangle(cornerRadius: 12))
+				.glassEffect(.clear.tint(isPositive ? .green : .red).interactive(), in: RoundedRectangle(cornerRadius: 30))
 				.animation(.easeInOut, value: isPositive)
 				.font(.title)
-				.onAppear {
-					focusedField = .title
-				}
 		}
 		.padding(.horizontal)
 		.padding(.top)
@@ -130,14 +129,14 @@ struct AddTransactionView: View {
 		change = isPositive ? amount : -amount
 	}
 
-	@MainActor
 	func submitTransaction() async {
 		isLoading = true
 		errorMessage = ""
+		let finalChange = isPositive ? amount : -amount
 
 		do {
 			_ = try await networkManager.createTransaction(
-				change: change,
+				change: finalChange,
 				title: title,
 				description: description,
 				importance: importance
