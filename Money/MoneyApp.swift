@@ -19,11 +19,11 @@ struct MoneyApp: App {
 				if networkManager.token != nil {
 					ContentView()
 						.environmentObject(networkManager)
-						.transition(.blurReplace)
+						.transition(.opacity)
 				} else {
 					LoginSignupView()
 						.environmentObject(networkManager)
-						.transition(.blurReplace)
+						.transition(.opacity)
 				}
 			}
 			.animation(.easeInOut, value: networkManager.token)

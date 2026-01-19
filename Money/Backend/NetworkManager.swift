@@ -218,4 +218,26 @@ final class NetworkManager: ObservableObject {
 
 		return try await fetchTransactions()
 	}
+
+	func logout() async throws {
+		guard let token = token else { return }
+
+		let url = URL(string: "https://money.adonis.pt/users/logout")!
+		var request = URLRequest(url: url)
+		request.httpMethod = "POST"
+		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+		let (_, response) = try await URLSession.shared.data(for: request)
+
+		guard let httpResponse = response as? HTTPURLResponse,
+		      (200 ... 299).contains(httpResponse.statusCode)
+		else {
+			throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to log out"])
+		}
+
+		
+		self.token = nil
+		email = nil
+		firstName = nil
+	}
 }
