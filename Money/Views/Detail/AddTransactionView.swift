@@ -6,12 +6,10 @@ struct AddTransactionView: View {
 	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
 
-	let positive: Bool
-
 	@State private var title = ""
 	@State private var description = ""
 	@State private var amount: Double = 50
-	@State private var isPositive: Bool
+	@State private var isPositive = true
 	@State private var importance: Importance = .essential
 
 	@State private var change: Double = 0
@@ -23,13 +21,6 @@ struct AddTransactionView: View {
 
 	enum Field: Hashable {
 		case title, description, amount
-	}
-
-	init(positive: Bool) {
-		self.positive = positive
-		_isPositive = State(initialValue: positive)
-		_amount = State(initialValue: 50)
-		_change = State(initialValue: positive ? 50 : -50)
 	}
 
 	var currencyFormatter: NumberFormatter {
@@ -52,7 +43,6 @@ struct AddTransactionView: View {
 
 				ToolbarItem(placement: .topBarTrailing) {
 					Button {
-						
 						Task { await submitTransaction() }
 					} label: {
 						if isLoading {

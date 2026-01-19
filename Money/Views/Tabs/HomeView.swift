@@ -11,6 +11,8 @@ import SwiftUI
 struct HomeView: View {
 	@EnvironmentObject var networkManager: NetworkManager
 
+	@State private var didSyncOnce = false
+
 	@Environment(\.modelContext) private var modelContext
 	@Query(sort: \Transaction.dateCreated, order: .reverse)
 	private var transactions: [Transaction]
@@ -25,7 +27,6 @@ struct HomeView: View {
 	@State private var errorMessage: String?
 
 	@State var showAddTransaction = false
-	@State var positive = false
 
 	var body: some View {
 		NavigationStack {
@@ -33,32 +34,39 @@ struct HomeView: View {
 				Text(total.formatted(.currency(code: "AUD")))
 					.font(.largeTitle.scaled(by: 2))
 					.contentTransition(.numericText())
-					.task(id: showAddTransaction, priority: .userInitiated) {
-						await loadTransactions()
+					.task {
+						if !didSyncOnce {
+							didSyncOnce = true
+							await loadTransactions()
+						}
 					}
 			}
 			.toolbar { toolbarContent }
 			.toolbar {
 				ToolbarItem(placement: .topBarTrailing) {
 					Button {
-						positive = true
 						showAddTransaction = true
 					} label: {
 						Label("Add Transaction", systemImage: "plus")
 					}
+					.buttonStyle(.glassProminent)
 				}
+
+				ToolbarSpacer(placement: .topBarTrailing)
+
 				ToolbarItem(placement: .topBarTrailing) {
 					Button {
-						positive = false
-						showAddTransaction = true
+						Task {
+							await loadTransactions()
+						}
 					} label: {
-						Label("Add Transaction", systemImage: "minus")
+						Label("Sync", systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
 					}
 				}
 			}
 
 			.sheet(isPresented: $showAddTransaction) {
-				AddTransactionView(positive: positive)
+				AddTransactionView()
 					.environmentObject(networkManager)
 					.presentationDetents([.large])
 					.presentationDragIndicator(.hidden)
