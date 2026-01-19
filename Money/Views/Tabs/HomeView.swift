@@ -13,6 +13,8 @@ struct HomeView: View {
 
 	@State private var didSyncOnce = false
 
+	@State private var rotateTrigger = 0
+
 	@Environment(\.modelContext) private var modelContext
 	@Query(sort: \Transaction.dateCreated, order: .reverse)
 	private var transactions: [Transaction]
@@ -24,7 +26,18 @@ struct HomeView: View {
 	}
 
 	@State private var isLoading = false
+	@State private var showSuccess = false
 	@State private var errorMessage: String?
+
+	private var iconName: String {
+		if isLoading {
+			return "arrow.trianglehead.2.clockwise.rotate.90"
+		}
+		if showSuccess {
+			return "checkmark"
+		}
+		return "arrow.trianglehead.2.clockwise.rotate.90"
+	}
 
 	@State var showAddTransaction = false
 
@@ -60,12 +73,18 @@ struct HomeView: View {
 							await loadTransactions()
 						}
 					} label: {
-						Label("Sync", systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
+						Image(systemName: iconName)
+//							.symbolEffect(
+//								.rotate.byLayer,
+//								value: isLoading
+//							)
+							.contentTransition(.symbolEffect(.replace))
 					}
+					.animation(.easeInOut, value: "\(isLoading)\(showSuccess)")
+					.disabled(isLoading)
 				}
 			}
-
-			.sheet(isPresented: $showAddTransaction) {
+			.sheet(isPresented: $showAddTransaction, onDismiss: { Task { await loadTransactions() }}) {
 				AddTransactionView()
 					.environmentObject(networkManager)
 					.presentationDetents([.large])
@@ -75,30 +94,36 @@ struct HomeView: View {
 	}
 
 	func loadTransactions() async {
-		isLoading = true
+		await MainActor.run {
+			isLoading = true
+			showSuccess = false
+		}
+
 		do {
 			let fetched = try await networkManager.fetchTransactions()
 
-			for t in fetched {
-				if !transactions.contains(where: { $0.id == t.id }) {
-					let entity = Transaction(
-						id: t.id,
-						change: t.change,
-						title: t.title,
-						desc: t.description,
-						importance: t.importance,
-						dateCreated: t.dateCreated
-					)
-					modelContext.insert(entity)
-				}
+			for t in fetched where !transactions.contains(where: { $0.id == t.id }) {
+				let entity = Transaction(
+					id: t.id,
+					change: t.change,
+					title: t.title,
+					desc: t.description,
+					importance: t.importance,
+					dateCreated: t.dateCreated
+				)
+				modelContext.insert(entity)
 			}
+
+			isLoading = false
+			showSuccess = true
+
+			try? await Task.sleep(for: .seconds(1.5))
+
+			showSuccess = false
+
 		} catch {
+			isLoading = false
 			errorMessage = error.localizedDescription
 		}
-		isLoading = false
 	}
-}
-
-#Preview {
-	HomeView()
 }

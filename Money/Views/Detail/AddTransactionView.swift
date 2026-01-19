@@ -12,7 +12,7 @@ struct AddTransactionView: View {
 	@State private var isPositive = true
 	@State private var importance: Importance = .essential
 
-	@State private var change: Double = 0
+	@State private var change: Double = 50
 	@State private var isLoading = false
 	@State private var errorMessage = ""
 	@State private var showError = false
@@ -52,15 +52,7 @@ struct AddTransactionView: View {
 						}
 					}
 					.disabled(isLoading || title.isEmpty || change == 0)
-				}
-
-				ToolbarItem(placement: .keyboard) {
-					Button {
-						focusedField = nil
-					} label: {
-						Label("Done", systemImage: "checkmark")
-							.padding(.bottom)
-					}
+					.buttonStyle(.glassProminent)
 				}
 			}
 			.alert("Error Adding Transaction", isPresented: $showError) {
@@ -81,11 +73,11 @@ struct AddTransactionView: View {
 					.tag(false)
 			}
 			.pickerStyle(.segmented)
-			.frame(width: 100)
 			.onChange(of: isPositive) {
 				updateChange()
 			}
-			.font(.largeTitle.scaled(by: 2))
+			.controlSize(.extraLarge)
+			.font(.largeTitle)
 
 			Spacer()
 
@@ -99,13 +91,15 @@ struct AddTransactionView: View {
 				}
 				.frame(maxWidth: 150)
 				.padding(5)
-				.glassEffect(.clear.interactive(), in: RoundedRectangle(cornerRadius: 12))
+				.glassEffect(.clear.tint(isPositive ? .green : .red).interactive(), in: RoundedRectangle(cornerRadius: 12))
+				.animation(.easeInOut, value: isPositive)
 				.font(.title)
 				.onAppear {
-					focusedField = .amount
+					focusedField = .title
 				}
 		}
 		.padding(.horizontal)
+		.padding(.top)
 
 		Form {
 			Section {
@@ -156,4 +150,9 @@ struct AddTransactionView: View {
 			showError = true
 		}
 	}
+}
+
+#Preview {
+	AddTransactionView()
+		.environmentObject(NetworkManager.shared)
 }
