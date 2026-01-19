@@ -261,7 +261,10 @@ final class NetworkManager: ObservableObject {
 			throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: message])
 		}
 
-		return try JSONDecoder().decode(TransactionResponse.self, from: data)
+		print(data.base64EncodedString())
+		let decoder = JSONDecoder()
+		decoder.dateDecodingStrategy = .iso8601
+		return try decoder.decode(TransactionResponse.self, from: data)
 	}
 
 	func logout() async throws {

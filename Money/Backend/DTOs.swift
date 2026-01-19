@@ -24,8 +24,9 @@ struct TransactionDTO: Codable {
 
 struct TransactionResponse: Decodable, Identifiable {
 	let id: UUID
-	let change: Int
+	let change: Double
 	let title: String
+	let userID: UUID
 	let description: String
 	let importance: Importance
 	let dateCreated: Date

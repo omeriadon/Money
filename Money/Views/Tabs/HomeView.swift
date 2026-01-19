@@ -19,7 +19,7 @@ struct HomeView: View {
 	@Query(sort: \Transaction.dateCreated, order: .reverse)
 	private var transactions: [Transaction]
 
-	var total: Int {
+	var total: Double {
 		transactions.reduce(into: 0) { result, transaction in
 			result += transaction.change
 		}

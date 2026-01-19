@@ -41,7 +41,7 @@ enum Importance: String, Codable, CaseIterable, Identifiable {
 @Model
 final class Transaction: Identifiable {
 	@Attribute(.unique) var id: UUID
-	var change: Int
+	var change: Double
 	var title: String
 	var desc: String
 	var importance: Importance
@@ -50,7 +50,7 @@ final class Transaction: Identifiable {
 
 	init(
 		id: UUID = UUID(),
-		change: Int,
+		change: Double,
 		title: String,
 		desc: String,
 		importance: Importance,
