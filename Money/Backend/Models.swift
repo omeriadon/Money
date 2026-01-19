@@ -7,9 +7,43 @@
 
 import Defaults
 import Foundation
+import SwiftData
 
 struct CurrentUser: Codable, Defaults.Serializable {
-    let firstName: String
-    let email: String
-    let token: String
+	let firstName: String
+	let email: String
+	let token: String
+}
+
+enum Importance: String, Codable {
+	case essential, leisure, investment, reward, emergent, occasional
+}
+
+@Model
+final class Transaction: Identifiable {
+	@Attribute(.unique) var id: UUID
+	var change: Int
+	var title: String
+	var desc: String
+	var importance: Importance
+	var dateCreated: Date
+	var dateUpdated: Date
+
+	init(
+		id: UUID = UUID(),
+		change: Int,
+		title: String,
+		desc: String,
+		importance: Importance,
+		dateCreated: Date = Date(),
+		dateUpdated: Date = Date()
+	) {
+		self.id = id
+		self.change = change
+		self.title = title
+		self.desc = desc
+		self.importance = importance
+		self.dateCreated = dateCreated
+		self.dateUpdated = dateUpdated
+	}
 }

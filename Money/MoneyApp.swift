@@ -7,6 +7,7 @@
 
 import Defaults
 import SwiftUI
+import SwiftData
 
 @main
 struct MoneyApp: App {
@@ -14,7 +15,7 @@ struct MoneyApp: App {
 
 	var body: some Scene {
 		WindowGroup {
-			NavigationStack {
+			Group {
 				if networkManager.token != nil {
 					ContentView()
 						.environmentObject(networkManager)
@@ -28,5 +29,6 @@ struct MoneyApp: App {
 			.animation(.easeInOut, value: networkManager.token)
 			.fontDesign(.monospaced)
 		}
+		.modelContainer(for: Transaction.self)
 	}
 }

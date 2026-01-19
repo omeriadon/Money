@@ -18,10 +18,59 @@ final class NetworkManager: ObservableObject {
 		didSet { Defaults[.userFirstName] = firstName }
 	}
 
+	@Published var transactions: [TransactionDTO] = []
+
+	var totalBalance: Int {
+		transactions.reduce(0) { $0 + $1.change }
+	}
+
 	private init() {
 		token = Defaults[.userToken]
 		email = Defaults[.userEmail]
 		firstName = Defaults[.userFirstName]
+	}
+
+	func fetchTransactions() async throws -> [TransactionResponse] {
+		guard let token else {
+			throw NSError(
+				domain: "",
+				code: 401,
+				userInfo: [NSLocalizedDescriptionKey: "Not authenticated"]
+			)
+		}
+
+		let url = URL(string: "https://money.adonis.pt/transactions")!
+		var request = URLRequest(url: url)
+		request.httpMethod = "GET"
+		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+		request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+		let (data, response) = try await URLSession.shared.data(for: request)
+
+		guard let httpResponse = response as? HTTPURLResponse else {
+			throw URLError(.badServerResponse)
+		}
+
+		guard (200 ... 299).contains(httpResponse.statusCode) else {
+			let message: String
+			if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+			   let error = json["error"] as? String
+			{
+				message = error
+			} else {
+				message = "\(httpResponse.statusCode)"
+			}
+			throw NSError(
+				domain: "",
+				code: httpResponse.statusCode,
+				userInfo: [NSLocalizedDescriptionKey: message]
+			)
+		}
+
+		let decoder = JSONDecoder()
+		decoder.dateDecodingStrategy = .iso8601
+
+		return try decoder.decode([TransactionResponse].self, from: data)
 	}
 
 	@MainActor
@@ -61,7 +110,7 @@ final class NetworkManager: ObservableObject {
 
 		Task {
 			try await Task.sleep(nanoseconds: 2_000_000_000)
-			token = decoded.token
+			self.token = decoded.token
 		}
 		self.email = decoded.user.email
 		firstName = decoded.user.firstName

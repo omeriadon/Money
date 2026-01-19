@@ -22,6 +22,16 @@ struct TransactionDTO: Codable {
 	let dateUpdated: Date?
 }
 
+struct TransactionResponse: Decodable, Identifiable {
+	let id: UUID
+	let change: Int
+	let title: String
+	let description: String
+	let importance: Importance
+	let dateCreated: Date
+	let dateUpdated: Date
+}
+
 struct UserLoginResponse: Codable {
 	let token: String
 	let user: UserDTO
