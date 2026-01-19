@@ -1,10 +1,3 @@
-//
-//  TransactionAddView.swift
-//  Money
-//
-//  Created by Adon Omeri on 19/1/2026.
-//
-
 import SwiftData
 import SwiftUI
 
@@ -17,102 +10,127 @@ struct AddTransactionView: View {
 
 	@State private var title = ""
 	@State private var description = ""
-	@State private var change = 0.0
+	@State private var amount: Double = 50
+	@State private var isPositive: Bool
 	@State private var importance: Importance = .essential
 
+	@State private var change: Double = 0
 	@State private var isLoading = false
-	@State private var errorMessage: String?
+	@State private var errorMessage = ""
+	@State private var showError = false
 
-	@State private var changeText: String = "0"
+	init(positive: Bool) {
+		self.positive = positive
+		_isPositive = State(initialValue: positive)
+		_amount = State(initialValue: 50)
+		_change = State(initialValue: positive ? 50 : -50)
+	}
+
+	var currencyFormatter: NumberFormatter {
+		let formatter = NumberFormatter()
+		formatter.numberStyle = .currency
+		formatter.currencyCode = "AUD"
+		return formatter
+	}
 
 	var body: some View {
 		NavigationStack {
-			Form {
-				Section("Transaction") {
-					TextField("Title", text: $title)
-					TextField("Description", text: $description)
-
-					HStack {
-						TextField("", text: $changeText)
-							.contentTransition(.numericText())
-							.keyboardType(.numbersAndPunctuation)
-							.multilineTextAlignment(.trailing)
-							.frame(width: 80)
-							.onChange(of: changeText) {
-								if let value = Double(changeText.replacingOccurrences(of: "+", with: "")) {
-									change = value
-								}
-							}
-
-						Spacer()
-
-						Stepper("", value: $change, step: 10)
-							.labelsHidden()
-							.onChange(of: change) {
-								changeText = String(format: "%.0f", change)
-							}
-					}
-
-					Picker("Importance", selection: $importance) {
-						ForEach(Importance.allCases) { importance in
-							Label(importance.rawValue.capitalized, systemImage: importance.symbol).tag(importance)
-								.labelIconToTitleSpacing(50)
-								.tint(change >= 0 ? Color.green : Color.red)
-						}
-					}
-					.pickerStyle(.menu)
+			form
+				.alert("Error Adding Transaction", isPresented: $showError) {
+					Button("OK", role: .cancel) {}
+				} message: {
+					Text(errorMessage)
 				}
-				.listRowBackground(Rectangle().fill(.regularMaterial))
-
-				if let error = errorMessage {
-					Section {
-						Text(error)
-							.foregroundStyle(.red)
+				.scrollContentBackground(.hidden)
+				.background(
+					Rectangle()
+						.fill(change >= 0 ? Color.green.opacity(0.3) : Color.red.opacity(0.3))
+						.animation(.easeInOut, value: change)
+						.ignoresSafeArea()
+				)
+				.toolbar {
+					ToolbarItem(placement: .topBarTrailing) {
+						Button(role: .close) { dismiss() }
 					}
-					.listRowBackground(Rectangle().fill(.regularMaterial))
 				}
-
-				Section {
+				.safeAreaBar(edge: .bottom, alignment: .center, spacing: 30) {
 					Button {
+						updateChange()
 						Task { await submitTransaction() }
 					} label: {
 						if isLoading {
 							ProgressView()
 						} else {
 							Text("Add Transaction")
+								.padding(.vertical, 10)
+								.padding(.horizontal, 15)
+								.foregroundStyle((isLoading || title.isEmpty || change == 0) ? .black : .primary)
 						}
 					}
 					.disabled(isLoading || title.isEmpty || change == 0)
 					.buttonStyle(.glassProminent)
+					.padding(.bottom)
+					.tint(change >= 0 ? Color.green : Color.red)
 				}
-				.listRowBackground(Rectangle().fill(.regularMaterial))
-			}
-			.scrollContentBackground(.hidden)
-			.background(
-				Rectangle()
-					.fill(change >= 0 ? Color.green.opacity(0.3) : Color.red.opacity(0.3))
-					.animation(.easeInOut, value: change)
-					.ignoresSafeArea()
-			)
-			.task {
-				if positive {
-					change = 50
-				} else {
-					change = -50
-				}
-			}
-			.toolbar {
-				ToolbarItem(placement: .topBarTrailing) {
-					Button(role: .close) { dismiss() }
-				}
-			}
 		}
+	}
+
+	var form: some View {
+		Form {
+			Section("Transaction") {
+				TextField("Title", text: $title)
+				TextField("Description", text: $description)
+
+				HStack {
+					Picker("", selection: $isPositive) {
+						Image(systemName: "plus.circle.fill")
+							.tag(true)
+						Image(systemName: "minus.circle.fill")
+							.tag(false)
+					}
+					.pickerStyle(.segmented)
+					.frame(width: 100)
+					.onChange(of: isPositive) {
+						updateChange()
+					}
+
+					Spacer()
+
+					TextField("Amount", value: $amount, formatter: currencyFormatter)
+						.keyboardType(.numberPad)
+						.multilineTextAlignment(.trailing)
+						.onSubmit {
+							updateChange()
+						}
+						.frame(maxWidth: 120)
+						.padding(5)
+						.glassEffect(.clear.interactive(), in: RoundedRectangle(cornerRadius: 12))
+						.scrollDismissesKeyboard(.immediately)
+						.font(.title3)
+				}
+
+				Picker("Importance", selection: $importance) {
+					ForEach(Importance.allCases) { importance in
+						Label(importance.rawValue.capitalized, systemImage: importance.symbol)
+							.labelIconToTitleSpacing(50)
+							.tag(importance)
+							.fontDesign(.monospaced)
+					}
+				}
+				.pickerStyle(.menu)
+			}
+			.listRowBackground(Rectangle().fill(.regularMaterial))
+		}
+	}
+
+	private func updateChange() {
+		change = isPositive ? amount : -amount
 	}
 
 	@MainActor
 	func submitTransaction() async {
 		isLoading = true
-		errorMessage = nil
+		errorMessage = ""
 
 		do {
 			_ = try await networkManager.createTransaction(
@@ -121,12 +139,12 @@ struct AddTransactionView: View {
 				description: description,
 				importance: importance
 			)
-
 			isLoading = false
 			dismiss()
 		} catch {
 			isLoading = false
 			errorMessage = error.localizedDescription
+			showError = true
 		}
 	}
 }
