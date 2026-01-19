@@ -52,7 +52,7 @@ struct AddTransactionView: View {
 
 				ToolbarItem(placement: .topBarTrailing) {
 					Button {
-						updateChange()
+						
 						Task { await submitTransaction() }
 					} label: {
 						if isLoading {
@@ -99,7 +99,7 @@ struct AddTransactionView: View {
 
 			Spacer()
 
-			TextField("Amount", value: $amount, formatter: currencyFormatter)
+			TextField("Amount", value: $amount, format: .currency(code: "AUD"))
 				.keyboardType(.numberPad)
 				.multilineTextAlignment(.trailing)
 				.focused($focusedField, equals: .amount)
@@ -118,7 +118,7 @@ struct AddTransactionView: View {
 		.padding(.horizontal)
 
 		Form {
-			Section("Transaction") {
+			Section {
 				TextField("Title", text: $title)
 					.focused($focusedField, equals: .title)
 					.onSubmit { focusedField = .description }
