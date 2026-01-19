@@ -219,6 +219,51 @@ final class NetworkManager: ObservableObject {
 		return try await fetchTransactions()
 	}
 
+	func updateTransaction(
+		id: UUID,
+		change: Int? = nil,
+		title: String? = nil,
+		description: String? = nil,
+		importance: Importance? = nil
+	) async throws -> TransactionResponse {
+		let url = URL(string: "https://money.adonis.pt/transactions/\(id)")!
+		var request = URLRequest(url: url)
+		request.httpMethod = "PATCH"
+		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+		if let token = token {
+			request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+		}
+
+		var body: [String: Any] = [:]
+		if let change = change { body["change"] = change }
+		if let title = title { body["title"] = title }
+		if let description = description { body["description"] = description }
+		if let importance = importance { body["importance"] = importance.rawValue }
+
+		request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+		let (data, response) = try await URLSession.shared.data(for: request)
+
+		guard let httpResponse = response as? HTTPURLResponse else {
+			throw URLError(.badServerResponse)
+		}
+
+		guard (200 ... 299).contains(httpResponse.statusCode) else {
+			let message: String
+			if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+			   let error = json["error"] as? String
+			{
+				message = error
+			} else {
+				message = "\(httpResponse.statusCode)"
+			}
+			throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: message])
+		}
+
+		return try JSONDecoder().decode(TransactionResponse.self, from: data)
+	}
+
 	func logout() async throws {
 		guard let token = token else { return }
 
@@ -235,7 +280,6 @@ final class NetworkManager: ObservableObject {
 			throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to log out"])
 		}
 
-		
 		self.token = nil
 		email = nil
 		firstName = nil

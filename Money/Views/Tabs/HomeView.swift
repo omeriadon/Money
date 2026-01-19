@@ -104,7 +104,7 @@ struct HomeView: View {
 				}
 			}
 			.sheet(isPresented: $showAddTransaction, onDismiss: { Task { await loadTransactions() }}) {
-				AddTransactionView()
+				TransactionDetailView(isNew: true)
 					.environmentObject(networkManager)
 					.presentationDetents([.large])
 					.presentationDragIndicator(.hidden)

@@ -1,7 +1,7 @@
 import SwiftData
 import SwiftUI
 
-struct AddTransactionView: View {
+struct TransactionDetailView: View {
 	@EnvironmentObject var networkManager: NetworkManager
 	@Environment(\.modelContext) private var modelContext
 	@Environment(\.dismiss) private var dismiss
@@ -19,8 +19,16 @@ struct AddTransactionView: View {
 
 	@FocusState private var focusedField: Field?
 
+	let isNew: Bool
+	let transaction: Transaction?
+
 	enum Field: Hashable {
 		case title, description, amount
+	}
+
+	init(isNew: Bool, transaction: Transaction? = nil) {
+		self.isNew = isNew
+		self.transaction = transaction
 	}
 
 	var currencyFormatter: NumberFormatter {
@@ -36,6 +44,16 @@ struct AddTransactionView: View {
 			VStack {
 				form
 			}
+			.onAppear {
+				if let t = transaction {
+					title = t.title
+					description = t.desc
+					change = Double(t.change)
+					isPositive = t.change >= 0
+					amount = abs(Double(t.change))
+					importance = t.importance
+				}
+			}
 			.toolbar {
 				ToolbarItem(placement: .topBarLeading) {
 					Button(role: .cancel) { dismiss() }
@@ -48,36 +66,40 @@ struct AddTransactionView: View {
 						if isLoading {
 							ProgressView()
 						} else {
-							Label("Add", systemImage: "plus")
+							Label(isNew ? "Add" : "Update", systemImage: isNew ? "plus" : "pencil")
 						}
 					}
-					.disabled(isLoading || title.isEmpty || change == 0)
+					.disabled(
+						isLoading ||
+							title.isEmpty ||
+							change == (transaction != nil ? Double(transaction!.change) : 0)
+					)
 					.buttonStyle(.glassProminent)
 				}
 			}
-			.alert("Error Adding Transaction", isPresented: $showError) {
-				Button("OK", role: .cancel) {}
-			} message: {
-				Text(errorMessage)
+			.alert(isPresented: $showError) {
+				Alert(
+					title: Text(isNew ? "Error Adding Transaction" : "Error Updating Transaction"),
+					message: Text(errorMessage),
+					dismissButton: .default(Text("OK"))
+				)
 			}
 		}
 	}
+
+	// MARK: - Form
 
 	@ViewBuilder
 	var form: some View {
 		HStack {
 			Picker("", selection: $isPositive) {
-				Image(systemName: "plus.circle.fill")
-					.tag(true)
-				Image(systemName: "minus.circle.fill")
-					.tag(false)
+				Image(systemName: "plus.circle.fill").tag(true)
+				Image(systemName: "minus.circle.fill").tag(false)
 			}
 			.pickerStyle(.segmented)
-			.onChange(of: isPositive) {
-				updateChange()
-			}
 			.controlSize(.extraLarge)
 			.font(.largeTitle)
+			.onChange(of: isPositive) { updateChange() }
 
 			Spacer()
 
@@ -85,12 +107,8 @@ struct AddTransactionView: View {
 				.keyboardType(.numberPad)
 				.multilineTextAlignment(.trailing)
 				.focused($focusedField, equals: .amount)
-				.onSubmit {
-					focusedField = nil
-				}
-				.onChange(of: amount) {
-					updateChange()
-				}
+				.onSubmit { focusedField = nil }
+				.onChange(of: amount) { updateChange() }
 				.frame(maxWidth: 150)
 				.padding(5)
 				.glassEffect(.clear.tint(isPositive ? .green : .red).interactive(), in: RoundedRectangle(cornerRadius: 30))
@@ -135,12 +153,25 @@ struct AddTransactionView: View {
 		let finalChange = isPositive ? amount : -amount
 
 		do {
-			_ = try await networkManager.createTransaction(
-				change: finalChange,
-				title: title,
-				description: description,
-				importance: importance
-			)
+			if isNew {
+				_ = try await networkManager.createTransaction(
+					change: finalChange,
+					title: title,
+					description: description,
+					importance: importance
+				)
+			} else if let t = transaction {
+				let oldChange = Double(t.change)
+				let newChange = Int(finalChange)
+				_ = try await networkManager.updateTransaction(
+					id: t.id,
+					change: newChange != Int(oldChange) ? newChange : nil,
+					title: title != t.title ? title : nil,
+					description: description != (t.desc) ? description : nil,
+					importance: importance != t.importance ? importance : nil
+				)
+			}
+
 			isLoading = false
 			dismiss()
 		} catch {
@@ -149,9 +180,4 @@ struct AddTransactionView: View {
 			showError = true
 		}
 	}
-}
-
-#Preview {
-	AddTransactionView()
-		.environmentObject(NetworkManager.shared)
 }
