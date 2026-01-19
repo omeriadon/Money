@@ -19,6 +19,12 @@ struct AddTransactionView: View {
 	@State private var errorMessage = ""
 	@State private var showError = false
 
+	@FocusState private var focusedField: Field?
+
+	enum Field: Hashable {
+		case title, description, amount
+	}
+
 	init(positive: Bool) {
 		self.positive = positive
 		_isPositive = State(initialValue: positive)
@@ -30,30 +36,21 @@ struct AddTransactionView: View {
 		let formatter = NumberFormatter()
 		formatter.numberStyle = .currency
 		formatter.currencyCode = "AUD"
+		formatter.maximumFractionDigits = 0
 		return formatter
 	}
 
 	var body: some View {
 		NavigationStack {
-			form
-				.alert("Error Adding Transaction", isPresented: $showError) {
-					Button("OK", role: .cancel) {}
-				} message: {
-					Text(errorMessage)
+			VStack {
+				form
+			}
+			.toolbar {
+				ToolbarItem(placement: .topBarLeading) {
+					Button(role: .cancel) { dismiss() }
 				}
-				.scrollContentBackground(.hidden)
-				.background(
-					Rectangle()
-						.fill(change >= 0 ? Color.green.opacity(0.3) : Color.red.opacity(0.3))
-						.animation(.easeInOut, value: change)
-						.ignoresSafeArea()
-				)
-				.toolbar {
-					ToolbarItem(placement: .topBarTrailing) {
-						Button(role: .close) { dismiss() }
-					}
-				}
-				.safeAreaBar(edge: .bottom, alignment: .center, spacing: 30) {
+
+				ToolbarItem(placement: .topBarTrailing) {
 					Button {
 						updateChange()
 						Task { await submitTransaction() }
@@ -61,65 +58,87 @@ struct AddTransactionView: View {
 						if isLoading {
 							ProgressView()
 						} else {
-							Text("Add Transaction")
-								.padding(.vertical, 10)
-								.padding(.horizontal, 15)
-								.foregroundStyle((isLoading || title.isEmpty || change == 0) ? .black : .primary)
+							Label("Add", systemImage: "plus")
 						}
 					}
 					.disabled(isLoading || title.isEmpty || change == 0)
-					.buttonStyle(.glassProminent)
-					.padding(.bottom)
-					.tint(change >= 0 ? Color.green : Color.red)
 				}
+
+				ToolbarItem(placement: .keyboard) {
+					Button {
+						focusedField = nil
+					} label: {
+						Label("Done", systemImage: "checkmark")
+							.padding(.bottom)
+					}
+				}
+			}
+			.alert("Error Adding Transaction", isPresented: $showError) {
+				Button("OK", role: .cancel) {}
+			} message: {
+				Text(errorMessage)
+			}
 		}
 	}
 
+	@ViewBuilder
 	var form: some View {
+		HStack {
+			Picker("", selection: $isPositive) {
+				Image(systemName: "plus.circle.fill")
+					.tag(true)
+				Image(systemName: "minus.circle.fill")
+					.tag(false)
+			}
+			.pickerStyle(.segmented)
+			.frame(width: 100)
+			.onChange(of: isPositive) {
+				updateChange()
+			}
+			.font(.largeTitle.scaled(by: 2))
+
+			Spacer()
+
+			TextField("Amount", value: $amount, formatter: currencyFormatter)
+				.keyboardType(.numberPad)
+				.multilineTextAlignment(.trailing)
+				.focused($focusedField, equals: .amount)
+				.onSubmit {
+					updateChange()
+					focusedField = nil
+				}
+				.frame(maxWidth: 150)
+				.padding(5)
+				.glassEffect(.clear.interactive(), in: RoundedRectangle(cornerRadius: 12))
+				.font(.title)
+				.onAppear {
+					focusedField = .amount
+				}
+		}
+		.padding(.horizontal)
+
 		Form {
 			Section("Transaction") {
 				TextField("Title", text: $title)
+					.focused($focusedField, equals: .title)
+					.onSubmit { focusedField = .description }
+
 				TextField("Description", text: $description)
-
-				HStack {
-					Picker("", selection: $isPositive) {
-						Image(systemName: "plus.circle.fill")
-							.tag(true)
-						Image(systemName: "minus.circle.fill")
-							.tag(false)
-					}
-					.pickerStyle(.segmented)
-					.frame(width: 100)
-					.onChange(of: isPositive) {
-						updateChange()
-					}
-
-					Spacer()
-
-					TextField("Amount", value: $amount, formatter: currencyFormatter)
-						.keyboardType(.numberPad)
-						.multilineTextAlignment(.trailing)
-						.onSubmit {
-							updateChange()
-						}
-						.frame(maxWidth: 120)
-						.padding(5)
-						.glassEffect(.clear.interactive(), in: RoundedRectangle(cornerRadius: 12))
-						.scrollDismissesKeyboard(.immediately)
-						.font(.title3)
-				}
+					.focused($focusedField, equals: .description)
+					.onSubmit { focusedField = .amount }
 
 				Picker("Importance", selection: $importance) {
 					ForEach(Importance.allCases) { importance in
 						Label(importance.rawValue.capitalized, systemImage: importance.symbol)
 							.labelIconToTitleSpacing(50)
-							.tag(importance)
 							.fontDesign(.monospaced)
+							.tag(importance)
 					}
 				}
 				.pickerStyle(.menu)
+				.foregroundStyle(.primary)
+				.tint(.primary)
 			}
-			.listRowBackground(Rectangle().fill(.regularMaterial))
 		}
 	}
 

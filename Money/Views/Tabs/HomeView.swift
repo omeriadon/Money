@@ -60,7 +60,7 @@ struct HomeView: View {
 			.sheet(isPresented: $showAddTransaction) {
 				AddTransactionView(positive: positive)
 					.environmentObject(networkManager)
-					.presentationDetents([.medium, .large])
+					.presentationDetents([.large])
 					.presentationDragIndicator(.hidden)
 			}
 		}
