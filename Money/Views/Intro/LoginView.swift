@@ -27,7 +27,7 @@ struct LoginView: View {
 
 	var body: some View {
 		NavigationStack {
-			Form {
+			List {
 				Section {
 					TextField("Email", text: $loginDetails.email)
 						.textContentType(.emailAddress)
@@ -114,7 +114,8 @@ struct LoginView: View {
 
 	private func attemptLogin() {
 		focusedField = nil
-		dismissKeyboard()
+//		dismissKeyboard()
+
 		isLoading = true
 		showAlert = false
 
@@ -126,9 +127,11 @@ struct LoginView: View {
 				)
 
 				if success {
-					isLoading = false
-					withAnimation { isSuccess = true }
+					withAnimation {
+						isSuccess = true
+					}
 					try await Task.sleep(nanoseconds: 1_000_000_000)
+					isLoading = false
 					dismiss()
 				} else {
 					isLoading = false

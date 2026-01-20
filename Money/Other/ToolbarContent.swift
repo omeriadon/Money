@@ -5,8 +5,8 @@
 //  Created by Adon Omeri on 20/1/2026.
 //
 
-import SwiftUI
 import PortalTransitions
+import SwiftUI
 
 @ToolbarContentBuilder
 var toolbarContent: some ToolbarContent {
@@ -22,7 +22,6 @@ var toolbarContent: some ToolbarContent {
 					.renderingMode(.template)
 					.resizable()
 					.aspectRatio(contentMode: .fit)
-					.portal(id: "logo", .destination)
 			)
 			.frame(width: 35, height: 35)
 		}

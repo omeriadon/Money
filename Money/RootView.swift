@@ -16,7 +16,7 @@ struct RootView: View {
 	@StateObject private var repoHolder = RepoHolder()
 
 	var body: some View {
-		Group {
+		ZStack {
 			if let repo = repoHolder.repo {
 				if networkManager.token != nil {
 					ContentView()
@@ -24,7 +24,7 @@ struct RootView: View {
 						.transition(.opacity)
 				} else {
 					LoginSignupView()
-					.transition(.opacity)
+						.transition(.opacity)
 				}
 			}
 		}

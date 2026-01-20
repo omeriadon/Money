@@ -12,6 +12,8 @@ struct LoginSignupView: View {
 
     @State var showSignup = false
     @State var showLogin = false
+	
+	
 
     var body: some View {
         GeometryReader { geo in
@@ -72,8 +74,4 @@ struct LoginSignupView: View {
             }
         }
     }
-}
-
-#Preview {
-    LoginSignupView()
 }
