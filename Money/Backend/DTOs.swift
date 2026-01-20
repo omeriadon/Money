@@ -11,24 +11,13 @@ struct UserLoginDTO: Codable, Equatable {
 	var password: String
 }
 
-struct TransactionDTO: Codable {
-	let id: UUID?
-	let change: Int
-	let title: String
-	let description: String
-	let importance: String
-	let userID: UUID
-	let dateCreated: Date?
-	let dateUpdated: Date?
-}
-
-struct TransactionResponse: Decodable, Identifiable {
+struct TransactionDTO: Codable, Identifiable {
 	let id: UUID
 	let change: Double
 	let title: String
-	let userID: UUID
 	let description: String
 	let importance: Importance
+	let userID: UUID
 	let dateCreated: Date
 	let dateUpdated: Date
 }

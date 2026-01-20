@@ -20,7 +20,7 @@ final class NetworkManager: ObservableObject {
 
 	@Published var transactions: [TransactionDTO] = []
 
-	var totalBalance: Int {
+	var totalBalance: Double {
 		transactions.reduce(0) { $0 + $1.change }
 	}
 
@@ -30,7 +30,7 @@ final class NetworkManager: ObservableObject {
 		firstName = Defaults[.userFirstName]
 	}
 
-	func fetchTransactions() async throws -> [TransactionResponse] {
+	func fetchTransactions() async throws -> [TransactionDTO] {
 		guard let token else {
 			throw NSError(
 				domain: "",
@@ -70,7 +70,7 @@ final class NetworkManager: ObservableObject {
 		let decoder = JSONDecoder()
 		decoder.dateDecodingStrategy = .iso8601
 
-		return try decoder.decode([TransactionResponse].self, from: data)
+		return try decoder.decode([TransactionDTO].self, from: data)
 	}
 
 	@MainActor
@@ -173,7 +173,7 @@ final class NetworkManager: ObservableObject {
 		title: String,
 		description: String,
 		importance: Importance
-	) async throws -> [TransactionResponse] {
+	) async throws -> [TransactionDTO] {
 		guard let token = token else {
 			throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Not authenticated"])
 		}
@@ -225,7 +225,7 @@ final class NetworkManager: ObservableObject {
 		title: String? = nil,
 		description: String? = nil,
 		importance: Importance? = nil
-	) async throws -> TransactionResponse {
+	) async throws -> TransactionDTO {
 		let url = URL(string: "https://money.adonis.pt/transactions/\(id)")!
 		var request = URLRequest(url: url)
 		request.httpMethod = "PATCH"
@@ -264,7 +264,56 @@ final class NetworkManager: ObservableObject {
 		print(data.base64EncodedString())
 		let decoder = JSONDecoder()
 		decoder.dateDecodingStrategy = .iso8601
-		return try decoder.decode(TransactionResponse.self, from: data)
+		return try decoder.decode(TransactionDTO.self, from: data)
+	}
+
+	func deleteTransactions(ids: [UUID]) async throws -> [TransactionDTO] {
+		guard let token = token else {
+			throw NSError(
+				domain: "",
+				code: 401,
+				userInfo: [NSLocalizedDescriptionKey: "Not authenticated"]
+			)
+		}
+
+		let url = URL(string: "https://money.adonis.pt/transactions/deleteMultiple")!
+		var request = URLRequest(url: url)
+		request.httpMethod = "POST"
+		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+		let body: [String: Any] = [
+			"ids": ids.map { $0.uuidString },
+		]
+		request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+		let (data, response) = try await URLSession.shared.data(for: request)
+
+		guard let httpResponse = response as? HTTPURLResponse else {
+			throw URLError(.badServerResponse)
+		}
+
+		guard (200 ... 299).contains(httpResponse.statusCode) else {
+			let message: String
+			if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+			   let error = json["error"] as? String
+			{
+				message = error
+			} else {
+				switch httpResponse.statusCode {
+					case 400: message = "Bad request"
+					case 401: message = "Unauthorized"
+					default: message = "\(httpResponse.statusCode)"
+				}
+			}
+			throw NSError(
+				domain: "",
+				code: httpResponse.statusCode,
+				userInfo: [NSLocalizedDescriptionKey: message]
+			)
+		}
+
+		return try await fetchTransactions()
 	}
 
 	func logout() async throws {

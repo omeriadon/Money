@@ -93,8 +93,6 @@ struct TransactionDetailView: View {
 		}
 	}
 
-	// MARK: - Form
-
 	@ViewBuilder
 	var form: some View {
 		HStack {
@@ -103,7 +101,7 @@ struct TransactionDetailView: View {
 				Image(systemName: "minus.circle.fill").tag(false)
 			}
 			.pickerStyle(.segmented)
-			.controlSize(.extraLarge)
+			.controlSize(.large)
 			.font(.largeTitle)
 			.onChange(of: isPositive) { updateChange() }
 

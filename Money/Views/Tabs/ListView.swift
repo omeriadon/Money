@@ -14,7 +14,7 @@ struct ListView: View {
 	@Environment(\.modelContext) private var modelContext
 	@Query(sort: \Transaction.dateCreated, order: .reverse)
 	private var transactions: [Transaction]
-	
+
 	@State private var isLoading = false
 	@State private var showSuccess = false
 	@State private var errorMessage: String?
@@ -34,10 +34,18 @@ struct ListView: View {
 
 							Text(transaction.change, format: .currency(code: "AUD"))
 								.foregroundStyle(transaction.change > 0 ? .green : .red)
-								.font(.title2)
+								.font(.title3)
 								.lineLimit(1)
 								.minimumScaleFactor(0.01)
 						}
+					}
+				}
+				.onDelete { indexSet in
+					let ids = indexSet.map { transactions[$0].id }
+
+					Task {
+						let updated = try await NetworkManager.shared.deleteTransactions(ids: ids)
+						await loadTransactions()
 					}
 				}
 			}
@@ -47,6 +55,9 @@ struct ListView: View {
 					RefreshButton(isLoading: $isLoading, showSuccess: $showSuccess) {
 						await loadTransactions()
 					}
+				}
+				ToolbarItem(placement: .principal) {
+					EditButton()
 				}
 			}
 		}
