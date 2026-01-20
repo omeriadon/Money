@@ -1,17 +1,9 @@
-//
-//  ListView.swift
-//  Money
-//
-//  Created by Adon Omeri on 19/1/2026.
-//
-
 import SwiftData
 import SwiftUI
 
 struct ListView: View {
-	@EnvironmentObject var networkManager: NetworkManager
+	@EnvironmentObject var transactionRepo: TransactionRepository
 
-	@Environment(\.modelContext) private var modelContext
 	@Query(sort: \Transaction.dateCreated, order: .reverse)
 	private var transactions: [Transaction]
 
@@ -21,98 +13,85 @@ struct ListView: View {
 
 	var body: some View {
 		NavigationStack {
-			List {
-				ForEach(transactions) { transaction in
-					NavigationLink {
-						TransactionDetailView(isNew: false, transaction: transaction)
-					} label: {
-						HStack {
-							Text(transaction.title)
-							Image(systemName: transaction.importance.symbol)
+			ZStack {
+				if transactions.isEmpty {
+					ContentUnavailableView("No Transactions", systemImage: "camera.metering.none")
+						.transition(.blurReplace)
+				} else {
+					List {
+						ForEach(transactions) { transaction in
+							NavigationLink {
+								TransactionDetailView(
+									isNew: false,
+									transaction: transaction
+								)
+							} label: {
+								HStack {
+									Text(transaction.title)
+									Image(systemName: transaction.importance.symbol)
 
-							Spacer()
+									Spacer()
 
-							Text(transaction.change, format: .currency(code: "AUD"))
-								.foregroundStyle(transaction.change > 0 ? .green : .red)
-								.font(.title3)
-								.lineLimit(1)
-								.minimumScaleFactor(0.01)
+									Text(
+										transaction.change,
+										format: .currency(code: "AUD")
+									)
+									.foregroundStyle(
+										transaction.change > 0 ? .green : .red
+									)
+									.font(.title3)
+									.lineLimit(1)
+									.minimumScaleFactor(0.01)
+								}
+							}
+						}
+						.onDelete { indexSet in
+							let ids = indexSet.map { transactions[$0].id }
+
+							Task {
+								do {
+									try await transactionRepo.delete(ids: ids)
+								} catch {
+									errorMessage = error.localizedDescription
+								}
+							}
 						}
 					}
-				}
-				.onDelete { indexSet in
-					let ids = indexSet.map { transactions[$0].id }
-
-					Task {
-						let _ = try await NetworkManager.shared.deleteTransactions(ids: ids)
-						await loadTransactions()
-					}
+					.transition(.blurReplace)
 				}
 			}
+			.animation(.easeInOut, value: transactions.isEmpty)
 			.toolbar { toolbarContent }
 			.toolbar {
-				ToolbarItem(placement: .primaryAction) {
+				ToolbarItem(placement: .topBarTrailing) {
 					EditButton()
 				}
+				
+				ToolbarSpacer(placement: .topBarTrailing)
+
 				ToolbarItem(placement: .topBarTrailing) {
-					RefreshButton(isLoading: $isLoading, showSuccess: $showSuccess) {
-						await loadTransactions()
+					RefreshButton(
+						isLoading: $isLoading,
+						showSuccess: $showSuccess
+					) {
+						await refresh()
 					}
 				}
 			}
 		}
 	}
 
-	func loadTransactions() async {
-		await MainActor.run {
-			isLoading = true
-			showSuccess = false
-		}
-
+	private func refresh() async {
 		do {
-			let fetched = try await networkManager.fetchTransactions()
-
-			for t in fetched {
-				if let existing = transactions.first(where: { $0.id == t.id }) {
-					if existing.change != t.change ||
-						existing.title != t.title ||
-						existing.desc != t.description ||
-						existing.importance != t.importance ||
-						existing.dateCreated != t.dateCreated
-					{
-						existing.change = t.change
-						existing.title = t.title
-						existing.desc = t.description
-						existing.importance = t.importance
-						existing.dateCreated = t.dateCreated
-					}
-				} else {
-					let entity = Transaction(
-						id: t.id,
-						change: t.change,
-						title: t.title,
-						desc: t.description,
-						importance: t.importance,
-						dateCreated: t.dateCreated
-					)
-					modelContext.insert(entity)
-				}
-			}
-
-			isLoading = false
+			isLoading = true
+			try await transactionRepo.syncTransactions()
 			showSuccess = true
-
-			try? await Task.sleep(for: .seconds(1.5))
-
+			try? await Task.sleep(for: .seconds(1.2))
 			showSuccess = false
-
+			isLoading = false
 		} catch {
 			isLoading = false
 			errorMessage = error.localizedDescription
 		}
 	}
-}
-
-#Preview {
-	ListView()
 }

@@ -9,10 +9,6 @@ import SwiftUI
 
 @ToolbarContentBuilder
 var toolbarContent: some ToolbarContent {
-	ToolbarItem(placement: .title) {
-		Text("Money")
-	}
-
 	ToolbarItem(placement: .topBarLeading) {
 		HStack {
 			LinearGradient(

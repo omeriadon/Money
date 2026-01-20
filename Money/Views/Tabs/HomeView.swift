@@ -33,31 +33,34 @@ struct HomeView: View {
 						}
 					}
 			}
-		
-		.toolbar { toolbarContent }
-		.toolbar {
-			ToolbarItem(placement: .topBarTrailing) {
-				Button {
-					showAddTransaction = true
-				} label: {
-					Label("Add Transaction", systemImage: "plus")
-				}
-			}
-			
-			ToolbarSpacer(.fixed, placement: .topBarTrailing)
-			
 
-			ToolbarItem(placement: .topBarTrailing) {
-				RefreshButton(isLoading: $isLoading, showSuccess: $showSuccess) {
-					await refresh()
+			.toolbar { toolbarContent }
+			.toolbar {
+				ToolbarItem(placement: .title) {
+					Text("Money")
+				}
+
+				ToolbarItem(placement: .topBarTrailing) {
+					Button {
+						showAddTransaction = true
+					} label: {
+						Label("Add Transaction", systemImage: "plus")
+					}
+				}
+
+				ToolbarSpacer(.fixed, placement: .topBarTrailing)
+
+				ToolbarItem(placement: .topBarTrailing) {
+					RefreshButton(isLoading: $isLoading, showSuccess: $showSuccess) {
+						await refresh()
+					}
 				}
 			}
+			.sheet(isPresented: $showAddTransaction) {
+				TransactionDetailView(isNew: true)
+					.presentationDragIndicator(.hidden)
+			}
 		}
-		.sheet(isPresented: $showAddTransaction) {
-			TransactionDetailView(isNew: true)
-				.presentationDragIndicator(.hidden)
-		}
-	}
 	}
 
 	private func refresh() async {
