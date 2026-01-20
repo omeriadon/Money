@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PortalTransitions
 
 @ToolbarContentBuilder
 var toolbarContent: some ToolbarContent {
@@ -21,6 +22,7 @@ var toolbarContent: some ToolbarContent {
 					.renderingMode(.template)
 					.resizable()
 					.aspectRatio(contentMode: .fit)
+					.portal(id: "logo", .destination)
 			)
 			.frame(width: 35, height: 35)
 		}

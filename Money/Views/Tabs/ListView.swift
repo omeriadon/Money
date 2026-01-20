@@ -63,11 +63,13 @@ struct ListView: View {
 			.animation(.easeInOut, value: transactions.isEmpty)
 			.toolbar { toolbarContent }
 			.toolbar {
-				ToolbarItem(placement: .topBarTrailing) {
-					EditButton()
+				if !transactions.isEmpty {
+					ToolbarItem(placement: .topBarTrailing) {
+						EditButton()
+					}
+
+					ToolbarSpacer(placement: .topBarTrailing)
 				}
-				
-				ToolbarSpacer(placement: .topBarTrailing)
 
 				ToolbarItem(placement: .topBarTrailing) {
 					RefreshButton(

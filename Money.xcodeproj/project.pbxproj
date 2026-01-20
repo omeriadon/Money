@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A75824A42F1F6B7900ADCD20 /* PortalHeaders in Frameworks */ = {isa = PBXBuildFile; productRef = A75824A32F1F6B7900ADCD20 /* PortalHeaders */; };
+		A75824A62F1F6B7900ADCD20 /* PortalTransitions in Frameworks */ = {isa = PBXBuildFile; productRef = A75824A52F1F6B7900ADCD20 /* PortalTransitions */; };
 		A7C7AEC52F1CCDF700EDD160 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = A7C7AEC42F1CCDF700EDD160 /* Defaults */; };
 		A7C7AEC72F1CCDF700EDD160 /* DefaultsMacros in Frameworks */ = {isa = PBXBuildFile; productRef = A7C7AEC62F1CCDF700EDD160 /* DefaultsMacros */; };
 /* End PBXBuildFile section */
@@ -29,7 +31,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				A7C7AEC52F1CCDF700EDD160 /* Defaults in Frameworks */,
+				A75824A62F1F6B7900ADCD20 /* PortalTransitions in Frameworks */,
 				A7C7AEC72F1CCDF700EDD160 /* DefaultsMacros in Frameworks */,
+				A75824A42F1F6B7900ADCD20 /* PortalHeaders in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,6 +78,8 @@
 			packageProductDependencies = (
 				A7C7AEC42F1CCDF700EDD160 /* Defaults */,
 				A7C7AEC62F1CCDF700EDD160 /* DefaultsMacros */,
+				A75824A32F1F6B7900ADCD20 /* PortalHeaders */,
+				A75824A52F1F6B7900ADCD20 /* PortalTransitions */,
 			);
 			productName = Money;
 			productReference = A7B9C9B72F1B905400529CE2 /* Money.app */;
@@ -105,6 +111,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				A7C7AEC32F1CCDF700EDD160 /* XCRemoteSwiftPackageReference "Defaults" */,
+				A75824A22F1F6B7900ADCD20 /* XCRemoteSwiftPackageReference "Portal" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A7B9C9B82F1B905400529CE2 /* Products */;
@@ -373,6 +380,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		A75824A22F1F6B7900ADCD20 /* XCRemoteSwiftPackageReference "Portal" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Aeastr/Portal";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.0.0;
+			};
+		};
 		A7C7AEC32F1CCDF700EDD160 /* XCRemoteSwiftPackageReference "Defaults" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/Defaults";
@@ -384,6 +399,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		A75824A32F1F6B7900ADCD20 /* PortalHeaders */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A75824A22F1F6B7900ADCD20 /* XCRemoteSwiftPackageReference "Portal" */;
+			productName = PortalHeaders;
+		};
+		A75824A52F1F6B7900ADCD20 /* PortalTransitions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A75824A22F1F6B7900ADCD20 /* XCRemoteSwiftPackageReference "Portal" */;
+			productName = PortalTransitions;
+		};
 		A7C7AEC42F1CCDF700EDD160 /* Defaults */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A7C7AEC32F1CCDF700EDD160 /* XCRemoteSwiftPackageReference "Defaults" */;
