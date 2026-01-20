@@ -19,7 +19,6 @@ final class TransactionRepository: ObservableObject {
 		self.network = network
 	}
 
-	
 	func syncTransactions() async throws {
 		let remote = try await network.fetchTransactions()
 		let local = try context.fetch(FetchDescriptor<Transaction>())
@@ -28,9 +27,9 @@ final class TransactionRepository: ObservableObject {
 			if let existing = local.first(where: { $0.id == r.id }) {
 				// Only update if something changed
 				if existing.change != r.change ||
-				   existing.title != r.title ||
-				   existing.desc != r.description ||
-				   existing.importance != r.importance
+					existing.title != r.title ||
+					existing.desc != r.description ||
+					existing.importance != r.importance
 				{
 					existing.update(from: r)
 				}
@@ -39,7 +38,6 @@ final class TransactionRepository: ObservableObject {
 			}
 		}
 	}
-
 
 	func delete(ids: [UUID]) async throws {
 		let snapshot = try? context.fetch(FetchDescriptor<Transaction>())
@@ -55,7 +53,6 @@ final class TransactionRepository: ObservableObject {
 		}
 	}
 
-	
 	func createTransaction(
 		change: Double,
 		title: String,
@@ -73,23 +70,20 @@ final class TransactionRepository: ObservableObject {
 
 		for r in remote {
 			if let existing = local.first(where: { $0.id == r.id }) {
-				// Only update if fields changed
 				if existing.change != r.change ||
-				   existing.title != r.title ||
-				   existing.description != r.description ||
-				   existing.importance != r.importance
+					existing.title != r.title ||
+					existing.desc != r.description ||
+					existing.importance != r.importance
 				{
 					existing.update(from: r)
 				}
 			} else {
-				// Ensure we set the same id as server
 				let newTransaction = Transaction(from: r)
 				newTransaction.id = r.id
 				context.insert(newTransaction)
 			}
 		}
 	}
-
 
 	func updateTransaction(
 		id: UUID,
@@ -100,7 +94,7 @@ final class TransactionRepository: ObservableObject {
 	) async throws {
 		let remote = try await network.updateTransaction(
 			id: id,
-			change: change.map(Int.init),
+			change: change,
 			title: title,
 			description: description,
 			importance: importance
@@ -112,6 +106,36 @@ final class TransactionRepository: ObservableObject {
 			local.update(from: remote)
 		} else {
 			context.insert(Transaction(from: remote))
+		}
+	}
+	
+	func logout() async throws {
+		do {
+			try await network.logout()
+
+			let allTransactions = try context.fetch(FetchDescriptor<Transaction>())
+			for tx in allTransactions {
+				context.delete(tx)
+			}
+
+		} catch {
+			try? await syncTransactions()
+			throw error
+		}
+	}
+
+	func deleteUser() async throws {
+		do {
+			try await network.deleteCurrentUser()
+
+			let allTransactions = try context.fetch(FetchDescriptor<Transaction>())
+			for tx in allTransactions {
+				context.delete(tx)
+			}
+
+		} catch {
+			try? await syncTransactions()
+			throw error
 		}
 	}
 }

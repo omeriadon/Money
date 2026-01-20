@@ -67,8 +67,7 @@ final class NetworkManager: ObservableObject {
 		return try decoder.decode([TransactionDTO].self, from: data)
 	}
 
-	@MainActor
-	func login(email: String, password: String) async throws -> Bool {
+	func login(email: String, password: String) async throws {
 		let url = URL(string: "https://money.adonis.pt/users/login")!
 		var request = URLRequest(url: url)
 		request.httpMethod = "POST"
@@ -84,41 +83,36 @@ final class NetworkManager: ObservableObject {
 		}
 
 		guard (200 ... 299).contains(httpResponse.statusCode) else {
-			let message: String
-			if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-			   let error = json["error"] as? String
-			{
-				message = error
-			} else {
-				switch httpResponse.statusCode {
-					case 400: message = "Bad request"
-					case 401: message = "Invalid credentials"
-					case 404: message = "User not found"
-					default: message = "\(httpResponse.statusCode)"
-				}
-			}
-			throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: message])
+			let message =
+				(try? JSONSerialization.jsonObject(with: data) as? [String: Any])?["error"] as? String
+					?? "Login failed (\(httpResponse.statusCode))"
+
+			throw NSError(domain: "", code: httpResponse.statusCode,
+			              userInfo: [NSLocalizedDescriptionKey: message])
 		}
 
 		let decoded = try JSONDecoder().decode(UserLoginResponse.self, from: data)
 
 		Task {
-			try await Task.sleep(nanoseconds: 2_000_000_000)
-			self.token = decoded.token
+			// SO THAT THE SUCCESS ANIMATIONS PLAYS NICELY
+			try await Task.sleep(nanoseconds: 1_000_000_000)
+			token = decoded.token
 		}
 		self.email = decoded.user.email
 		firstName = decoded.user.firstName
-
-		return true
 	}
 
-	func signup(firstName: String, email: String, password: String) async throws -> Bool {
+	func signup(firstName: String, email: String, password: String) async throws {
 		let url = URL(string: "https://money.adonis.pt/users/signup")!
 		var request = URLRequest(url: url)
 		request.httpMethod = "POST"
 		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-		let body = ["firstName": firstName, "email": email, "password": password]
+		let body = [
+			"firstName": firstName,
+			"email": email,
+			"password": password,
+		]
 		request.httpBody = try JSONEncoder().encode(body)
 
 		let (data, response) = try await URLSession.shared.data(for: request)
@@ -128,38 +122,23 @@ final class NetworkManager: ObservableObject {
 		}
 
 		guard (200 ... 299).contains(httpResponse.statusCode) else {
-			let message: String
-			if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-			   let error = json["error"] as? String
-			{
-				message = error
-			} else {
-				switch httpResponse.statusCode {
-					case 400:
-						message = "Invalid request. Check your input."
-					case 409:
-						message = "Account for this email already exists."
-					case 500:
-						message = "Server error. Try again later."
-					default:
-						message = "Unexpected error: \(httpResponse.statusCode)"
-				}
-			}
-			throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: message])
+			let message =
+				(try? JSONSerialization.jsonObject(with: data) as? [String: Any])?["error"] as? String
+					?? "Signup failed (\(httpResponse.statusCode))"
+
+			throw NSError(domain: "", code: httpResponse.statusCode,
+			              userInfo: [NSLocalizedDescriptionKey: message])
 		}
 
 		let decoded = try JSONDecoder().decode(UserLoginResponse.self, from: data)
 
-		let success = true
-
-		Task { @MainActor in
-			try? await Task.sleep(nanoseconds: 1_000_000_000)
-			self.token = decoded.token
-			self.email = decoded.user.email
-			self.firstName = decoded.user.firstName
+		Task {
+			// SO THAT THE SUCCESS ANIMATIONS PLAYS NICELY
+			try await Task.sleep(nanoseconds: 1_000_000_000)
+			token = decoded.token
 		}
-
-		return success
+		self.email = decoded.user.email
+		self.firstName = decoded.user.firstName
 	}
 
 	func createTransaction(
@@ -324,6 +303,31 @@ final class NetworkManager: ObservableObject {
 		      (200 ... 299).contains(httpResponse.statusCode)
 		else {
 			throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to log out"])
+		}
+
+		self.token = nil
+		email = nil
+		firstName = nil
+	}
+
+	func deleteCurrentUser() async throws {
+		guard let token else {
+			throw NSError(domain: "", code: 401,
+			              userInfo: [NSLocalizedDescriptionKey: "Not authenticated"])
+		}
+
+		let url = URL(string: "https://money.adonis.pt/users/me")!
+		var request = URLRequest(url: url)
+		request.httpMethod = "DELETE"
+		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+		let (_, response) = try await URLSession.shared.data(for: request)
+
+		guard let httpResponse = response as? HTTPURLResponse,
+		      (200 ... 299).contains(httpResponse.statusCode)
+		else {
+			throw NSError(domain: "", code: 0,
+			              userInfo: [NSLocalizedDescriptionKey: "Failed to delete user"])
 		}
 
 		self.token = nil

@@ -98,28 +98,22 @@ struct SignupView: View {
 					isLoading = true
 					showAlert = false
 
-					Task {
+					Task { @MainActor in
 						do {
-							let success = try await networkManager.signup(
+							try await networkManager.signup(
 								firstName: signUpDetails.firstName,
 								email: signUpDetails.email,
 								password: signUpDetails.password
 							)
 
-							if success {
-								withAnimation {
-									isSuccess = true
-								}
-								Task {
-									try await Task.sleep(nanoseconds: 1_000_000_000)
-									dismiss()
-								}
-							} else {
-								isLoading = false
-							}
+							withAnimation { isSuccess = true }
+
+							try await Task.sleep(nanoseconds: 1_000_000_000)
+							isLoading = false
+							dismiss()
 
 						} catch {
-							withAnimation { isLoading = false }
+							isLoading = false
 							alertTitle = "Error creating account"
 							alertMessage = error.localizedDescription
 							showAlert = true
@@ -162,10 +156,9 @@ struct SignupView: View {
 	var progressView: some View {
 		if isSuccess {
 			Image(systemName: "checkmark")
-				.imageScale(.large)
+				.scaleEffect(2)
 				.tint(.accent)
 				.transition(.blurReplace)
-
 		} else {
 			ProgressView()
 				.scaleEffect(2)

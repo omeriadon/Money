@@ -114,28 +114,24 @@ struct LoginView: View {
 
 	private func attemptLogin() {
 		focusedField = nil
-//		dismissKeyboard()
-
 		isLoading = true
 		showAlert = false
 
-		Task {
+		Task { @MainActor in
 			do {
-				let success = try await networkManager.login(
+				try await networkManager.login(
 					email: loginDetails.email,
 					password: loginDetails.password
 				)
 
-				if success {
-					withAnimation {
-						isSuccess = true
-					}
-					try await Task.sleep(nanoseconds: 1_000_000_000)
-					isLoading = false
-					dismiss()
-				} else {
-					isLoading = false
+				withAnimation {
+					isSuccess = true
 				}
+
+				try await Task.sleep(nanoseconds: 1_000_000_000)
+				isLoading = false
+				dismiss()
+
 			} catch {
 				isLoading = false
 				alertTitle = "Login Failed"
