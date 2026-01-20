@@ -18,12 +18,6 @@ final class NetworkManager: ObservableObject {
 		didSet { Defaults[.userFirstName] = firstName }
 	}
 
-	@Published var transactions: [TransactionDTO] = []
-
-	var totalBalance: Double {
-		transactions.reduce(0) { $0 + $1.change }
-	}
-
 	private init() {
 		token = Defaults[.userToken]
 		email = Defaults[.userEmail]

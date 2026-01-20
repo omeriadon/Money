@@ -8,27 +8,43 @@
 import SwiftUI
 
 struct ContentView: View {
+	@Environment(\.modelContext) private var modelContext
 	@EnvironmentObject var networkManager: NetworkManager
 
+	@StateObject private var repo: TransactionRepository
+
+	init() {
+		// repo must be created on main actor, but @StateObject handles that
+		_repo = StateObject(wrappedValue: TransactionRepository(
+			context: nil, // temporarily nil, will fix in body
+			network: networkManager
+		))
+	}
+
 	var body: some View {
+		// Now we have modelContext, assign it if needed
+		let _ = repo.context = modelContext
+
 		TabView {
 			Tab {
 				HomeView()
-					.environmentObject(networkManager)
+					.environmentObject(repo) // inject repo, not networkManager
 
 			} label: {
 				Label("Money", systemImage: "house")
 			}
+
 			Tab {
 				ListView()
-					.environmentObject(networkManager)
+					.environmentObject(repo) // inject repo
 
 			} label: {
 				Label("Transactions", systemImage: "mail.stack")
 			}
+
 			Tab {
 				SettingsView()
-					.environmentObject(networkManager)
+					.environmentObject(networkManager) // still only needs auth
 			} label: {
 				Label("Settings", systemImage: "gearshape")
 			}
@@ -38,29 +54,4 @@ struct ContentView: View {
 
 #Preview {
 	ContentView()
-}
-
-@ToolbarContentBuilder
-var toolbarContent: some ToolbarContent {
-	ToolbarItem(placement: .title) {
-		Text("Money")
-	}
-
-	ToolbarItem(placement: .topBarLeading) {
-		HStack {
-			LinearGradient(
-				colors: [Color.yellow, Color.yellow.opacity(0.8)],
-				startPoint: .top,
-				endPoint: .bottom
-			)
-			.mask(
-				Image("Logo")
-					.renderingMode(.template)
-					.resizable()
-					.aspectRatio(contentMode: .fit)
-			)
-			.frame(width: 35, height: 35)
-		}
-	}
-	.sharedBackgroundVisibility(.hidden)
 }

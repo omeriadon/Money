@@ -17,23 +17,23 @@ struct CurrentUser: Codable, Defaults.Serializable {
 
 enum Importance: String, Codable, CaseIterable, Identifiable {
 	case essential, leisure, investment, reward, emergent, occasional
-	
-	var id: String { self.rawValue }
-	
+
+	var id: String { rawValue }
+
 	var symbol: String {
 		switch self {
-		case .essential:
-			"carrot"
-		case .leisure:
-			"scooter"
-		case .investment:
-			"banknote"
-		case .reward:
-			"star"
-		case .emergent:
-			"cross.case"
-		case .occasional:
-			"calendar"
+			case .essential:
+				"carrot"
+			case .leisure:
+				"scooter"
+			case .investment:
+				"banknote"
+			case .reward:
+				"star"
+			case .emergent:
+				"cross.case"
+			case .occasional:
+				"calendar"
 		}
 	}
 }
@@ -64,5 +64,24 @@ final class Transaction: Identifiable {
 		self.importance = importance
 		self.dateCreated = dateCreated
 		self.dateUpdated = dateUpdated
+	}
+
+	convenience init(from dto: TransactionDTO) {
+		self.init(
+			id: dto.id,
+			change: dto.change,
+			title: dto.title,
+			desc: dto.description,
+			importance: dto.importance,
+			dateCreated: dto.dateCreated
+		)
+	}
+
+	func update(from dto: TransactionDTO) {
+		change = dto.change
+		title = dto.title
+		desc = dto.description
+		importance = dto.importance
+		dateCreated = dto.dateCreated
 	}
 }
