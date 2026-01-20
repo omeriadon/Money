@@ -23,7 +23,6 @@ struct RefreshButton: View {
 	}
 
 	var body: some View {
-		
 		Button {
 			Task { await action() }
 		} label: {

@@ -38,7 +38,7 @@ struct LoginView: View {
 				} header: {
 					Text("Email")
 				} footer: {
-					if !isValidEmail(loginDetails.email) && !loginDetails.email.isEmpty {
+					if !isValidEmail(loginDetails.email), !loginDetails.email.isEmpty {
 						Text("Not a valid email")
 							.foregroundStyle(.red)
 					}
@@ -53,7 +53,7 @@ struct LoginView: View {
 				} header: {
 					Text("Password")
 				} footer: {
-					if loginDetails.password.count < 8 && !loginDetails.password.isEmpty {
+					if loginDetails.password.count < 8, !loginDetails.password.isEmpty {
 						Text("Password should be at least 8 characters")
 							.foregroundStyle(.red)
 					}

@@ -9,7 +9,7 @@ import Defaults
 import Foundation
 
 extension Defaults.Keys {
-    static let userToken = Key<String?>("userToken", default: nil)
-    static let userEmail = Key<String?>("userEmail", default: nil)
-    static let userFirstName = Key<String?>("userFirstName", default: nil)
+	static let userToken = Key<String?>("userToken", default: nil)
+	static let userEmail = Key<String?>("userEmail", default: nil)
+	static let userFirstName = Key<String?>("userFirstName", default: nil)
 }

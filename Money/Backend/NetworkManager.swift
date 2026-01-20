@@ -46,13 +46,12 @@ final class NetworkManager: ObservableObject {
 		}
 
 		guard (200 ... 299).contains(httpResponse.statusCode) else {
-			let message: String
-			if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-			   let error = json["error"] as? String
+			let message: String = if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+			                         let error = json["error"] as? String
 			{
-				message = error
+				error
 			} else {
-				message = "\(httpResponse.statusCode)"
+				"\(httpResponse.statusCode)"
 			}
 			throw NSError(
 				domain: "",
@@ -147,7 +146,7 @@ final class NetworkManager: ObservableObject {
 		description: String,
 		importance: Importance
 	) async throws -> [TransactionDTO] {
-		guard let token = token else {
+		guard let token else {
 			throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Not authenticated"])
 		}
 
@@ -172,18 +171,17 @@ final class NetworkManager: ObservableObject {
 		}
 
 		guard (200 ... 299).contains(httpResponse.statusCode) else {
-			let message: String
-			if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-			   let error = json["error"] as? String
+			let message: String = if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+			                         let error = json["error"] as? String
 			{
-				message = error
+				error
 			} else {
 				switch httpResponse.statusCode {
-					case 400: message = "Bad request"
-					case 401: message = "Unauthorized"
-					case 404: message = "Not found"
-					case 409: message = "Conflict"
-					default: message = "\(httpResponse.statusCode)"
+					case 400: "Bad request"
+					case 401: "Unauthorized"
+					case 404: "Not found"
+					case 409: "Conflict"
+					default: "\(httpResponse.statusCode)"
 				}
 			}
 			throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: message])
@@ -204,15 +202,15 @@ final class NetworkManager: ObservableObject {
 		request.httpMethod = "PATCH"
 		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-		if let token = token {
+		if let token {
 			request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 		}
 
 		var body: [String: Any] = [:]
-		if let change = change { body["change"] = change }
-		if let title = title { body["title"] = title }
-		if let description = description { body["description"] = description }
-		if let importance = importance { body["importance"] = importance.rawValue }
+		if let change { body["change"] = change }
+		if let title { body["title"] = title }
+		if let description { body["description"] = description }
+		if let importance { body["importance"] = importance.rawValue }
 
 		request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
@@ -223,13 +221,12 @@ final class NetworkManager: ObservableObject {
 		}
 
 		guard (200 ... 299).contains(httpResponse.statusCode) else {
-			let message: String
-			if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-			   let error = json["error"] as? String
+			let message: String = if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+			                         let error = json["error"] as? String
 			{
-				message = error
+				error
 			} else {
-				message = "\(httpResponse.statusCode)"
+				"\(httpResponse.statusCode)"
 			}
 			throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: message])
 		}
@@ -241,7 +238,7 @@ final class NetworkManager: ObservableObject {
 	}
 
 	func deleteTransactions(ids: [UUID]) async throws -> [TransactionDTO] {
-		guard let token = token else {
+		guard let token else {
 			throw NSError(
 				domain: "",
 				code: 401,
@@ -256,7 +253,7 @@ final class NetworkManager: ObservableObject {
 		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
 		let body: [String: Any] = [
-			"ids": ids.map { $0.uuidString },
+			"ids": ids.map(\.uuidString),
 		]
 		request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
@@ -267,16 +264,15 @@ final class NetworkManager: ObservableObject {
 		}
 
 		guard (200 ... 299).contains(httpResponse.statusCode) else {
-			let message: String
-			if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-			   let error = json["error"] as? String
+			let message: String = if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+			                         let error = json["error"] as? String
 			{
-				message = error
+				error
 			} else {
 				switch httpResponse.statusCode {
-					case 400: message = "Bad request"
-					case 401: message = "Unauthorized"
-					default: message = "\(httpResponse.statusCode)"
+					case 400: "Bad request"
+					case 401: "Unauthorized"
+					default: "\(httpResponse.statusCode)"
 				}
 			}
 			throw NSError(
@@ -290,7 +286,7 @@ final class NetworkManager: ObservableObject {
 	}
 
 	func logout() async throws {
-		guard let token = token else { return }
+		guard let token else { return }
 
 		let url = URL(string: "https://money.adonis.pt/users/logout")!
 		var request = URLRequest(url: url)

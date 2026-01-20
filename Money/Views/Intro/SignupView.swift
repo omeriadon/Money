@@ -60,7 +60,7 @@ struct SignupView: View {
 					Text("Email")
 
 				} footer: {
-					if !isValidEmail(signUpDetails.email) && !signUpDetails.email.isEmpty {
+					if !isValidEmail(signUpDetails.email), !signUpDetails.email.isEmpty {
 						Text("Not a valid email")
 							.foregroundStyle(.red)
 					}
@@ -75,11 +75,11 @@ struct SignupView: View {
 					Text("Password")
 
 				} footer: {
-					if signUpDetails.password.count < 8 && !signUpDetails.password.isEmpty {
+					if signUpDetails.password.count < 8, !signUpDetails.password.isEmpty {
 						Text("Passwords should be above 8 characters")
 							.foregroundStyle(.red)
 					}
-					if (signUpDetails.password != confirmPassword) && !confirmPassword.isEmpty {
+					if signUpDetails.password != confirmPassword, !confirmPassword.isEmpty {
 						Text("Passwords don't match")
 							.foregroundStyle(.red)
 					}

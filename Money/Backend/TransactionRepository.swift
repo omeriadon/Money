@@ -108,7 +108,7 @@ final class TransactionRepository: ObservableObject {
 			context.insert(Transaction(from: remote))
 		}
 	}
-	
+
 	func logout() async throws {
 		do {
 			try await network.logout()
