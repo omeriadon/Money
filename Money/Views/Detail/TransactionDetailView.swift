@@ -166,10 +166,10 @@ struct TransactionDetailView: View {
 				)
 			} else if let t = transaction {
 				let oldChange = Double(t.change)
-				let newChange = Int(finalChange)
+				let newChange = finalChange
 				_ = try await networkManager.updateTransaction(
 					id: t.id,
-					change: newChange != Int(oldChange) ? newChange : nil,
+					change: (newChange != oldChange) ? newChange : nil,
 					title: title != t.title ? title : nil,
 					description: description != t.desc ? description : nil,
 					importance: importance != t.importance ? importance : nil

@@ -215,7 +215,7 @@ final class NetworkManager: ObservableObject {
 
 	func updateTransaction(
 		id: UUID,
-		change: Int? = nil,
+		change: Double? = nil,
 		title: String? = nil,
 		description: String? = nil,
 		importance: Importance? = nil
