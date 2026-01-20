@@ -44,20 +44,20 @@ struct ListView: View {
 					let ids = indexSet.map { transactions[$0].id }
 
 					Task {
-						let updated = try await NetworkManager.shared.deleteTransactions(ids: ids)
+						let _ = try await NetworkManager.shared.deleteTransactions(ids: ids)
 						await loadTransactions()
 					}
 				}
 			}
 			.toolbar { toolbarContent }
 			.toolbar {
+				ToolbarItem(placement: .primaryAction) {
+					EditButton()
+				}
 				ToolbarItem(placement: .topBarTrailing) {
 					RefreshButton(isLoading: $isLoading, showSuccess: $showSuccess) {
 						await loadTransactions()
 					}
-				}
-				ToolbarItem(placement: .principal) {
-					EditButton()
 				}
 			}
 		}
