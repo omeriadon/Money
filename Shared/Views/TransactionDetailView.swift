@@ -100,15 +100,17 @@ struct TransactionDetailView: View {
 				Image(systemName: "plus.circle.fill").tag(true)
 				Image(systemName: "minus.circle.fill").tag(false)
 			}
-			.pickerStyle(.segmented)
+
 			.controlSize(.large)
 			.font(.largeTitle)
 			.onChange(of: isPositive) { updateChange() }
+			#if os(iOS)
+				.pickerStyle(.segmented)
+			#endif
 
 			Spacer()
 
 			TextField("Amount", value: $amount, format: .currency(code: "AUD"))
-				.keyboardType(.numberPad)
 				.multilineTextAlignment(.trailing)
 				.focused($focusedField, equals: .amount)
 				.onSubmit { focusedField = nil }
@@ -118,6 +120,9 @@ struct TransactionDetailView: View {
 				.glassEffect(.clear.tint(isPositive ? .green : .red).interactive(), in: RoundedRectangle(cornerRadius: 30))
 				.animation(.easeInOut, value: isPositive)
 				.font(.title)
+			#if os(iOS)
+				.keyboardType(.numberPad)
+			#endif
 		}
 		.padding(.horizontal)
 		.padding(.top)
@@ -140,9 +145,11 @@ struct TransactionDetailView: View {
 							.tag(importance)
 					}
 				}
-				.pickerStyle(.menu)
 				.foregroundStyle(.primary)
 				.tint(.primary)
+				#if os(iOS)
+					.pickerStyle(.menu)
+				#endif
 			}
 		}
 	}

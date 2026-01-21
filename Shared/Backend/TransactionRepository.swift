@@ -109,33 +109,39 @@ final class TransactionRepository: ObservableObject {
 		}
 	}
 
-	func logout() async throws {
-		do {
-			try await network.logout()
+	#if os(iOS)
 
-			let allTransactions = try context.fetch(FetchDescriptor<Transaction>())
-			for tx in allTransactions {
-				context.delete(tx)
+		func logout() async throws {
+			do {
+				try await network.logout()
+
+				let allTransactions = try context.fetch(FetchDescriptor<Transaction>())
+				for tx in allTransactions {
+					context.delete(tx)
+				}
+
+			} catch {
+				try? await syncTransactions()
+				throw error
 			}
-
-		} catch {
-			try? await syncTransactions()
-			throw error
 		}
-	}
+	#endif // os(iOS)
 
-	func deleteUser() async throws {
-		do {
-			try await network.deleteCurrentUser()
+	#if os(iOS)
 
-			let allTransactions = try context.fetch(FetchDescriptor<Transaction>())
-			for tx in allTransactions {
-				context.delete(tx)
+		func deleteUser() async throws {
+			do {
+				try await network.deleteCurrentUser()
+
+				let allTransactions = try context.fetch(FetchDescriptor<Transaction>())
+				for tx in allTransactions {
+					context.delete(tx)
+				}
+
+			} catch {
+				try? await syncTransactions()
+				throw error
 			}
-
-		} catch {
-			try? await syncTransactions()
-			throw error
 		}
-	}
+	#endif // os(iOS)
 }

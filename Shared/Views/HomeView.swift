@@ -33,12 +33,17 @@ struct HomeView: View {
 						}
 					}
 			}
+			#if !os(iOS)
+			.navigationTitle(Text("Money"))
+			#endif
 
 			.toolbar { toolbarContent }
 			.toolbar {
-				ToolbarItem(placement: .title) {
-					Text("Money")
-				}
+				#if os(iOS)
+					ToolbarItem(placement: .title) {
+						Text("Money")
+					}
+				#endif
 
 				ToolbarItem(placement: .topBarTrailing) {
 					Button {
@@ -48,7 +53,9 @@ struct HomeView: View {
 					}
 				}
 
-				ToolbarSpacer(.fixed, placement: .topBarTrailing)
+				#if os(iOS)
+					ToolbarSpacer(.fixed, placement: .topBarTrailing)
+				#endif
 
 				ToolbarItem(placement: .topBarTrailing) {
 					RefreshButton(isLoading: $isLoading, showSuccess: $showSuccess) {

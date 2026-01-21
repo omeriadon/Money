@@ -5,7 +5,6 @@
 //  Created by Adon Omeri on 20/1/2026.
 //
 
-import Combine
 import SwiftData
 import SwiftUI
 
@@ -38,8 +37,4 @@ struct RootView: View {
 			}
 		}
 	}
-}
-
-final class RepoHolder: ObservableObject {
-	@Published var repo: TransactionRepository?
 }

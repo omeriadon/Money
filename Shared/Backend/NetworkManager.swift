@@ -66,79 +66,88 @@ final class NetworkManager: ObservableObject {
 		return try decoder.decode([TransactionDTO].self, from: data)
 	}
 
-	func login(email: String, password: String) async throws {
-		let url = URL(string: "https://money.adonis.pt/users/login")!
-		var request = URLRequest(url: url)
-		request.httpMethod = "POST"
-		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+	#if os(iOS)
+		func login(email: String, password: String) async throws {
+			let url = URL(string: "https://money.adonis.pt/users/login")!
+			var request = URLRequest(url: url)
+			request.httpMethod = "POST"
+			request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-		let body = ["email": email, "password": password]
-		request.httpBody = try JSONEncoder().encode(body)
+			let body = ["email": email, "password": password]
+			request.httpBody = try JSONEncoder().encode(body)
 
-		let (data, response) = try await URLSession.shared.data(for: request)
+			let (data, response) = try await URLSession.shared.data(for: request)
 
-		guard let httpResponse = response as? HTTPURLResponse else {
-			throw URLError(.badServerResponse)
+			guard let httpResponse = response as? HTTPURLResponse else {
+				throw URLError(.badServerResponse)
+			}
+
+			guard (200 ... 299).contains(httpResponse.statusCode) else {
+				let message =
+					(try? JSONSerialization.jsonObject(with: data) as? [String: Any])?["error"] as? String
+						?? "Login failed (\(httpResponse.statusCode))"
+
+				throw NSError(domain: "", code: httpResponse.statusCode,
+				              userInfo: [NSLocalizedDescriptionKey: message])
+			}
+
+			let decoded = try JSONDecoder().decode(UserLoginResponse.self, from: data)
+
+			iPhoneWatchSessionManager.shared.sendAuthToken(decoded.token)
+
+			Task {
+				// SO THAT THE SUCCESS ANIMATIONS PLAYS NICELY
+				try await Task.sleep(nanoseconds: 1_000_000_000)
+				token = decoded.token
+			}
+			self.email = decoded.user.email
+			firstName = decoded.user.firstName
 		}
+	#endif
 
-		guard (200 ... 299).contains(httpResponse.statusCode) else {
-			let message =
-				(try? JSONSerialization.jsonObject(with: data) as? [String: Any])?["error"] as? String
-					?? "Login failed (\(httpResponse.statusCode))"
+	#if os(iOS)
 
-			throw NSError(domain: "", code: httpResponse.statusCode,
-			              userInfo: [NSLocalizedDescriptionKey: message])
+		func signup(firstName: String, email: String, password: String) async throws {
+			let url = URL(string: "https://money.adonis.pt/users/signup")!
+			var request = URLRequest(url: url)
+			request.httpMethod = "POST"
+			request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+			let body = [
+				"firstName": firstName,
+				"email": email,
+				"password": password,
+			]
+			request.httpBody = try JSONEncoder().encode(body)
+
+			let (data, response) = try await URLSession.shared.data(for: request)
+
+			guard let httpResponse = response as? HTTPURLResponse else {
+				throw URLError(.badServerResponse)
+			}
+
+			guard (200 ... 299).contains(httpResponse.statusCode) else {
+				let message =
+					(try? JSONSerialization.jsonObject(with: data) as? [String: Any])?["error"] as? String
+						?? "Signup failed (\(httpResponse.statusCode))"
+
+				throw NSError(domain: "", code: httpResponse.statusCode,
+				              userInfo: [NSLocalizedDescriptionKey: message])
+			}
+
+			let decoded = try JSONDecoder().decode(UserLoginResponse.self, from: data)
+
+			iPhoneWatchSessionManager.shared.sendAuthToken(decoded.token)
+
+			Task {
+				// SO THAT THE SUCCESS ANIMATIONS PLAYS NICELY
+				try await Task.sleep(nanoseconds: 1_000_000_000)
+				token = decoded.token
+			}
+			self.email = decoded.user.email
+			self.firstName = decoded.user.firstName
 		}
-
-		let decoded = try JSONDecoder().decode(UserLoginResponse.self, from: data)
-
-		Task {
-			// SO THAT THE SUCCESS ANIMATIONS PLAYS NICELY
-			try await Task.sleep(nanoseconds: 1_000_000_000)
-			token = decoded.token
-		}
-		self.email = decoded.user.email
-		firstName = decoded.user.firstName
-	}
-
-	func signup(firstName: String, email: String, password: String) async throws {
-		let url = URL(string: "https://money.adonis.pt/users/signup")!
-		var request = URLRequest(url: url)
-		request.httpMethod = "POST"
-		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-		let body = [
-			"firstName": firstName,
-			"email": email,
-			"password": password,
-		]
-		request.httpBody = try JSONEncoder().encode(body)
-
-		let (data, response) = try await URLSession.shared.data(for: request)
-
-		guard let httpResponse = response as? HTTPURLResponse else {
-			throw URLError(.badServerResponse)
-		}
-
-		guard (200 ... 299).contains(httpResponse.statusCode) else {
-			let message =
-				(try? JSONSerialization.jsonObject(with: data) as? [String: Any])?["error"] as? String
-					?? "Signup failed (\(httpResponse.statusCode))"
-
-			throw NSError(domain: "", code: httpResponse.statusCode,
-			              userInfo: [NSLocalizedDescriptionKey: message])
-		}
-
-		let decoded = try JSONDecoder().decode(UserLoginResponse.self, from: data)
-
-		Task {
-			// SO THAT THE SUCCESS ANIMATIONS PLAYS NICELY
-			try await Task.sleep(nanoseconds: 1_000_000_000)
-			token = decoded.token
-		}
-		self.email = decoded.user.email
-		self.firstName = decoded.user.firstName
-	}
+	#endif // os(iOS)
 
 	func createTransaction(
 		change: Double,
@@ -285,49 +294,59 @@ final class NetworkManager: ObservableObject {
 		return try await fetchTransactions()
 	}
 
-	func logout() async throws {
-		guard let token else { return }
+	#if os(iOS)
 
-		let url = URL(string: "https://money.adonis.pt/users/logout")!
-		var request = URLRequest(url: url)
-		request.httpMethod = "POST"
-		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+		func logout() async throws {
+			guard let token else { return }
 
-		let (_, response) = try await URLSession.shared.data(for: request)
+			let url = URL(string: "https://money.adonis.pt/users/logout")!
+			var request = URLRequest(url: url)
+			request.httpMethod = "POST"
+			request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
-		guard let httpResponse = response as? HTTPURLResponse,
-		      (200 ... 299).contains(httpResponse.statusCode)
-		else {
-			throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to log out"])
+			let (_, response) = try await URLSession.shared.data(for: request)
+
+			guard let httpResponse = response as? HTTPURLResponse,
+			      (200 ... 299).contains(httpResponse.statusCode)
+			else {
+				throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to log out"])
+			}
+
+			iPhoneWatchSessionManager.shared.sendLogout()
+
+			self.token = nil
+			email = nil
+			firstName = nil
 		}
+	#endif // os(iOS)
 
-		self.token = nil
-		email = nil
-		firstName = nil
-	}
+	#if os(iOS)
 
-	func deleteCurrentUser() async throws {
-		guard let token else {
-			throw NSError(domain: "", code: 401,
-			              userInfo: [NSLocalizedDescriptionKey: "Not authenticated"])
+		func deleteCurrentUser() async throws {
+			guard let token else {
+				throw NSError(domain: "", code: 401,
+				              userInfo: [NSLocalizedDescriptionKey: "Not authenticated"])
+			}
+
+			let url = URL(string: "https://money.adonis.pt/users/me")!
+			var request = URLRequest(url: url)
+			request.httpMethod = "DELETE"
+			request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+			let (_, response) = try await URLSession.shared.data(for: request)
+
+			guard let httpResponse = response as? HTTPURLResponse,
+			      (200 ... 299).contains(httpResponse.statusCode)
+			else {
+				throw NSError(domain: "", code: 0,
+				              userInfo: [NSLocalizedDescriptionKey: "Failed to delete user"])
+			}
+
+			iPhoneWatchSessionManager.shared.sendLogout()
+
+			self.token = nil
+			email = nil
+			firstName = nil
 		}
-
-		let url = URL(string: "https://money.adonis.pt/users/me")!
-		var request = URLRequest(url: url)
-		request.httpMethod = "DELETE"
-		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-
-		let (_, response) = try await URLSession.shared.data(for: request)
-
-		guard let httpResponse = response as? HTTPURLResponse,
-		      (200 ... 299).contains(httpResponse.statusCode)
-		else {
-			throw NSError(domain: "", code: 0,
-			              userInfo: [NSLocalizedDescriptionKey: "Failed to delete user"])
-		}
-
-		self.token = nil
-		email = nil
-		firstName = nil
-	}
+	#endif // os(iOS)
 }

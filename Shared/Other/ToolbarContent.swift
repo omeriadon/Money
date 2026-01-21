@@ -5,7 +5,6 @@
 //  Created by Adon Omeri on 20/1/2026.
 //
 
-import PortalTransitions
 import SwiftUI
 
 @ToolbarContentBuilder
@@ -26,5 +25,7 @@ var toolbarContent: some ToolbarContent {
 			.frame(width: 35, height: 35)
 		}
 	}
+	#if os(iOS)
 	.sharedBackgroundVisibility(.hidden)
+	#endif
 }
