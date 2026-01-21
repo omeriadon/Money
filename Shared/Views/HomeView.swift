@@ -31,9 +31,11 @@ struct HomeView: View {
 					}
 			}
 			#if !os(iOS)
+			.containerBackground(total < 0 ? Color.red.gradient : Color.clear.gradient, for: .tabView)
 			.navigationTitle(Text("Money"))
+			#else
+			.containerBackground(total < 0 ? Color.red.gradient : Color.clear.gradient, for: .navigation)
 			#endif
-
 			.toolbar { toolbarContent }
 			.toolbar {
 				#if os(iOS)
@@ -42,12 +44,14 @@ struct HomeView: View {
 					}
 				#endif
 
-				ToolbarItem(placement: .topBarTrailing) {
+				ToolbarItem(placement: isiPhone() == true ? .topBarTrailing : .bottomBar) {
 					Button {
 						showAddTransaction = true
 					} label: {
 						Label("Add Transaction", systemImage: "plus")
 					}
+					.buttonStyle(.glassProminent)
+					.foregroundStyle(.black)
 				}
 
 				#if os(iOS)

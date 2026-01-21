@@ -70,6 +70,7 @@ struct TransactionDetailView: View {
 							ProgressView()
 						} else {
 							Label(isNew ? "Add" : "Update", systemImage: isNew ? "plus" : "pencil")
+								.labelStyle(.iconOnly)
 						}
 					}
 					.disabled(
@@ -82,6 +83,7 @@ struct TransactionDetailView: View {
 								importance == transaction!.importance)
 					)
 					.buttonStyle(.glassProminent)
+					.buttonBorderShape(.circle)
 				}
 			}
 			.alert(isPresented: $showError) {
@@ -101,12 +103,14 @@ struct TransactionDetailView: View {
 				Image(systemName: "plus.circle.fill").tag(true)
 				Image(systemName: "minus.circle.fill").tag(false)
 			}
-
-			.controlSize(.large)
-			.font(.largeTitle)
 			.onChange(of: isPositive) { updateChange() }
 			#if os(iOS)
 				.pickerStyle(.segmented)
+				.controlSize(.large)
+				.font(.largeTitle)
+			#else
+				.pickerStyle(.inline)
+				.frame(height: 50)
 			#endif
 
 			Spacer()
@@ -116,17 +120,22 @@ struct TransactionDetailView: View {
 				.focused($focusedField, equals: .amount)
 				.onSubmit { focusedField = nil }
 				.onChange(of: amount) { updateChange() }
+				.animation(.easeInOut, value: isPositive)
+			#if os(iOS)
 				.frame(maxWidth: 150)
 				.padding(5)
-				.glassEffect(.clear.tint(isPositive ? .green : .red).interactive(), in: RoundedRectangle(cornerRadius: 30))
-				.animation(.easeInOut, value: isPositive)
 				.font(.title)
-			#if os(iOS)
+				.glassEffect(.clear.tint(isPositive ? .green : .red).interactive(), in: RoundedRectangle(cornerRadius: 30))
 				.keyboardType(.numberPad)
+			#else
+				.foregroundStyle(isPositive ? .green : .red)
+				.frame(height: 50)
 			#endif
 		}
+		#if os(iOS)
 		.padding(.horizontal)
 		.padding(.top)
+		#endif
 
 		Form {
 			Section {
@@ -141,7 +150,6 @@ struct TransactionDetailView: View {
 				Picker("Importance", selection: $importance) {
 					ForEach(Importance.allCases) { importance in
 						Label(importance.rawValue.capitalized, systemImage: importance.symbol)
-							.labelIconToTitleSpacing(50)
 							.fontDesign(.monospaced)
 							.tag(importance)
 					}

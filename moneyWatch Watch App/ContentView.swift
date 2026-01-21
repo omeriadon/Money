@@ -9,7 +9,22 @@ import SwiftUI
 
 struct ContentView: View {
 	var body: some View {
-		HomeView()
+		TabView {
+			Tab {
+				HomeView()
+
+			} label: {
+				Label("Money", systemImage: "house")
+			}
+
+			Tab {
+				ListView()
+
+			} label: {
+				Label("Transactions", systemImage: "mail.stack")
+			}
+		}
+		.tabViewStyle(.carousel)
 	}
 }
 
