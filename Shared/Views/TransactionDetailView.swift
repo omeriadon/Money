@@ -98,7 +98,7 @@ struct TransactionDetailView: View {
 
 	@ViewBuilder
 	var form: some View {
-		HStack {
+		HStack(alignment: .center) {
 			Picker("", selection: $isPositive) {
 				Image(systemName: "plus.circle.fill").tag(true)
 				Image(systemName: "minus.circle.fill").tag(false)
@@ -108,9 +108,12 @@ struct TransactionDetailView: View {
 				.pickerStyle(.segmented)
 				.controlSize(.large)
 				.font(.largeTitle)
+
 			#else
 				.pickerStyle(.inline)
-				.frame(height: 50)
+				.font(.title2)
+				.controlSize(.mini)
+				.defaultWheelPickerItemHeight(40)
 			#endif
 
 			Spacer()
@@ -129,12 +132,15 @@ struct TransactionDetailView: View {
 				.keyboardType(.numberPad)
 			#else
 				.foregroundStyle(isPositive ? .green : .red)
-				.frame(height: 50)
+				.frame(height: 30)
+				.controlSize(.mini)
 			#endif
 		}
 		#if os(iOS)
 		.padding(.horizontal)
 		.padding(.top)
+		#else
+		.frame(height: 50)
 		#endif
 
 		Form {
