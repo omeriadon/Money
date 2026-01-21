@@ -9,7 +9,6 @@ import SwiftData
 import SwiftUI
 
 struct RootView: View {
-	@Environment(\.modelContext) private var modelContext
 	@EnvironmentObject var networkManager: NetworkManager
 
 	@StateObject private var repoHolder = RepoHolder()
@@ -31,7 +30,6 @@ struct RootView: View {
 		.task {
 			if repoHolder.repo == nil {
 				repoHolder.repo = TransactionRepository(
-					context: modelContext,
 					network: networkManager
 				)
 			}

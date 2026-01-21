@@ -1,147 +1,115 @@
-//
-//  TransactionRepository.swift
-//  Money
-//
-//  Created by Adon Omeri on 20/1/2026.
-//
-
 import Combine
 import Foundation
-import SwiftData
 
 @MainActor
 final class TransactionRepository: ObservableObject {
-	private(set) var context: ModelContext
+	@Published private(set) var transactions: [Transaction] = []
 	private let network: NetworkManager
+	private let key = "transactions"
 
-	init(context: ModelContext, network: NetworkManager) {
-		self.context = context
+	init(network: NetworkManager) {
 		self.network = network
+		load()
+	}
+
+	private func load() {
+		if let data = UserDefaults.standard.data(forKey: key),
+		   let decoded = try? JSONDecoder().decode([Transaction].self, from: data)
+		{
+			transactions = decoded
+		}
+	}
+
+	private func save() {
+		if let encoded = try? JSONEncoder().encode(transactions) {
+			UserDefaults.standard.set(encoded, forKey: key)
+		}
 	}
 
 	func syncTransactions() async throws {
 		let remote = try await network.fetchTransactions()
-		let local = try context.fetch(FetchDescriptor<Transaction>())
-
+		// Merge remote into local
 		for r in remote {
-			if let existing = local.first(where: { $0.id == r.id }) {
-				// Only update if something changed
-				if existing.change != r.change ||
-					existing.title != r.title ||
-					existing.desc != r.description ||
-					existing.importance != r.importance
-				{
-					existing.update(from: r)
-				}
+			let t = Transaction(
+				id: r.id,
+				change: r.change,
+				title: r.title,
+				desc: r.description,
+				importance: r.importance,
+				dateCreated: r.dateCreated,
+				dateUpdated: r.dateUpdated
+			)
+			if let index = transactions.firstIndex(where: { $0.id == r.id }) {
+				transactions[index] = t
 			} else {
-				context.insert(Transaction(from: r))
+				transactions.append(t)
 			}
 		}
+		save()
 	}
 
-	func delete(ids: [UUID]) async throws {
-		let snapshot = try? context.fetch(FetchDescriptor<Transaction>())
-
-		do {
-			for tx in snapshot ?? [] where ids.contains(tx.id) {
-				context.delete(tx)
-			}
-			_ = try await network.deleteTransactions(ids: ids)
-		} catch {
-			try? await syncTransactions()
-			throw error
-		}
-	}
-
-	func createTransaction(
-		change: Double,
-		title: String,
-		description: String,
-		importance: Importance
-	) async throws {
+	func createTransaction(change: Double, title: String, description: String, importance: Importance) async throws {
 		let remote = try await network.createTransaction(
 			change: change,
 			title: title,
 			description: description,
 			importance: importance
 		)
-
-		let local = try context.fetch(FetchDescriptor<Transaction>())
-
 		for r in remote {
-			if let existing = local.first(where: { $0.id == r.id }) {
-				if existing.change != r.change ||
-					existing.title != r.title ||
-					existing.desc != r.description ||
-					existing.importance != r.importance
-				{
-					existing.update(from: r)
-				}
+			let t = Transaction(
+				id: r.id,
+				change: r.change,
+				title: r.title,
+				desc: r.description,
+				importance: r.importance,
+				dateCreated: r.dateCreated,
+				dateUpdated: r.dateUpdated
+			)
+			if let index = transactions.firstIndex(where: { $0.id == r.id }) {
+				transactions[index] = t
 			} else {
-				let newTransaction = Transaction(from: r)
-				newTransaction.id = r.id
-				context.insert(newTransaction)
+				transactions.append(t)
 			}
 		}
+		save()
 	}
 
-	func updateTransaction(
-		id: UUID,
-		change: Double? = nil,
-		title: String? = nil,
-		description: String? = nil,
-		importance: Importance? = nil
-	) async throws {
-		let remote = try await network.updateTransaction(
-			id: id,
-			change: change,
-			title: title,
-			description: description,
-			importance: importance
+	func updateTransaction(id: UUID, change: Double? = nil, title: String? = nil, description: String? = nil, importance: Importance? = nil) async throws {
+		let remote = try await network.updateTransaction(id: id, change: change, title: title, description: description, importance: importance)
+		let t = Transaction(
+			id: remote.id,
+			change: remote.change,
+			title: remote.title,
+			desc: remote.description,
+			importance: remote.importance,
+			dateCreated: remote.dateCreated,
+			dateUpdated: remote.dateUpdated
 		)
-
-		if let local = try context.fetch(FetchDescriptor<Transaction>())
-			.first(where: { $0.id == remote.id })
-		{
-			local.update(from: remote)
+		if let index = transactions.firstIndex(where: { $0.id == remote.id }) {
+			transactions[index] = t
 		} else {
-			context.insert(Transaction(from: remote))
+			transactions.append(t)
 		}
+		save()
+	}
+
+	func delete(ids: [UUID]) async throws {
+		transactions.removeAll { ids.contains($0.id) }
+		_ = try await network.deleteTransactions(ids: ids)
+		save()
 	}
 
 	#if os(iOS)
-
 		func logout() async throws {
-			do {
-				try await network.logout()
-
-				let allTransactions = try context.fetch(FetchDescriptor<Transaction>())
-				for tx in allTransactions {
-					context.delete(tx)
-				}
-
-			} catch {
-				try? await syncTransactions()
-				throw error
-			}
+			try await network.logout()
+			transactions.removeAll()
+			save()
 		}
-	#endif // os(iOS)
-
-	#if os(iOS)
 
 		func deleteUser() async throws {
-			do {
-				try await network.deleteCurrentUser()
-
-				let allTransactions = try context.fetch(FetchDescriptor<Transaction>())
-				for tx in allTransactions {
-					context.delete(tx)
-				}
-
-			} catch {
-				try? await syncTransactions()
-				throw error
-			}
+			try await network.deleteCurrentUser()
+			transactions.removeAll()
+			save()
 		}
 	#endif // os(iOS)
 }

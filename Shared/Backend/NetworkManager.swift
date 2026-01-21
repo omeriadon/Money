@@ -103,7 +103,7 @@ final class NetworkManager: ObservableObject {
 			self.email = decoded.user.email
 			firstName = decoded.user.firstName
 		}
-	#endif
+	#endif // os(iOS)
 
 	#if os(iOS)
 

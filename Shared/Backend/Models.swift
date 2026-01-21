@@ -7,7 +7,6 @@
 
 import Defaults
 import Foundation
-import SwiftData
 
 struct CurrentUser: Codable, Defaults.Serializable {
 	let firstName: String
@@ -38,9 +37,8 @@ enum Importance: String, Codable, CaseIterable, Identifiable {
 	}
 }
 
-@Model
-final class Transaction: Identifiable {
-	@Attribute(.unique) var id: UUID
+final class Transaction: Identifiable, Codable {
+	var id: UUID
 	var change: Double
 	var title: String
 	var desc: String

@@ -5,7 +5,6 @@
 //  Created by Adon Omeri on 17/1/2026.
 //
 
-import SwiftData
 import SwiftUI
 
 @main
@@ -18,6 +17,5 @@ struct MoneyApp: App {
 				.environmentObject(networkManager)
 				.fontDesign(.monospaced)
 		}
-		.modelContainer(for: Transaction.self)
 	}
 }

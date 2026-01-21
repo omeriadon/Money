@@ -1,6 +1,5 @@
 // moneyWatchApp.swift
 
-import SwiftData
 import SwiftUI
 
 @main
@@ -8,7 +7,6 @@ struct moneyWatch_Watch_AppApp: App {
 	@StateObject private var session = WatchWatchSessionManager.shared
 	@StateObject private var networkManager = NetworkManager.shared
 	@StateObject private var repoHolder = RepoHolder()
-	@Environment(\.modelContext) private var modelContext
 
 	var body: some Scene {
 		WindowGroup {
@@ -33,9 +31,9 @@ struct moneyWatch_Watch_AppApp: App {
 			.fontDesign(.monospaced)
 			.animation(.easeInOut, value: session.hasToken)
 			.task {
+				networkManager.token = TokenStore.shared.load()
 				if repoHolder.repo == nil {
 					repoHolder.repo = TransactionRepository(
-						context: modelContext,
 						network: networkManager
 					)
 				}
