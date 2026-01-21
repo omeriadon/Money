@@ -37,7 +37,7 @@ enum Importance: String, Codable, CaseIterable, Identifiable {
 	}
 }
 
-final class Transaction: Identifiable, Codable {
+final class Transaction: Identifiable, Codable, Defaults.Serializable {
 	var id: UUID
 	var change: Double
 	var title: String

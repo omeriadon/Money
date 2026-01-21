@@ -1,34 +1,27 @@
 import Combine
+import Defaults
 import Foundation
 
 @MainActor
 final class TransactionRepository: ObservableObject {
-	@Published private(set) var transactions: [Transaction] = []
+	@Published private(set) var transactions: [Transaction] = Defaults[.transactions]
 	private let network: NetworkManager
-	private let key = "transactions"
 
 	init(network: NetworkManager) {
 		self.network = network
-		load()
+
+		// Observe changes in Defaults (optional, for auto-syncing if needed)
+		Defaults.publisher(.transactions)
+			.sink { [weak self] change in
+				self?.transactions = change.newValue
+			}
+			.store(in: &cancellables)
 	}
 
-	private func load() {
-		if let data = UserDefaults.standard.data(forKey: key),
-		   let decoded = try? JSONDecoder().decode([Transaction].self, from: data)
-		{
-			transactions = decoded
-		}
-	}
-
-	private func save() {
-		if let encoded = try? JSONEncoder().encode(transactions) {
-			UserDefaults.standard.set(encoded, forKey: key)
-		}
-	}
+	private var cancellables = Set<AnyCancellable>()
 
 	func syncTransactions() async throws {
 		let remote = try await network.fetchTransactions()
-		// Merge remote into local
 		for r in remote {
 			let t = Transaction(
 				id: r.id,
@@ -45,7 +38,7 @@ final class TransactionRepository: ObservableObject {
 				transactions.append(t)
 			}
 		}
-		save()
+		Defaults[.transactions] = transactions
 	}
 
 	func createTransaction(change: Double, title: String, description: String, importance: Importance) async throws {
@@ -71,11 +64,17 @@ final class TransactionRepository: ObservableObject {
 				transactions.append(t)
 			}
 		}
-		save()
+		Defaults[.transactions] = transactions
 	}
 
 	func updateTransaction(id: UUID, change: Double? = nil, title: String? = nil, description: String? = nil, importance: Importance? = nil) async throws {
-		let remote = try await network.updateTransaction(id: id, change: change, title: title, description: description, importance: importance)
+		let remote = try await network.updateTransaction(
+			id: id,
+			change: change,
+			title: title,
+			description: description,
+			importance: importance
+		)
 		let t = Transaction(
 			id: remote.id,
 			change: remote.change,
@@ -90,26 +89,26 @@ final class TransactionRepository: ObservableObject {
 		} else {
 			transactions.append(t)
 		}
-		save()
+		Defaults[.transactions] = transactions
 	}
 
 	func delete(ids: [UUID]) async throws {
 		transactions.removeAll { ids.contains($0.id) }
 		_ = try await network.deleteTransactions(ids: ids)
-		save()
+		Defaults[.transactions] = transactions
 	}
 
 	#if os(iOS)
 		func logout() async throws {
 			try await network.logout()
 			transactions.removeAll()
-			save()
+			Defaults[.transactions] = transactions
 		}
 
 		func deleteUser() async throws {
 			try await network.deleteCurrentUser()
 			transactions.removeAll()
-			save()
+			Defaults[.transactions] = transactions
 		}
-	#endif // os(iOS)
+	#endif
 }

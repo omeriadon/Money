@@ -1,14 +1,11 @@
-import SwiftData
+
 import SwiftUI
 
 struct HomeView: View {
 	@EnvironmentObject var transactionRepo: TransactionRepository
 
-	@Query(sort: \Transaction.dateCreated, order: .reverse)
-	private var transactions: [Transaction]
-
 	var total: Double {
-		transactions.reduce(0) { $0 + $1.change }
+		transactionRepo.transactions.reduce(0) { $0 + $1.change }
 	}
 
 	@State private var didSyncOnce = false

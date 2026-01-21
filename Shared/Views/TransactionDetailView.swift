@@ -1,9 +1,10 @@
-import SwiftData
+
 import SwiftUI
 
 struct TransactionDetailView: View {
 	@EnvironmentObject var networkManager: NetworkManager
-	@Environment(\.modelContext) private var modelContext
+	@EnvironmentObject var transactionRepo: TransactionRepository
+
 	@Environment(\.dismiss) private var dismiss
 
 	@State private var title = ""
@@ -165,16 +166,16 @@ struct TransactionDetailView: View {
 
 		do {
 			if isNew {
-				_ = try await networkManager.createTransaction(
+				try await transactionRepo.createTransaction(
 					change: finalChange,
 					title: title,
 					description: description,
 					importance: importance
 				)
 			} else if let t = transaction {
-				let oldChange = Double(t.change)
+				let oldChange = t.change
 				let newChange = finalChange
-				_ = try await networkManager.updateTransaction(
+				try await transactionRepo.updateTransaction(
 					id: t.id,
 					change: (newChange != oldChange) ? newChange : nil,
 					title: title != t.title ? title : nil,
@@ -183,30 +184,8 @@ struct TransactionDetailView: View {
 				)
 			}
 
-			let fetched = try await networkManager.fetchTransactions()
-
-			let request = FetchDescriptor<Transaction>(sortBy: [SortDescriptor(\.dateCreated, order: .forward)])
-			let existingTransactions = try modelContext.fetch(request)
-
-			for t in fetched {
-				if let existing = existingTransactions.first(where: { $0.id == t.id }) {
-					existing.change = t.change
-					existing.title = t.title
-					existing.desc = t.description
-					existing.importance = t.importance
-					existing.dateCreated = t.dateCreated
-				} else {
-					let entity = Transaction(
-						id: t.id,
-						change: t.change,
-						title: t.title,
-						desc: t.description,
-						importance: t.importance,
-						dateCreated: t.dateCreated
-					)
-					modelContext.insert(entity)
-				}
-			}
+			// sync local array with remote
+			try await transactionRepo.syncTransactions()
 
 			isLoading = false
 			dismiss()

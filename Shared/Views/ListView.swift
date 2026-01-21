@@ -1,11 +1,8 @@
-import SwiftData
+
 import SwiftUI
 
 struct ListView: View {
 	@EnvironmentObject var transactionRepo: TransactionRepository
-
-	@Query(sort: \Transaction.dateCreated, order: .reverse)
-	private var transactions: [Transaction]
 
 	@State private var isLoading = false
 	@State private var showSuccess = false
@@ -14,12 +11,12 @@ struct ListView: View {
 	var body: some View {
 		NavigationStack {
 			ZStack {
-				if transactions.isEmpty {
+				if transactionRepo.transactions.isEmpty {
 					ContentUnavailableView("No Transactions", systemImage: "camera.metering.none")
 						.transition(.blurReplace)
 				} else {
 					List {
-						ForEach(transactions) { transaction in
+						ForEach(transactionRepo.transactions) { transaction in
 							NavigationLink {
 								TransactionDetailView(
 									isNew: false,
@@ -46,7 +43,7 @@ struct ListView: View {
 							}
 						}
 						.onDelete { indexSet in
-							let ids = indexSet.map { transactions[$0].id }
+							let ids = indexSet.map { transactionRepo.transactions[$0].id }
 
 							Task {
 								do {
@@ -60,11 +57,11 @@ struct ListView: View {
 					.transition(.blurReplace)
 				}
 			}
-			.animation(.easeInOut, value: transactions.isEmpty)
+			.animation(.easeInOut, value: transactionRepo.transactions.isEmpty)
 			.toolbar { toolbarContent }
 			.toolbar {
 				#if os(iOS)
-					if !transactions.isEmpty {
+					if !transactionRepo.transactions.isEmpty {
 						ToolbarItem(placement: .topBarTrailing) {
 							EditButton()
 						}
