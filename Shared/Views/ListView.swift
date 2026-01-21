@@ -87,8 +87,10 @@ struct ListView: View {
 			isLoading = true
 			try await transactionRepo.syncTransactions()
 			showSuccess = true
-			try? await Task.sleep(for: .seconds(1.2))
-			showSuccess = false
+			Task {
+				try? await Task.sleep(for: .seconds(1))
+				showSuccess = false
+			}
 			isLoading = false
 		} catch {
 			isLoading = false

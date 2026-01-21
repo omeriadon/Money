@@ -28,6 +28,7 @@ struct RefreshButton: View {
 		} label: {
 			Image(systemName: iconName)
 				.contentTransition(.symbolEffect(.replace))
+				.symbolEffect(.rotate, isActive: isLoading)
 		}
 		.animation(.easeInOut, value: "\(isLoading)\(showSuccess)")
 		.disabled(isLoading)

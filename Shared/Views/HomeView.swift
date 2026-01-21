@@ -74,6 +74,13 @@ struct HomeView: View {
 	private func refresh() async {
 		do {
 			try await transactionRepo.syncTransactions()
+
+			showSuccess = true
+
+			Task {
+				try await Task.sleep(for: .seconds(1))
+				showSuccess = false
+			}
 		} catch {
 			errorMessage = error.localizedDescription
 		}
