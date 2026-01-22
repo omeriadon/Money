@@ -13,9 +13,6 @@ struct RefreshButton: View {
 	let action: () async -> Void
 
 	private var iconName: String {
-		if isLoading {
-			return "arrow.triangle.2.circlepath"
-		}
 		if showSuccess {
 			return "checkmark"
 		}
@@ -26,9 +23,14 @@ struct RefreshButton: View {
 		Button {
 			Task { await action() }
 		} label: {
-			Image(systemName: iconName)
-				.contentTransition(.symbolEffect(.replace))
-				.symbolEffect(.rotate, isActive: isLoading)
+			if isLoading {
+				ProgressView()
+					.transition(.blurReplace)
+			} else {
+				Image(systemName: iconName)
+					.contentTransition(.symbolEffect(.replace))
+					.transition(.blurReplace)
+			}
 		}
 		.animation(.easeInOut, value: "\(isLoading)\(showSuccess)")
 		.disabled(isLoading)

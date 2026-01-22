@@ -97,53 +97,78 @@ struct TransactionDetailView: View {
 	}
 
 	@ViewBuilder
-	var form: some View {
-		HStack(alignment: .center) {
-			Picker("", selection: $isPositive) {
-				Image(systemName: "plus.circle.fill").tag(true)
-				Image(systemName: "minus.circle.fill").tag(false)
-			}
-			.onChange(of: isPositive) { updateChange() }
-			#if os(iOS)
-				.pickerStyle(.segmented)
-				.controlSize(.large)
-				.font(.largeTitle)
-
-			#else
-				.pickerStyle(.inline)
-				.font(.title2)
-				.controlSize(.mini)
-				.defaultWheelPickerItemHeight(40)
-			#endif
-
-			Spacer()
-
-			TextField("Amount", value: $amount, format: .currency(code: "AUD"))
-				.multilineTextAlignment(.trailing)
-				.focused($focusedField, equals: .amount)
-				.onSubmit { focusedField = nil }
-				.onChange(of: amount) { updateChange() }
-				.animation(.easeInOut, value: isPositive)
-			#if os(iOS)
-				.frame(maxWidth: 150)
-				.padding(5)
-				.font(.title)
-				.glassEffect(.clear.tint(isPositive ? .green : .red).interactive(), in: RoundedRectangle(cornerRadius: 30))
-				.keyboardType(.numberPad)
-			#else
-				.foregroundStyle(isPositive ? .green : .red)
-				.frame(height: 30)
-				.controlSize(.mini)
-			#endif
+	var picker: some View {
+		Picker("", selection: $isPositive) {
+			Image(systemName: "plus.circle.fill").tag(true)
+			Image(systemName: "minus.circle.fill").tag(false)
 		}
+		.onChange(of: isPositive) { updateChange() }
 		#if os(iOS)
+			.pickerStyle(.segmented)
+			.controlSize(.large)
+			.font(.largeTitle)
+
+		#else
+			.pickerStyle(.wheel)
+			.font(.title2)
+			.defaultWheelPickerItemHeight(30)
+			.frame(height: 60)
+		#endif
+	}
+
+	@ViewBuilder
+	var textField: some View {
+		TextField("Amount", value: $amount, format: .currency(code: "AUD"))
+			.multilineTextAlignment(.trailing)
+			.focused($focusedField, equals: .amount)
+			.onSubmit { focusedField = nil }
+			.onChange(of: amount) { updateChange() }
+			.animation(.easeInOut, value: isPositive)
+		#if os(iOS)
+			.frame(maxWidth: 150)
+			.padding(5)
+			.font(.title)
+			.glassEffect(.clear.tint(isPositive ? .green : .red).interactive(), in: RoundedRectangle(cornerRadius: 30))
+			.keyboardType(.numberPad)
+		#else
+			.font(.title)
+			.foregroundStyle(isPositive ? .green : .red)
+			.frame(height: 20)
+			.padding(.horizontal)
+		#endif
+	}
+
+	@ViewBuilder
+	var iPhoneHeader: some View {
+		HStack(alignment: .center) {}
+
+		HStack {
+			picker
+			Spacer()
+			textField
+		}
 		.padding(.horizontal)
 		.padding(.top)
-		#else
-		.frame(height: 50)
-		#endif
+	}
+
+	@ViewBuilder
+	var form: some View {
+		if isiPhone() {
+			iPhoneHeader
+		}
 
 		Form {
+			if !isiPhone() {
+				Section {
+					picker
+						.listRowBackground(Color.clear)
+				}
+				Section {
+					textField
+						.listRowBackground(Color.clear)
+				}
+			}
+
 			Section {
 				TextField("Title", text: $title)
 					.focused($focusedField, equals: .title)
@@ -165,6 +190,18 @@ struct TransactionDetailView: View {
 				#if os(iOS)
 					.pickerStyle(.menu)
 				#endif
+			}
+			if let dateCreated = transaction?.dateCreated {
+				Section("Created") {
+					Text(dateCreated, format: .dateTime.minute().hour().day().month().year())
+				}
+			}
+			if let dateUpdated = transaction?.dateUpdated {
+				if dateUpdated != transaction?.dateCreated {
+					Section("Updated") {
+						Text(dateUpdated, format: .dateTime.minute().hour().day().month().year())
+					}
+				}
 			}
 		}
 	}

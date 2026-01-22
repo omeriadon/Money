@@ -73,15 +73,16 @@ struct HomeView: View {
 
 	private func refresh() async {
 		do {
+			isLoading = true
 			try await transactionRepo.syncTransactions()
-
 			showSuccess = true
-
 			Task {
-				try await Task.sleep(for: .seconds(1))
+				try? await Task.sleep(for: .seconds(1))
 				showSuccess = false
 			}
+			isLoading = false
 		} catch {
+			isLoading = false
 			errorMessage = error.localizedDescription
 		}
 	}
