@@ -14,6 +14,11 @@ struct BalancePoint: Identifiable {
 	let balance: Double
 }
 
+struct ImportanceSlice: Identifiable {
+	let id: Importance
+	let value: Double
+}
+
 struct AnalyseView: View {
 	@EnvironmentObject var transactionRepo: TransactionRepository
 
@@ -32,13 +37,32 @@ struct AnalyseView: View {
 		}
 	}
 
+	var importanceSlices: [ImportanceSlice] {
+		let grouped = Dictionary(grouping: transactionRepo.transactions) { $0.importance }
+
+		return grouped.map { importance, transactions in
+			let value: Double = switch selectedPieChart {
+				case .count:
+					Double(transactions.count)
+
+				case .total:
+					transactions.reduce(0) { $0 + abs($1.change) }
+			}
+
+			return ImportanceSlice(id: importance, value: value)
+		}
+	}
+
 	@State private var selectedRange: TimeRange = .month
+
+	@State private var selectedPieChart: TypeOfPieChart = .count
 
 	var body: some View {
 		NavigationStack {
 			TabView {
 				ForEach(AnalyseTabItem.allCases) { tab in
 					tabView(for: tab)
+						.padding(.bottom)
 						.tag(tab)
 				}
 			}
@@ -67,6 +91,7 @@ struct AnalyseView: View {
 					x: .value("Date", point.date),
 					y: .value("Balance", point.balance)
 				)
+				.interpolationMethod(.stepEnd)
 			}
 			.if(selectedRange.seconds != nil) { chart in
 				chart
@@ -88,10 +113,39 @@ struct AnalyseView: View {
 			.animation(.interactiveSpring, value: selectedRange)
 		}
 		.padding(.vertical)
+		.padding(.bottom)
 	}
 
 	@ViewBuilder
-	var differentTypes: some View {}
+	var differentTypes: some View {
+		VStack(alignment: .leading, spacing: 12) {
+			Picker("Type", selection: $selectedPieChart) {
+				ForEach(TypeOfPieChart.allCases) { type in
+					Text(type.rawValue).tag(type)
+				}
+			}
+			#if os(iOS)
+			.pickerStyle(.segmented)
+			.padding(.horizontal)
+			#else
+			.pickerStyle(.navigationLink)
+			#endif
+
+			Chart(importanceSlices) { slice in
+				SectorMark(
+					angle: .value("Value", slice.value),
+					innerRadius: .ratio(0.55),
+					angularInset: 2
+				)
+				.foregroundStyle(by: .value("Importance", slice.id.rawValue))
+				.cornerRadius(15)
+			}
+			.chartLegend(position: .bottom)
+			.animation(.interactiveSpring, value: selectedPieChart)
+			.padding(.horizontal)
+			.padding(.bottom, 32)
+		}
+	}
 
 	@ViewBuilder
 	private func tabView(for tab: AnalyseTabItem) -> some View {
@@ -109,6 +163,13 @@ struct AnalyseView: View {
 		case tot
 		case dt
 	}
+}
+
+enum TypeOfPieChart: String, CaseIterable, Identifiable {
+	var id: String { rawValue }
+
+	case count = "Amount of Transactions"
+	case total = "Total Transaction Cost"
 }
 
 enum TimeRange: String, CaseIterable, Identifiable {
