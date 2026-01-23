@@ -8,6 +8,8 @@
 import Charts
 import SwiftUI
 
+// MARK: - Models
+
 struct BalancePoint: Identifiable {
 	var id: String { "\(balance)\(date.description)" }
 	let date: Date
@@ -19,14 +21,16 @@ struct ImportanceSlice: Identifiable {
 	let value: Double
 }
 
+// MARK: - Main View
+
 struct AnalyseView: View {
 	@EnvironmentObject var transactionRepo: TransactionRepository
 
+	// MARK: Derived Data
+
 	var cumulativeBalance: [BalancePoint] {
 		let sorted = transactionRepo.transactions
-			.map { t in
-				(t.dateCreated, t.change)
-			}
+			.map { ($0.dateCreated, $0.change) }
 			.sorted { $0.0 < $1.0 }
 
 		var runningTotal = 0.0
@@ -44,7 +48,6 @@ struct AnalyseView: View {
 			let value: Double = switch selectedPieChart {
 				case .count:
 					Double(transactions.count)
-
 				case .total:
 					transactions.reduce(0) { $0 + abs($1.change) }
 			}
@@ -53,17 +56,33 @@ struct AnalyseView: View {
 		}
 	}
 
+	// Correct range delta: sum transaction changes, not balances
+	var rangeTotalChange: Double {
+		guard let seconds = selectedRange.seconds else {
+			return transactionRepo.transactions.reduce(0) { $0 + $1.change }
+		}
+
+		let cutoff = Date().addingTimeInterval(-Double(seconds))
+
+		return transactionRepo.transactions
+			.filter { $0.dateCreated >= cutoff }
+			.reduce(0) { $0 + $1.change }
+	}
+
+	// MARK: State
+
 	@State private var selectedRange: TimeRange = .month
 	@State private var selectedPieChart: TypeOfPieChart = .count
-
 	@State private var rawSelectedDate: Date?
-	@State private var selectedAngle: Double?
+
+	// MARK: Selection Resolution
 
 	var selectedBalancePoint: BalancePoint? {
 		guard let rawSelectedDate else { return nil }
-
 		return cumulativeBalance.last(where: { $0.date <= rawSelectedDate })
 	}
+
+	// MARK: Body
 
 	var body: some View {
 		NavigationStack {
@@ -79,9 +98,17 @@ struct AnalyseView: View {
 		}
 	}
 
+	// MARK: - Total Over Time
+
 	@ViewBuilder
 	var totalOverTime: some View {
 		VStack(alignment: .leading, spacing: 12) {
+			// Header replaces floating annotation
+			BalanceHeader(
+				selected: selectedBalancePoint,
+				rangeDelta: rangeTotalChange
+			)
+
 			Picker("Range", selection: $selectedRange) {
 				ForEach(TimeRange.allCases) { range in
 					Text(range.rawValue).tag(range)
@@ -104,49 +131,25 @@ struct AnalyseView: View {
 				}
 
 				if let selected = selectedBalancePoint {
-					RuleMark(
-						x: .value("Selected", selected.date)
-					)
-					.foregroundStyle(.gray.opacity(0.3))
-					.offset(yStart: -10)
-					.zIndex(-1)
+					RuleMark(x: .value("Selected", selected.date))
+						.foregroundStyle(.gray.opacity(0.3))
+						.offset(yStart: -10)
 				}
 			}
 			.chartXSelection(value: $rawSelectedDate)
-			.chartOverlay { proxy in
-				GeometryReader { geometry in
-					if let selected = selectedBalancePoint,
-					   let xPos = proxy.position(forX: selected.date)
-					{
-						VStack(alignment: .leading, spacing: 4) {
-							Text(selected.date, style: .date)
-							Text(selected.balance, format: .currency(code: "AUD"))
-						}
-						.font(.caption)
-						.padding(6)
-						.background(.regularMaterial)
-						.clipShape(RoundedRectangle(cornerRadius: 8))
-						.fixedSize()
-						.position(
-							x: min(max(xPos, 70), geometry.size.width - 70),
-							y: 40
-						)
-					}
-				}
-			}
 			.if(selectedRange.seconds != nil) { chart in
 				chart
 					.chartScrollableAxes(.horizontal)
 					.chartXVisibleDomain(length: selectedRange.seconds!)
 			}
 			.chartXAxis {
-				AxisMarks(values: .automatic) { _ in
+				AxisMarks(values: .automatic) {
 					AxisGridLine()
 					AxisValueLabel()
 				}
 			}
 			.chartYAxis {
-				AxisMarks(values: .automatic) { _ in
+				AxisMarks(values: .automatic) {
 					AxisGridLine()
 					AxisValueLabel()
 				}
@@ -154,8 +157,9 @@ struct AnalyseView: View {
 			.animation(.interactiveSpring, value: selectedRange)
 		}
 		.padding(.vertical)
-		.padding(.bottom)
 	}
+
+	// MARK: - Pie Chart
 
 	@ViewBuilder
 	var differentTypes: some View {
@@ -188,6 +192,8 @@ struct AnalyseView: View {
 		}
 	}
 
+	// MARK: - Tab Routing
+
 	@ViewBuilder
 	private func tabView(for tab: AnalyseTabItem) -> some View {
 		switch tab {
@@ -198,17 +204,47 @@ struct AnalyseView: View {
 		}
 	}
 
+	// MARK: - Tabs
+
 	enum AnalyseTabItem: String, Identifiable, CaseIterable {
 		var id: String { rawValue }
-
 		case tot
 		case dt
 	}
 }
 
+// MARK: - Header
+
+struct BalanceHeader: View {
+	let selected: BalancePoint?
+	let rangeDelta: Double
+
+	var body: some View {
+		VStack(alignment: .leading, spacing: 4) {
+			if let selected {
+				Text(selected.date, style: .date)
+					.font(.caption)
+					.foregroundStyle(.secondary)
+
+				Text(selected.balance, format: .currency(code: "AUD"))
+					.font(.title2.bold())
+			} else {
+				Text("Range change")
+					.font(.caption)
+					.foregroundStyle(.secondary)
+
+				Text(rangeDelta, format: .currency(code: "AUD"))
+					.font(.title2.bold())
+			}
+		}
+		.padding(.horizontal)
+	}
+}
+
+// MARK: - Supporting Types
+
 enum TypeOfPieChart: String, CaseIterable, Identifiable {
 	var id: String { rawValue }
-
 	case count = "Amount of Transactions"
 	case total = "Total Transaction Cost"
 }
