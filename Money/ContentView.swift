@@ -14,6 +14,7 @@ struct ContentView: View {
 					tab.view
 				} label: {
 					Label(tab.title, systemImage: tab.symbol)
+						.fontDesign(.monospaced)
 				}
 			}
 		}

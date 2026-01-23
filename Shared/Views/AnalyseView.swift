@@ -8,7 +8,7 @@
 import Charts
 import SwiftUI
 
-struct BalancePoint: Identifiable {
+struct BalancePoint: Identifiable, Equatable {
 	var id: String { "\(balance)\(date.description)" }
 	let date: Date
 	let balance: Double
@@ -54,8 +54,18 @@ struct AnalyseView: View {
 	}
 
 	@State private var selectedRange: TimeRange = .month
-
 	@State private var selectedPieChart: TypeOfPieChart = .count
+
+	@State private var annotationOffset: CGPoint = .zero
+
+	@State private var rawSelectedDate: Date?
+	@State private var selectedAngle: Double?
+
+	var selectedBalancePoint: BalancePoint? {
+		guard let rawSelectedDate else { return nil }
+
+		return cumulativeBalance.last(where: { $0.date <= rawSelectedDate })
+	}
 
 	var body: some View {
 		NavigationStack {
@@ -86,13 +96,62 @@ struct AnalyseView: View {
 			.pickerStyle(.navigationLink)
 			#endif
 
-			Chart(cumulativeBalance) { point in
-				LineMark(
-					x: .value("Date", point.date),
-					y: .value("Balance", point.balance)
-				)
-				.interpolationMethod(.stepEnd)
+			Chart {
+				ForEach(cumulativeBalance) { point in
+					LineMark(
+						x: .value("Date", point.date),
+						y: .value("Balance", point.balance)
+					)
+					.interpolationMethod(.stepEnd)
+				}
+
+				if let selected = selectedBalancePoint {
+					RuleMark(
+						x: .value("Selected", selected.date)
+					)
+					.foregroundStyle(.gray.opacity(0.3))
+					.offset(yStart: -10)
+					.zIndex(-1)
+				}
 			}
+			.chartOverlay { proxy in
+				GeometryReader { geometry in
+					if let selected = selectedBalancePoint,
+					   let xPos = proxy.position(forX: selected.date)
+					{
+						let annotation = VStack(alignment: .leading, spacing: 4) {
+							Text(selected.date, style: .date)
+							Text(selected.balance, format: .currency(code: "AUD"))
+						}
+						.font(.caption)
+						.padding(6)
+						.background(.regularMaterial)
+						.clipShape(RoundedRectangle(cornerRadius: 8))
+						.fixedSize()
+
+						annotation
+							.background(
+								GeometryReader { annotationGeo in
+									Color.clear.preference(
+										key: AnnotationSizeKey.self,
+										value: annotationGeo.size
+									)
+								}
+							)
+							.onPreferenceChange(AnnotationSizeKey.self) { size in
+								let halfWidth = size.width / 2
+								let minX = halfWidth
+								let maxX = geometry.size.width - halfWidth
+								let clampedX = min(max(xPos, minX), maxX)
+
+								annotationOffset = CGPoint(x: clampedX, y: 40)
+							}
+							.position(annotationOffset)
+					}
+				}
+			}
+			.animation(.spring, value: selectedBalancePoint)
+			.chartXSelection(value: $rawSelectedDate)
 			.if(selectedRange.seconds != nil) { chart in
 				chart
 					.chartScrollableAxes(.horizontal)
@@ -107,7 +166,7 @@ struct AnalyseView: View {
 			.chartYAxis {
 				AxisMarks(values: .automatic) { _ in
 					AxisGridLine()
-					AxisValueLabel()
+					AxisValueLabel(format: .dateTime.day())
 				}
 			}
 			.animation(.interactiveSpring, value: selectedRange)
@@ -197,5 +256,12 @@ enum TimeRange: String, CaseIterable, Identifiable {
 			case .allTime:
 				nil
 		}
+	}
+}
+
+struct AnnotationSizeKey: PreferenceKey {
+	static var defaultValue: CGSize = .zero
+	static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+		value = nextValue()
 	}
 }
