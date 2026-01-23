@@ -41,6 +41,7 @@ struct ListView: View {
 									.minimumScaleFactor(0.01)
 								}
 							}
+							.transition(.blurReplace)
 						}
 						.onDelete { indexSet in
 							let ids = indexSet.map { transactionRepo.transactions[$0].id }

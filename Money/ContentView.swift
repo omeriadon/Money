@@ -1,4 +1,3 @@
-import PortalTransitions
 import SwiftUI
 
 struct ContentView: View {
@@ -18,6 +17,7 @@ struct ContentView: View {
 				}
 			}
 		}
+
 		.onChange(of: currentTab) {
 			generator.impactOccurred(intensity: 1)
 		}
@@ -28,7 +28,7 @@ struct ContentView: View {
 }
 
 enum TabItem: CaseIterable, Identifiable {
-	case home, list, settings
+	case home, list, analyse, settings
 
 	var id: String { title }
 
@@ -40,6 +40,8 @@ enum TabItem: CaseIterable, Identifiable {
 				"Transactions"
 			case .settings:
 				"Settings"
+			case .analyse:
+				"Analyse"
 		}
 	}
 
@@ -52,6 +54,8 @@ enum TabItem: CaseIterable, Identifiable {
 				ListView()
 			case .settings:
 				SettingsView()
+			case .analyse:
+				AnalyseView()
 		}
 	}
 
@@ -63,6 +67,8 @@ enum TabItem: CaseIterable, Identifiable {
 				"mail.stack"
 			case .settings:
 				"gearshape"
+			case .analyse:
+				"magnifyingglass"
 		}
 	}
 }
