@@ -179,7 +179,7 @@ struct AnalyseView: View {
 					angularInset: 2
 				)
 				.foregroundStyle(by: .value("Importance", slice.id.rawValue))
-				.cornerRadius(15)
+				.cornerRadius(8)
 			}
 			.chartLegend(position: .bottom)
 			.animation(.interactiveSpring, value: selectedPieChart)
