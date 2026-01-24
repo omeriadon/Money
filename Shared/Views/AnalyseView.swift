@@ -14,7 +14,7 @@ struct BalancePoint: Identifiable {
 	var id: Date { date }
 }
 
-struct ImportanceSlice: Identifiable {
+struct ImportanceSlice: Identifiable, Equatable {
 	let id: Importance
 	let value: Double
 }
@@ -117,11 +117,6 @@ struct AnalyseView: View {
 	@ViewBuilder
 	var totalOverTime: some View {
 		VStack(alignment: .leading, spacing: 12) {
-			BalanceHeader(
-				selected: selectedBalancePoint,
-				rangeDelta: rangeTotalChange
-			)
-
 			Picker("Range", selection: $selectedRange) {
 				ForEach(TimeRange.allCases) { range in
 					Text(range.rawValue).tag(range)
@@ -133,6 +128,11 @@ struct AnalyseView: View {
 			#else
 			.pickerStyle(.navigationLink)
 			#endif
+
+			BalanceHeader(
+				selected: selectedBalancePoint,
+				rangeDelta: rangeTotalChange
+			)
 
 			Chart(cumulativeBalance, id: \.id) { point in
 				LineMark(
@@ -164,9 +164,9 @@ struct AnalyseView: View {
 			.chartYAxis {
 				AxisMarks()
 			}
-			.animation(.interactiveSpring, value: selectedRange)
+			.animation(.easeInOut, value: selectedRange)
 		}
-		.padding(.vertical)
+		.padding(.bottom, 32)
 	}
 
 	@ViewBuilder
@@ -212,37 +212,46 @@ struct AnalyseView: View {
 							switch selectedPieChart {
 								case .count:
 									Text("\(Int(selected.value))")
-										.font(.title2.bold())
-									Text("transactions")
+										.contentTransition(.numericText())
+										.font(.title.bold())
+									Text(Int(selected.value) == 1 ? "transaction" : "transactions")
+										.contentTransition(.numericText())
 										.font(.callout)
 										.foregroundStyle(.secondary)
 								case .total:
 									Text(selected.value, format: .currency(code: "AUD"))
-										.font(.title2.bold())
+										.contentTransition(.numericText())
+										.font(.title.bold())
 							}
 						} else {
-							Text("All Importances")
+							Text("All Transactions")
 								.font(.callout)
 								.foregroundStyle(.secondary)
 
-							switch selectedPieChart {
-								case .count:
-									Text("\(Int(totalSliceValue))")
-										.font(.title2.bold())
-									Text("transactions")
-										.font(.callout)
-										.foregroundStyle(.secondary)
-								case .total:
-									Text(totalSliceValue, format: .currency(code: "AUD"))
-										.font(.title2.bold())
+							let centerValueText: String = if selectedPieChart == .count {
+								String(Int(totalSliceValue))
+							} else {
+								totalSliceValue.formatted(.currency(code: "AUD"))
+							}
+							Text(centerValueText)
+								.contentTransition(.numericText())
+								.font(.title.bold())
+
+							if selectedPieChart == .count {
+								Text("transactions")
+									.font(.callout)
+									.foregroundStyle(.secondary)
+									.transition(.opacity)
 							}
 						}
 					}
 					.position(x: frame.midX, y: frame.midY)
+					.animation(.easeInOut, value: selectedSlice)
+					.animation(.easeInOut, value: selectedPieChart)
 				}
 			}
 			.chartLegend(position: .bottom)
-			.animation(.interactiveSpring, value: selectedPieChart)
+			.animation(.easeInOut, value: selectedPieChart)
 			.padding(.horizontal)
 			.padding(.bottom, 32)
 		}
