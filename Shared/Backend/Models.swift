@@ -5,6 +5,7 @@
 //  Created by Adon Omeri on 18/1/2026.
 //
 
+import Charts
 import Defaults
 import Foundation
 
@@ -14,7 +15,7 @@ struct CurrentUser: Codable, Defaults.Serializable {
 	let token: String
 }
 
-enum Importance: String, Codable, CaseIterable, Identifiable {
+enum Importance: String, Codable, CaseIterable, Identifiable, Plottable {
 	case essential, leisure, investment, reward, emergent, occasional
 
 	var id: String { rawValue }

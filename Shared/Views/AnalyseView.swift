@@ -56,6 +56,16 @@ struct AnalyseView: View {
 		}
 	}
 
+	var cumulativeRanges: [(importance: Importance, range: Range<Double>)] {
+		var cumulative = 0.0
+		return importanceSlices.map { slice in
+			let newCumulative = cumulative + slice.value
+			let result = (importance: slice.id, range: cumulative ..< newCumulative)
+			cumulative = newCumulative
+			return result
+		}
+	}
+
 	// Correct range delta: sum transaction changes, not balances
 	var rangeTotalChange: Double {
 		guard let seconds = selectedRange.seconds else {
@@ -74,12 +84,24 @@ struct AnalyseView: View {
 	@State private var selectedRange: TimeRange = .month
 	@State private var selectedPieChart: TypeOfPieChart = .count
 	@State private var rawSelectedDate: Date?
+	@State private var selectedAngle: Double?
 
 	// MARK: Selection Resolution
 
 	var selectedBalancePoint: BalancePoint? {
 		guard let rawSelectedDate else { return nil }
 		return cumulativeBalance.last(where: { $0.date <= rawSelectedDate })
+	}
+
+	var selectedSlice: ImportanceSlice? {
+		guard let selectedAngle,
+		      let selectedIndex = cumulativeRanges.firstIndex(where: { $0.range.contains(selectedAngle) })
+		else { return nil }
+		return importanceSlices[selectedIndex]
+	}
+
+	var totalSliceValue: Double {
+		importanceSlices.reduce(0) { $0 + $1.value }
 	}
 
 	// MARK: Body
@@ -179,11 +201,54 @@ struct AnalyseView: View {
 			Chart(importanceSlices) { slice in
 				SectorMark(
 					angle: .value("Value", slice.value),
-					innerRadius: .ratio(0.55),
-					angularInset: 2
+					innerRadius: .ratio(0.618),
+					angularInset: 1.5
 				)
 				.foregroundStyle(by: .value("Importance", slice.id.rawValue))
-				.cornerRadius(8)
+				.cornerRadius(5)
+				.opacity(selectedSlice == nil || selectedSlice?.id == slice.id ? 1.0 : 0.3)
+			}
+			.chartAngleSelection(value: $selectedAngle)
+			.chartBackground { chartProxy in
+				GeometryReader { geometry in
+					let frame = geometry[chartProxy.plotFrame!]
+					VStack {
+						if let selected = selectedSlice {
+							Text(selected.id.rawValue)
+								.font(.callout)
+								.foregroundStyle(.secondary)
+
+							switch selectedPieChart {
+								case .count:
+									Text("\(Int(selected.value))")
+										.font(.title2.bold())
+									Text("transactions")
+										.font(.callout)
+										.foregroundStyle(.secondary)
+								case .total:
+									Text(selected.value, format: .currency(code: "AUD"))
+										.font(.title2.bold())
+							}
+						} else {
+							Text("All Importances")
+								.font(.callout)
+								.foregroundStyle(.secondary)
+
+							switch selectedPieChart {
+								case .count:
+									Text("\(Int(totalSliceValue))")
+										.font(.title2.bold())
+									Text("transactions")
+										.font(.callout)
+										.foregroundStyle(.secondary)
+								case .total:
+									Text(totalSliceValue, format: .currency(code: "AUD"))
+										.font(.title2.bold())
+							}
+						}
+					}
+					.position(x: frame.midX, y: frame.midY)
+				}
 			}
 			.chartLegend(position: .bottom)
 			.animation(.interactiveSpring, value: selectedPieChart)
@@ -229,12 +294,12 @@ struct BalanceHeader: View {
 				Text(selected.balance, format: .currency(code: "AUD"))
 					.font(.title2.bold())
 			} else {
-				Text("Range change")
+				Text("Total")
 					.font(.caption)
 					.foregroundStyle(.secondary)
 
 				Text(rangeDelta, format: .currency(code: "AUD"))
-					.font(.title2.bold())
+					.font(.title.bold())
 			}
 		}
 		.padding(.horizontal)
@@ -252,7 +317,6 @@ enum TypeOfPieChart: String, CaseIterable, Identifiable {
 enum TimeRange: String, CaseIterable, Identifiable {
 	var id: String { rawValue }
 
-	case day = "1D"
 	case week = "1W"
 	case month = "1M"
 	case threeMonths = "3M"
@@ -261,8 +325,6 @@ enum TimeRange: String, CaseIterable, Identifiable {
 
 	var seconds: Int? {
 		switch self {
-			case .day:
-				3600 * 24
 			case .week:
 				3600 * 24 * 7
 			case .month:
