@@ -37,6 +37,62 @@ struct AnalyseView: View {
 		}
 	}
 
+	var chartGradient: LinearGradient {
+		guard !cumulativeBalance.isEmpty else {
+			return LinearGradient(
+				colors: [.green],
+				startPoint: .bottom,
+				endPoint: .top
+			)
+		}
+
+		let minBalance = cumulativeBalance.map(\.balance).min()!
+		let maxBalance = cumulativeBalance.map(\.balance).max()!
+
+		guard minBalance != maxBalance else {
+			return LinearGradient(
+				colors: [minBalance >= 0 ? .green : .red],
+				startPoint: .bottom,
+				endPoint: .top
+			)
+		}
+
+		let zero = (0 - minBalance) / (maxBalance - minBalance)
+
+		let blend = 0.05
+		let low = max(0, zero - blend / 2)
+		let high = min(1, zero + blend / 2)
+
+		let stops: [Gradient.Stop] = {
+			if minBalance >= 0 {
+				return [
+					.init(color: .green, location: 0),
+					.init(color: .green, location: 1),
+				]
+			}
+
+			if maxBalance <= 0 {
+				return [
+					.init(color: .red, location: 0),
+					.init(color: .red, location: 1),
+				]
+			}
+
+			return [
+				.init(color: .red, location: 0),
+				.init(color: .red, location: low),
+				.init(color: .green, location: high),
+				.init(color: .green, location: 1),
+			]
+		}()
+
+		return LinearGradient(
+			gradient: Gradient(stops: stops),
+			startPoint: .bottom,
+			endPoint: .top
+		)
+	}
+
 	var importanceSlices: [ImportanceSlice] {
 		let grouped = Dictionary(grouping: transactionRepo.transactions) { $0.importance }
 
@@ -99,8 +155,6 @@ struct AnalyseView: View {
 		importanceSlices.reduce(0) { $0 + $1.value }
 	}
 
-	// MARK: Body
-
 	var body: some View {
 		NavigationStack {
 			TabView {
@@ -135,22 +189,25 @@ struct AnalyseView: View {
 			)
 
 			Chart(cumulativeBalance, id: \.id) { point in
-				LineMark(
-					x: .value("Date", point.date, unit: .day),
-					y: .value("Balance", point.balance)
-				)
-				.interpolationMethod(.stepEnd)
-
 				if let selected = selectedBalancePoint,
 				   calendar.isDate(point.date, equalTo: selected.date, toGranularity: .day)
 				{
 					RuleMark(
 						x: .value("Selected", selected.date, unit: .day)
 					)
-					.foregroundStyle(.gray.opacity(0.3))
+					.foregroundStyle(.accent)
 					.offset(yStart: -10)
 					.zIndex(-1)
 				}
+
+				LineMark(
+					x: .value("Date", point.date, unit: .day),
+					y: .value("Balance", point.balance)
+				)
+				.zIndex(1)
+				.lineStyle(StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round))
+				.foregroundStyle(chartGradient)
+				.interpolationMethod(.stepEnd)
 			}
 			.chartXSelection(value: $rawSelectedDate)
 			.if(selectedRange.seconds != nil) { chart in
@@ -285,6 +342,7 @@ struct BalanceHeader: View {
 
 				Text(selected.balance, format: .currency(code: "AUD"))
 					.font(.title.bold())
+					.foregroundStyle(selected.balance > 0 ? .green : .red)
 			} else {
 				Text("Total")
 					.font(.caption)
