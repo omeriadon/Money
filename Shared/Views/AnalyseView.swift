@@ -26,7 +26,7 @@ struct ImportanceSlice: Identifiable {
 struct AnalyseView: View {
 	@EnvironmentObject var transactionRepo: TransactionRepository
 
-	// MARK: Derived Data
+	private let importanceOrder = Importance.allCases
 
 	var cumulativeBalance: [BalancePoint] {
 		let sorted = transactionRepo.transactions
@@ -44,7 +44,9 @@ struct AnalyseView: View {
 	var importanceSlices: [ImportanceSlice] {
 		let grouped = Dictionary(grouping: transactionRepo.transactions) { $0.importance }
 
-		return grouped.map { importance, transactions in
+		return importanceOrder.map { importance in
+			let transactions = grouped[importance] ?? []
+
 			let value: Double = switch selectedPieChart {
 				case .count:
 					Double(transactions.count)
@@ -58,6 +60,7 @@ struct AnalyseView: View {
 
 	var cumulativeRanges: [(importance: Importance, range: Range<Double>)] {
 		var cumulative = 0.0
+
 		return importanceSlices.map { slice in
 			let newCumulative = cumulative + slice.value
 			let result = (importance: slice.id, range: cumulative ..< newCumulative)
@@ -66,7 +69,6 @@ struct AnalyseView: View {
 		}
 	}
 
-	// Correct range delta: sum transaction changes, not balances
 	var rangeTotalChange: Double {
 		guard let seconds = selectedRange.seconds else {
 			return transactionRepo.transactions.reduce(0) { $0 + $1.change }
@@ -95,9 +97,10 @@ struct AnalyseView: View {
 
 	var selectedSlice: ImportanceSlice? {
 		guard let selectedAngle,
-		      let selectedIndex = cumulativeRanges.firstIndex(where: { $0.range.contains(selectedAngle) })
+		      let index = cumulativeRanges.firstIndex(where: { $0.range.contains(selectedAngle) })
 		else { return nil }
-		return importanceSlices[selectedIndex]
+
+		return importanceSlices[index]
 	}
 
 	var totalSliceValue: Double {
@@ -125,7 +128,6 @@ struct AnalyseView: View {
 	@ViewBuilder
 	var totalOverTime: some View {
 		VStack(alignment: .leading, spacing: 12) {
-			// Header replaces floating annotation
 			BalanceHeader(
 				selected: selectedBalancePoint,
 				rangeDelta: rangeTotalChange
@@ -143,41 +145,35 @@ struct AnalyseView: View {
 			.pickerStyle(.navigationLink)
 			#endif
 
-			Chart {
-				ForEach(cumulativeBalance) { point in
-					LineMark(
-						x: .value("Date", point.date),
-						y: .value("Balance", point.balance)
-					)
-					.interpolationMethod(.stepEnd)
-				}
+			Chart(cumulativeBalance, id: \.id) { point in
+				LineMark(
+					x: .value("Date", point.date),
+					y: .value("Balance", point.balance)
+				)
+				.interpolationMethod(.stepEnd)
+			}
 
-				if let selected = selectedBalancePoint {
+			if let selected = selectedBalancePoint {
+				Chart {
 					RuleMark(x: .value("Selected", selected.date))
 						.foregroundStyle(.gray.opacity(0.3))
 						.offset(yStart: -10)
 				}
 			}
-			.chartXSelection(value: $rawSelectedDate)
-			.if(selectedRange.seconds != nil) { chart in
-				chart
-					.chartScrollableAxes(.horizontal)
-					.chartXVisibleDomain(length: selectedRange.seconds!)
-			}
-			.chartXAxis {
-				AxisMarks(values: .automatic) {
-					AxisGridLine()
-					AxisValueLabel()
-				}
-			}
-			.chartYAxis {
-				AxisMarks(values: .automatic) {
-					AxisGridLine()
-					AxisValueLabel()
-				}
-			}
-			.animation(.interactiveSpring, value: selectedRange)
 		}
+		.chartXSelection(value: $rawSelectedDate)
+		.if(selectedRange.seconds != nil) { chart in
+			chart
+				.chartScrollableAxes(.horizontal)
+				.chartXVisibleDomain(length: selectedRange.seconds!)
+		}
+		.chartXAxis {
+			AxisMarks()
+		}
+		.chartYAxis {
+			AxisMarks()
+		}
+		.animation(.interactiveSpring, value: selectedRange)
 		.padding(.vertical)
 	}
 
@@ -198,20 +194,25 @@ struct AnalyseView: View {
 			.pickerStyle(.navigationLink)
 			#endif
 
-			Chart(importanceSlices) { slice in
+			Chart(importanceSlices, id: \.id) { slice in
 				SectorMark(
 					angle: .value("Value", slice.value),
 					innerRadius: .ratio(0.618),
 					angularInset: 1.5
 				)
-				.foregroundStyle(by: .value("Importance", slice.id.rawValue))
 				.cornerRadius(5)
-				.opacity(selectedSlice == nil || selectedSlice?.id == slice.id ? 1.0 : 0.3)
+				.foregroundStyle(by: .value("Importance", slice.id))
+				.opacity(
+					selectedSlice == nil || selectedSlice?.id == slice.id
+						? 1.0
+						: 0.3
+				)
 			}
 			.chartAngleSelection(value: $selectedAngle)
 			.chartBackground { chartProxy in
 				GeometryReader { geometry in
 					let frame = geometry[chartProxy.plotFrame!]
+
 					VStack {
 						if let selected = selectedSlice {
 							Text(selected.id.rawValue)
