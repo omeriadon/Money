@@ -8,12 +8,10 @@
 import Charts
 import SwiftUI
 
-// MARK: - Models
-
 struct BalancePoint: Identifiable {
-	var id: String { "\(balance)\(date.description)" }
 	let date: Date
 	let balance: Double
+	var id: Date { date }
 }
 
 struct ImportanceSlice: Identifiable {
@@ -21,10 +19,9 @@ struct ImportanceSlice: Identifiable {
 	let value: Double
 }
 
-// MARK: - Main View
-
 struct AnalyseView: View {
 	@EnvironmentObject var transactionRepo: TransactionRepository
+	@Environment(\.calendar) private var calendar
 
 	private let importanceOrder = Importance.allCases
 
@@ -33,11 +30,10 @@ struct AnalyseView: View {
 			.map { ($0.dateCreated, $0.change) }
 			.sorted { $0.0 < $1.0 }
 
-		var runningTotal = 0.0
-
+		var running = 0.0
 		return sorted.map { date, change in
-			runningTotal += change
-			return BalancePoint(date: date, balance: runningTotal)
+			running += change
+			return BalancePoint(date: date, balance: running)
 		}
 	}
 
@@ -45,27 +41,23 @@ struct AnalyseView: View {
 		let grouped = Dictionary(grouping: transactionRepo.transactions) { $0.importance }
 
 		return importanceOrder.map { importance in
-			let transactions = grouped[importance] ?? []
-
+			let tx = grouped[importance] ?? []
 			let value: Double = switch selectedPieChart {
 				case .count:
-					Double(transactions.count)
+					Double(tx.count)
 				case .total:
-					transactions.reduce(0) { $0 + abs($1.change) }
+					tx.reduce(0) { $0 + abs($1.change) }
 			}
-
 			return ImportanceSlice(id: importance, value: value)
 		}
 	}
 
 	var cumulativeRanges: [(importance: Importance, range: Range<Double>)] {
 		var cumulative = 0.0
-
-		return importanceSlices.map { slice in
-			let newCumulative = cumulative + slice.value
-			let result = (importance: slice.id, range: cumulative ..< newCumulative)
-			cumulative = newCumulative
-			return result
+		return importanceSlices.map {
+			let next = cumulative + $0.value
+			defer { cumulative = next }
+			return ($0.id, cumulative ..< next)
 		}
 	}
 
@@ -75,29 +67,29 @@ struct AnalyseView: View {
 		}
 
 		let cutoff = Date().addingTimeInterval(-Double(seconds))
-
 		return transactionRepo.transactions
 			.filter { $0.dateCreated >= cutoff }
 			.reduce(0) { $0 + $1.change }
 	}
-
-	// MARK: State
 
 	@State private var selectedRange: TimeRange = .month
 	@State private var selectedPieChart: TypeOfPieChart = .count
 	@State private var rawSelectedDate: Date?
 	@State private var selectedAngle: Double?
 
-	// MARK: Selection Resolution
-
 	var selectedBalancePoint: BalancePoint? {
 		guard let rawSelectedDate else { return nil }
-		return cumulativeBalance.last(where: { $0.date <= rawSelectedDate })
+
+		return cumulativeBalance.last {
+			calendar.isDate($0.date, equalTo: rawSelectedDate, toGranularity: .day)
+				|| $0.date < rawSelectedDate
+		}
 	}
 
 	var selectedSlice: ImportanceSlice? {
-		guard let selectedAngle,
-		      let index = cumulativeRanges.firstIndex(where: { $0.range.contains(selectedAngle) })
+		guard
+			let selectedAngle,
+			let index = cumulativeRanges.firstIndex(where: { $0.range.contains(selectedAngle) })
 		else { return nil }
 
 		return importanceSlices[index]
@@ -119,11 +111,8 @@ struct AnalyseView: View {
 				}
 			}
 			.tabViewStyle(.page)
-			.toolbar { toolbarContent }
 		}
 	}
-
-	// MARK: - Total Over Time
 
 	@ViewBuilder
 	var totalOverTime: some View {
@@ -147,37 +136,38 @@ struct AnalyseView: View {
 
 			Chart(cumulativeBalance, id: \.id) { point in
 				LineMark(
-					x: .value("Date", point.date),
+					x: .value("Date", point.date, unit: .day),
 					y: .value("Balance", point.balance)
 				)
 				.interpolationMethod(.stepEnd)
-			}
 
-			if let selected = selectedBalancePoint {
-				Chart {
-					RuleMark(x: .value("Selected", selected.date))
-						.foregroundStyle(.gray.opacity(0.3))
-						.offset(yStart: -10)
+				if let selected = selectedBalancePoint,
+				   calendar.isDate(point.date, equalTo: selected.date, toGranularity: .day)
+				{
+					RuleMark(
+						x: .value("Selected", selected.date, unit: .day)
+					)
+					.foregroundStyle(.gray.opacity(0.3))
+					.offset(yStart: -10)
+					.zIndex(-1)
 				}
 			}
+			.chartXSelection(value: $rawSelectedDate)
+			.if(selectedRange.seconds != nil) { chart in
+				chart
+					.chartScrollableAxes(.horizontal)
+					.chartXVisibleDomain(length: selectedRange.seconds!)
+			}
+			.chartXAxis {
+				AxisMarks()
+			}
+			.chartYAxis {
+				AxisMarks()
+			}
+			.animation(.interactiveSpring, value: selectedRange)
 		}
-		.chartXSelection(value: $rawSelectedDate)
-		.if(selectedRange.seconds != nil) { chart in
-			chart
-				.chartScrollableAxes(.horizontal)
-				.chartXVisibleDomain(length: selectedRange.seconds!)
-		}
-		.chartXAxis {
-			AxisMarks()
-		}
-		.chartYAxis {
-			AxisMarks()
-		}
-		.animation(.interactiveSpring, value: selectedRange)
 		.padding(.vertical)
 	}
-
-	// MARK: - Pie Chart
 
 	@ViewBuilder
 	var differentTypes: some View {
@@ -258,19 +248,13 @@ struct AnalyseView: View {
 		}
 	}
 
-	// MARK: - Tab Routing
-
 	@ViewBuilder
 	private func tabView(for tab: AnalyseTabItem) -> some View {
 		switch tab {
-			case .tot:
-				totalOverTime
-			case .dt:
-				differentTypes
+			case .tot: totalOverTime
+			case .dt: differentTypes
 		}
 	}
-
-	// MARK: - Tabs
 
 	enum AnalyseTabItem: String, Identifiable, CaseIterable {
 		var id: String { rawValue }
@@ -278,8 +262,6 @@ struct AnalyseView: View {
 		case dt
 	}
 }
-
-// MARK: - Header
 
 struct BalanceHeader: View {
 	let selected: BalancePoint?
@@ -293,7 +275,7 @@ struct BalanceHeader: View {
 					.foregroundStyle(.secondary)
 
 				Text(selected.balance, format: .currency(code: "AUD"))
-					.font(.title2.bold())
+					.font(.title.bold())
 			} else {
 				Text("Total")
 					.font(.caption)
@@ -306,8 +288,6 @@ struct BalanceHeader: View {
 		.padding(.horizontal)
 	}
 }
-
-// MARK: - Supporting Types
 
 enum TypeOfPieChart: String, CaseIterable, Identifiable {
 	var id: String { rawValue }
@@ -326,16 +306,11 @@ enum TimeRange: String, CaseIterable, Identifiable {
 
 	var seconds: Int? {
 		switch self {
-			case .week:
-				3600 * 24 * 7
-			case .month:
-				3600 * 24 * 30
-			case .threeMonths:
-				3600 * 24 * 30 * 3
-			case .year:
-				3600 * 24 * 30 * 12
-			case .allTime:
-				nil
+			case .week: 3600 * 24 * 7
+			case .month: 3600 * 24 * 30
+			case .threeMonths: 3600 * 24 * 30 * 3
+			case .year: 3600 * 24 * 30 * 12
+			case .allTime: nil
 		}
 	}
 }
