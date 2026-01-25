@@ -11,7 +11,7 @@ struct TransactionDetailView: View {
 	@State private var description = ""
 	@State private var amount: Double = 50
 	@State private var isPositive = true
-	@State private var importance: Importance = .essential
+	@State private var importance: Importance = .dayJob
 
 	@State private var change: Double = 50
 	@State private var isLoading = false
