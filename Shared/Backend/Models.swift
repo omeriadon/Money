@@ -16,9 +16,38 @@ struct CurrentUser: Codable, Defaults.Serializable {
 }
 
 enum Importance: String, Codable, CaseIterable, Identifiable, Plottable {
-	case essential, leisure, investment, reward, emergent, occasional
+	case essential, leisure, investment, reward, emergency, occasional
+
+	case dayJob, passiveIncome, oneTime
 
 	var id: String { rawValue }
+
+	static let negative: [Importance] = [.essential, .leisure, .investment, .reward, .emergency, .occasional]
+
+	static let positive: [Importance] = [.dayJob, .passiveIncome, .oneTime]
+
+	var title: String {
+		switch self {
+			case .essential:
+				"Essential"
+			case .leisure:
+				"Leisure"
+			case .investment:
+				"Investment"
+			case .reward:
+				"Reward"
+			case .emergency:
+				"Emergency"
+			case .occasional:
+				"Occasional"
+			case .dayJob:
+				"Day Job"
+			case .passiveIncome:
+				"Passive Income"
+			case .oneTime:
+				"One Time"
+		}
+	}
 
 	var symbol: String {
 		switch self {
@@ -30,10 +59,16 @@ enum Importance: String, Codable, CaseIterable, Identifiable, Plottable {
 				"banknote"
 			case .reward:
 				"star"
-			case .emergent:
+			case .emergency:
 				"cross.case"
 			case .occasional:
 				"calendar"
+			case .dayJob:
+				"figure.walk"
+			case .passiveIncome:
+				"zzz"
+			case .oneTime:
+				"1.circle"
 		}
 	}
 }

@@ -179,10 +179,18 @@ struct TransactionDetailView: View {
 					.onSubmit { focusedField = .amount }
 
 				Picker("Importance", selection: $importance) {
-					ForEach(Importance.allCases) { importance in
-						Label(importance.rawValue.capitalized, systemImage: importance.symbol)
-							.fontDesign(.monospaced)
-							.tag(importance)
+					if isPositive {
+						ForEach(Importance.positive) { importance in
+							Label(importance.title, systemImage: importance.symbol)
+								.fontDesign(.monospaced)
+								.tag(importance)
+						}
+					} else {
+						ForEach(Importance.negative) { importance in
+							Label(importance.title, systemImage: importance.symbol)
+								.fontDesign(.monospaced)
+								.tag(importance)
+						}
 					}
 				}
 				.foregroundStyle(.primary)
@@ -190,6 +198,17 @@ struct TransactionDetailView: View {
 				#if os(iOS)
 					.pickerStyle(.menu)
 				#endif
+					.onChange(of: isPositive) {
+						if isPositive {
+							if Importance.negative.contains(importance) {
+								importance = Importance.positive.randomElement()!
+							}
+						} else {
+							if Importance.positive.contains(importance) {
+								importance = Importance.negative.randomElement()!
+							}
+						}
+					}
 			}
 			if let dateCreated = transaction?.dateCreated {
 				Section("Created") {
