@@ -4,24 +4,30 @@ import Foundation
 
 @MainActor
 final class TransactionRepository: ObservableObject {
-	@Published private(set) var transactions: [Transaction] = Defaults[.transactions]
+	// Backing store (unsorted, single mutation point)
+	@Published private var _transactions: [Transaction] = Defaults[.transactions]
+
+	// Public view: always newest first
+	var transactions: [Transaction] {
+		_transactions.sorted { $0.dateCreated > $1.dateCreated }
+	}
+
 	private let network: NetworkManager
+	private var cancellables = Set<AnyCancellable>()
 
 	init(network: NetworkManager) {
 		self.network = network
 
-		// Observe changes in Defaults (optional, for auto-syncing if needed)
 		Defaults.publisher(.transactions)
 			.sink { [weak self] change in
-				self?.transactions = change.newValue
+				self?._transactions = change.newValue
 			}
 			.store(in: &cancellables)
 	}
 
-	private var cancellables = Set<AnyCancellable>()
-
 	func syncTransactions() async throws {
 		let remote = try await network.fetchTransactions()
+
 		for r in remote {
 			let t = Transaction(
 				id: r.id,
@@ -32,22 +38,30 @@ final class TransactionRepository: ObservableObject {
 				dateCreated: r.dateCreated,
 				dateUpdated: r.dateUpdated
 			)
-			if let index = transactions.firstIndex(where: { $0.id == r.id }) {
-				transactions[index] = t
+
+			if let index = _transactions.firstIndex(where: { $0.id == r.id }) {
+				_transactions[index] = t
 			} else {
-				transactions.append(t)
+				_transactions.append(t)
 			}
 		}
-		Defaults[.transactions] = transactions
+
+		Defaults[.transactions] = _transactions
 	}
 
-	func createTransaction(change: Double, title: String, description: String, importance: Importance) async throws {
+	func createTransaction(
+		change: Double,
+		title: String,
+		description: String,
+		importance: Importance
+	) async throws {
 		let remote = try await network.createTransaction(
 			change: change,
 			title: title,
 			description: description,
 			importance: importance
 		)
+
 		for r in remote {
 			let t = Transaction(
 				id: r.id,
@@ -58,13 +72,15 @@ final class TransactionRepository: ObservableObject {
 				dateCreated: r.dateCreated,
 				dateUpdated: r.dateUpdated
 			)
-			if let index = transactions.firstIndex(where: { $0.id == r.id }) {
-				transactions[index] = t
+
+			if let index = _transactions.firstIndex(where: { $0.id == r.id }) {
+				_transactions[index] = t
 			} else {
-				transactions.append(t)
+				_transactions.append(t)
 			}
 		}
-		Defaults[.transactions] = transactions
+
+		Defaults[.transactions] = _transactions
 	}
 
 	func updateTransaction(id: UUID, change: Double? = nil, title: String? = nil, description: String? = nil, importance: Importance? = nil) async throws {
@@ -84,31 +100,33 @@ final class TransactionRepository: ObservableObject {
 			dateCreated: remote.dateCreated,
 			dateUpdated: remote.dateUpdated
 		)
-		if let index = transactions.firstIndex(where: { $0.id == remote.id }) {
-			transactions[index] = t
+
+		if let index = _transactions.firstIndex(where: { $0.id == remote.id }) {
+			_transactions[index] = t
 		} else {
-			transactions.append(t)
+			_transactions.append(t)
 		}
-		Defaults[.transactions] = transactions
+
+		Defaults[.transactions] = _transactions
 	}
 
 	func delete(ids: [UUID]) async throws {
-		transactions.removeAll { ids.contains($0.id) }
+		_transactions.removeAll { ids.contains($0.id) }
 		_ = try await network.deleteTransactions(ids: ids)
-		Defaults[.transactions] = transactions
+		Defaults[.transactions] = _transactions
 	}
 
 	#if os(iOS)
 		func logout() async throws {
 			try await network.logout()
-			transactions.removeAll()
-			Defaults[.transactions] = transactions
+			_transactions.removeAll()
+			Defaults[.transactions] = _transactions
 		}
 
 		func deleteUser() async throws {
 			try await network.deleteCurrentUser()
-			transactions.removeAll()
-			Defaults[.transactions] = transactions
+			_transactions.removeAll()
+			Defaults[.transactions] = _transactions
 		}
 	#endif
 }
