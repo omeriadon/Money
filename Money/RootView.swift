@@ -8,30 +8,30 @@
 import SwiftUI
 
 struct RootView: View {
-    @EnvironmentObject var networkManager: NetworkManager
+	@EnvironmentObject var networkManager: NetworkManager
 
-    @StateObject private var repoHolder = RepoHolder()
+	@StateObject private var repoHolder = RepoHolder()
 
-    var body: some View {
-        ZStack {
-            if let repo = repoHolder.repo {
-                if networkManager.token != nil {
-                    ContentView()
-                        .environmentObject(repo)
-                        .transition(.opacity)
-                } else {
-                    LoginSignupView()
-                        .transition(.opacity)
-                }
-            }
-        }
-        .animation(.easeInOut, value: networkManager.token)
-        .task {
-            if repoHolder.repo == nil {
-                repoHolder.repo = TransactionRepository(
-                    network: networkManager
-                )
-            }
-        }
-    }
+	var body: some View {
+		ZStack {
+			if let repo = repoHolder.repo {
+				if networkManager.token != nil {
+					ContentView()
+						.environmentObject(repo)
+						.transition(.opacity)
+				} else {
+					LoginSignupView()
+						.transition(.opacity)
+				}
+			}
+		}
+		.animation(.easeInOut, value: networkManager.token)
+		.task {
+			if repoHolder.repo == nil {
+				repoHolder.repo = TransactionRepository(
+					network: networkManager
+				)
+			}
+		}
+	}
 }

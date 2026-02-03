@@ -8,26 +8,26 @@
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        TabView {
-            Tab {
-                HomeView()
+	var body: some View {
+		TabView {
+			Tab {
+				HomeView()
 
-            } label: {
-                Label("Money", systemImage: "house")
-            }
+			} label: {
+				Label("Money", systemImage: "house")
+			}
 
-            Tab {
-                ListView()
+			Tab {
+				ListView()
 
-            } label: {
-                Label("Transactions", systemImage: "mail.stack")
-            }
-        }
-        .tabViewStyle(.carousel)
-    }
+			} label: {
+				Label("Transactions", systemImage: "mail.stack")
+			}
+		}
+		.tabViewStyle(.carousel)
+	}
 }
 
 #Preview {
-    ContentView()
+	ContentView()
 }

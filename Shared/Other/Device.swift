@@ -8,9 +8,9 @@
 import Foundation
 
 func isiPhone() -> Bool {
-    #if os(iOS)
-        return true
-    #else
-        return false
-    #endif
+	#if os(iOS)
+		return true
+	#else
+		return false
+	#endif
 }

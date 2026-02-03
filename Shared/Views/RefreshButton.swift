@@ -8,31 +8,31 @@
 import SwiftUI
 
 struct RefreshButton: View {
-    @Binding var isLoading: Bool
-    @Binding var showSuccess: Bool
-    let action: () async -> Void
+	@Binding var isLoading: Bool
+	@Binding var showSuccess: Bool
+	let action: () async -> Void
 
-    private var iconName: String {
-        if showSuccess {
-            return "checkmark"
-        }
-        return "arrow.triangle.2.circlepath"
-    }
+	private var iconName: String {
+		if showSuccess {
+			return "checkmark"
+		}
+		return "arrow.triangle.2.circlepath"
+	}
 
-    var body: some View {
-        Button {
-            Task { await action() }
-        } label: {
-            if isLoading {
-                ProgressView()
-                    .transition(.blurReplace)
-            } else {
-                Image(systemName: iconName)
-                    .contentTransition(.symbolEffect(.replace))
-                    .transition(.blurReplace)
-            }
-        }
-        .animation(.easeInOut, value: "\(isLoading)\(showSuccess)")
-        .disabled(isLoading)
-    }
+	var body: some View {
+		Button {
+			Task { await action() }
+		} label: {
+			if isLoading {
+				ProgressView()
+					.transition(.blurReplace)
+			} else {
+				Image(systemName: iconName)
+					.contentTransition(.symbolEffect(.replace))
+					.transition(.blurReplace)
+			}
+		}
+		.animation(.easeInOut, value: "\(isLoading)\(showSuccess)")
+		.disabled(isLoading)
+	}
 }

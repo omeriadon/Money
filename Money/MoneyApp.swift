@@ -9,13 +9,13 @@ import SwiftUI
 
 @main
 struct MoneyApp: App {
-    @StateObject private var networkManager = NetworkManager.shared
+	@StateObject private var networkManager = NetworkManager.shared
 
-    var body: some Scene {
-        WindowGroup {
-            RootView()
-                .environmentObject(networkManager)
-                .fontDesign(.monospaced)
-        }
-    }
+	var body: some Scene {
+		WindowGroup {
+			RootView()
+				.environmentObject(networkManager)
+				.fontDesign(.monospaced)
+		}
+	}
 }
