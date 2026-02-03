@@ -28,7 +28,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("Account Info") {
+                Section {
                     TextField("First Name", text: $firstName)
                         .autocapitalization(.words)
                     TextField("Email", text: $email)
@@ -36,24 +36,30 @@ struct SettingsView: View {
                         .autocapitalization(.none)
                     SecureField("New Password", text: $password)
                     SecureField("Confirm Password", text: $passwordConfirm)
+                } header: {
+                    Text("Account Info")
+                } footer: {
+                    VStack(alignment: .leading, spacing: 4) {
+                        if firstName.trimmingCharacters(in: .whitespaces).isEmpty {
+                            Text("First name cannot be empty")
+                        }
+                        if !isValidEmail(email) && !email.isEmpty {
+                            Text("Email is not valid")
+                        }
+                        if !password.isEmpty && password.count < 8 {
+                            Text("Password must be at least 8 characters")
+                        }
+                        if !password.isEmpty && password != passwordConfirm {
+                            Text("Passwords do not match")
+                        }
+                    }
+                    .foregroundStyle(.red)
                 }
                 .sectionActions {
                     Button("Save Changes") {
-                        Task {
-                            await updateAccount()
-                        }
+                        Task { await updateAccount() }
                     }
-                    .disabled(
-                        isSaving
-                            || transactionRepo.network.firstName == firstName
-                            || transactionRepo.network.email == email
-                            || password == ""
-                    )
-                }
-                .alert("Success", isPresented: $saveSuccess) {
-                    Button("OK", role: .cancel) {}
-                } message: {
-                    Text("Your account has been updated.")
+                    .disabled(!canSave)
                 }
 
                 Section("Danger Zone") {
@@ -65,9 +71,8 @@ struct SettingsView: View {
                     .alert("Logout?", isPresented: $showLogoutConfirmation) {
                         Button(role: .destructive) {
                             Task {
-                                do {
-                                    try await transactionRepo.logout()
-                                } catch {
+                                do { try await transactionRepo.logout() }
+                                catch {
                                     errorTitle = "Failed to Logout"
                                     errorMessage = error.localizedDescription
                                     showAlert = true
@@ -86,9 +91,8 @@ struct SettingsView: View {
                     .alert("Are you sure you want to delete your account?", isPresented: $showDeleteAccountConfirmation) {
                         Button(role: .destructive) {
                             Task {
-                                do {
-                                    try await transactionRepo.deleteUser()
-                                } catch {
+                                do { try await transactionRepo.deleteUser() }
+                                catch {
                                     errorTitle = "Failed to Delete Account"
                                     errorMessage = error.localizedDescription
                                     showAlert = true
@@ -96,9 +100,7 @@ struct SettingsView: View {
                             }
                         } label: { Text("Yes") }
                         Button(role: .cancel) {} label: { Text("No") }
-                    } message: {
-                        Text("This will permanently delete all your transactions.")
-                    }
+                    } message: { Text("This will permanently delete all your transactions.") }
                 }
             }
             .toolbar {
@@ -108,13 +110,24 @@ struct SettingsView: View {
             }
             .alert(errorTitle, isPresented: $showAlert) {
                 Button("OK", role: .cancel) {}
-            } message: {
-                Text(errorMessage)
-            }
-            .task {
-                loadCurrentUser()
-            }
+            } message: { Text(errorMessage) }
+            .alert("Success", isPresented: $saveSuccess) {
+                Button("OK", role: .cancel) {}
+            } message: { Text("Your account has been updated.") }
+            .task { loadCurrentUser() }
         }
+    }
+
+    private var canSave: Bool {
+        let changed = firstName != (transactionRepo.network.firstName ?? "") ||
+            email != (transactionRepo.network.email ?? "") ||
+            !password.isEmpty
+
+        let validFirstName = !firstName.trimmingCharacters(in: .whitespaces).isEmpty
+        let validEmail = isValidEmail(email)
+        let validPassword = password.isEmpty || (password.count >= 8 && password == passwordConfirm)
+
+        return changed && validFirstName && validEmail && validPassword
     }
 
     private func loadCurrentUser() {
@@ -145,6 +158,13 @@ struct SettingsView: View {
             errorMessage = error.localizedDescription
             showAlert = true
         }
+    }
+
+    private func isValidEmail(_ email: String) -> Bool {
+        let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+        let range = NSRange(email.startIndex ..< email.endIndex, in: email)
+        let matches = detector?.matches(in: email, options: [], range: range) ?? []
+        return matches.count == 1 && matches.first?.url?.scheme == "mailto"
     }
 }
 
