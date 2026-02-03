@@ -40,26 +40,43 @@ struct SettingsView: View {
                     Text("Account Info")
                 } footer: {
                     VStack(alignment: .leading, spacing: 4) {
-                        if firstName.trimmingCharacters(in: .whitespaces).isEmpty {
+                        if firstNameChanged && firstName.trimmingCharacters(in: .whitespaces).isEmpty {
                             Text("First name cannot be empty")
                         }
-                        if !isValidEmail(email) && !email.isEmpty {
+                        if emailChanged && !isValidEmail(email) && !email.isEmpty {
                             Text("Email is not valid")
                         }
-                        if !password.isEmpty && password.count < 8 {
+                        if passwordChanged && password.count < 8 {
                             Text("Password must be at least 8 characters")
                         }
-                        if !password.isEmpty && password != passwordConfirm {
+                        if passwordChanged && password != passwordConfirm {
                             Text("Passwords do not match")
                         }
                     }
                     .foregroundStyle(.red)
                 }
                 .sectionActions {
-                    Button("Save Changes") {
+                    Button {
                         Task { await updateAccount() }
+                    } label: {
+                        ZStack {
+                            if !isSaving {
+                                Text("Save Changes")
+                                    .transition(.blurReplace)
+                            } else {
+                                HStack {
+                                    ProgressView()
+                                    Text("Saving Changes")
+                                }
+                                .transition(.blurReplace)
+                            }
+                        }
+                        .animation(.easeInOut, value: isSaving)
                     }
                     .disabled(!canSave)
+                }
+                .task {
+                    await transactionRepo.network.refreshCurrentUser()
                 }
 
                 Section("Danger Zone") {
@@ -70,14 +87,7 @@ struct SettingsView: View {
                     }
                     .alert("Logout?", isPresented: $showLogoutConfirmation) {
                         Button(role: .destructive) {
-                            Task {
-                                do { try await transactionRepo.logout() }
-                                catch {
-                                    errorTitle = "Failed to Logout"
-                                    errorMessage = error.localizedDescription
-                                    showAlert = true
-                                }
-                            }
+                            Task { try? await transactionRepo.logout() }
                         } label: { Text("Yes") }
                         Button(role: .cancel) {} label: { Text("No") }
                     }
@@ -90,14 +100,7 @@ struct SettingsView: View {
                     }
                     .alert("Are you sure you want to delete your account?", isPresented: $showDeleteAccountConfirmation) {
                         Button(role: .destructive) {
-                            Task {
-                                do { try await transactionRepo.deleteUser() }
-                                catch {
-                                    errorTitle = "Failed to Delete Account"
-                                    errorMessage = error.localizedDescription
-                                    showAlert = true
-                                }
-                            }
+                            Task { try? await transactionRepo.deleteUser() }
                         } label: { Text("Yes") }
                         Button(role: .cancel) {} label: { Text("No") }
                     } message: { Text("This will permanently delete all your transactions.") }
@@ -118,16 +121,28 @@ struct SettingsView: View {
         }
     }
 
+    // MARK: - Field Change Detection
+
+    private var firstNameChanged: Bool {
+        firstName != (transactionRepo.network.firstName ?? "")
+    }
+
+    private var emailChanged: Bool {
+        email != (transactionRepo.network.email ?? "")
+    }
+
+    private var passwordChanged: Bool {
+        !password.isEmpty
+    }
+
+    // MARK: - Save Button Logic
+
     private var canSave: Bool {
-        let changed = firstName != (transactionRepo.network.firstName ?? "") ||
-            email != (transactionRepo.network.email ?? "") ||
-            !password.isEmpty
-
-        let validFirstName = !firstName.trimmingCharacters(in: .whitespaces).isEmpty
-        let validEmail = isValidEmail(email)
-        let validPassword = password.isEmpty || (password.count >= 8 && password == passwordConfirm)
-
-        return changed && validFirstName && validEmail && validPassword
+        let changed = firstNameChanged || emailChanged || passwordChanged
+        let validFirstName = !firstNameChanged || !firstName.trimmingCharacters(in: .whitespaces).isEmpty
+        let validEmail = !emailChanged || isValidEmail(email)
+        let validPassword = !passwordChanged || (password.count >= 8 && password == passwordConfirm)
+        return changed && validFirstName && validEmail && validPassword && !isSaving
     }
 
     private func loadCurrentUser() {
@@ -136,11 +151,16 @@ struct SettingsView: View {
     }
 
     private func updateAccount() async {
-        guard password == passwordConfirm else {
-            errorTitle = "Password Mismatch"
-            errorMessage = "The passwords do not match."
-            showAlert = true
-            return
+        // Only send changed fields
+        var updatePassword: String? = nil
+        if passwordChanged {
+            guard password == passwordConfirm else {
+                errorTitle = "Password Mismatch"
+                errorMessage = "The passwords do not match."
+                showAlert = true
+                return
+            }
+            updatePassword = password
         }
 
         isSaving = true
@@ -148,9 +168,9 @@ struct SettingsView: View {
 
         do {
             try await transactionRepo.updateUser(
-                firstName: firstName,
-                email: email,
-                password: password.isEmpty ? nil : password
+                firstName: firstNameChanged ? firstName : nil,
+                email: emailChanged ? email : nil,
+                password: updatePassword
             )
             saveSuccess = true
         } catch {

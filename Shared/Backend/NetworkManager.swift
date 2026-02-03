@@ -389,5 +389,29 @@ final class NetworkManager: ObservableObject {
             let decoder = JSONDecoder()
             return try decoder.decode(UserDTO.self, from: data)
         }
-    #endif
+    #endif // os(iOS)
+
+    func refreshCurrentUser() async {
+        guard let token else { return }
+
+        let url = URL(string: "https://money.adonis.pt/users/me")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse,
+                  (200 ... 299).contains(httpResponse.statusCode)
+            else { return }
+
+            let decoder = JSONDecoder()
+            let user = try decoder.decode(UserDTO.self, from: data)
+            email = user.email
+            firstName = user.firstName
+        } catch {
+            print("Failed to refresh user:", error.localizedDescription)
+        }
+    }
 }

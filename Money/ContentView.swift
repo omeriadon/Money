@@ -21,9 +21,13 @@ struct ContentView: View {
 
         .onChange(of: currentTab) {
             generator.impactOccurred(intensity: 1)
+            generator.prepare()
         }
         .onAppear {
             generator.prepare()
+        }
+        .task {
+            await transactionRepo.network.refreshCurrentUser()
         }
     }
 }
