@@ -17,6 +17,7 @@ struct BalancePoint: Identifiable {
 struct ImportanceSlice: Identifiable, Equatable {
 	let id: Importance
 	let value: Double
+	let color: Color
 }
 
 struct AnalyseView: View {
@@ -104,7 +105,7 @@ struct AnalyseView: View {
 				case .total:
 					tx.reduce(0) { $0 + abs($1.change) }
 			}
-			return ImportanceSlice(id: importance, value: value)
+			return ImportanceSlice(id: importance, value: value, color: importance.colour)
 		}
 	}
 
@@ -247,8 +248,8 @@ struct AnalyseView: View {
 					innerRadius: .ratio(0.618),
 					angularInset: 1.5
 				)
-				.cornerRadius(5)
-				.foregroundStyle(by: .value("Importance", slice.id))
+				.cornerRadius(10)
+				.foregroundStyle(slice.color)
 				.opacity(
 					selectedSlice == nil || selectedSlice?.id == slice.id
 						? 1.0
@@ -265,63 +266,55 @@ struct AnalyseView: View {
 							Text(selected.id.rawValue)
 								.font(.callout)
 								.foregroundStyle(.secondary)
+								.transition(.opacity)
 
 							switch selectedPieChart {
 								case .count:
-									Text("\(Int(selected.value))")
-										.contentTransition(.numericText())
-										.font(.system(size: 1000, weight: .bold))
-										.minimumScaleFactor(0.001)
-										.lineLimit(1)
-										.frame(width: frame.width * 0.5)
-										.multilineTextAlignment(.center)
-									Text(Int(selected.value) == 1 ? "transaction" : "transactions")
-										.contentTransition(.numericText())
-										.font(.system(size: 1000))
-										.minimumScaleFactor(0.001)
-										.lineLimit(1)
-										.frame(width: frame.width * 0.5)
-										.multilineTextAlignment(.center)
-										.foregroundStyle(.secondary)
+									VStack {
+										Text("\(Int(selected.value))")
+											.contentTransition(.numericText())
+											.lineLimit(1)
+											.font(.title)
+										Text(Int(selected.value) == 1 ? "transaction" : "transactions")
+											.contentTransition(.numericText())
+											.lineLimit(1)
+											.foregroundStyle(.secondary)
+											.font(.caption)
+									}
+									.transition(.opacity)
 								case .total:
 									Text(selected.value, format: .currency(code: "AUD"))
 										.contentTransition(.numericText())
-										.font(.system(size: 1000, weight: .bold))
-										.minimumScaleFactor(0.001)
 										.lineLimit(1)
-										.frame(width: frame.width * 0.5)
-										.multilineTextAlignment(.center)
+										.font(.title2)
+										.transition(.opacity)
 							}
+
 						} else {
 							Text("All Transactions")
-								.font(.system(size: 1000))
-								.minimumScaleFactor(0.001)
 								.lineLimit(1)
-								.frame(width: frame.height * 0.5)
-								.multilineTextAlignment(.center)
 								.foregroundStyle(.secondary)
+								.transition(.opacity)
+								.transition(.opacity)
 
 							let centerValueText: String = if selectedPieChart == .count {
 								String(Int(totalSliceValue))
 							} else {
 								totalSliceValue.formatted(.currency(code: "AUD"))
 							}
+
 							Text(centerValueText)
 								.contentTransition(.numericText())
-								.font(.system(size: 1000, weight: .bold))
-								.minimumScaleFactor(0.001)
 								.lineLimit(1)
-								.frame(width: frame.width * 0.5)
-								.multilineTextAlignment(.center)
+								.font(.title)
+								.transition(.opacity)
 
-							Text("transactions")
-								.font(.system(size: 1000))
-								.minimumScaleFactor(0.001)
+							Text(selectedPieChart == .count ? "transactions" : "in and out")
+								.contentTransition(.numericText())
+								.font(.caption)
 								.lineLimit(1)
-								.frame(width: frame.width * 0.5)
-								.multilineTextAlignment(.center)
 								.foregroundStyle(.secondary)
-								.opacity(selectedPieChart == .count ? 1 : 0)
+								.transition(.opacity)
 						}
 					}
 					.position(x: frame.midX, y: frame.midY)
@@ -329,9 +322,23 @@ struct AnalyseView: View {
 					.animation(.easeInOut, value: selectedPieChart)
 				}
 			}
-			.chartLegend(position: .bottom)
+			.chartLegend(.hidden)
 			.animation(.easeInOut, value: selectedPieChart)
 			.padding(.horizontal)
+			.padding(.bottom, 32)
+
+			FlowLayout {
+				ForEach(Importance.allCases) { importance in
+					Label(importance.title, systemImage: importance.symbol)
+						.foregroundStyle(importance.colour)
+						.padding(.horizontal, 5)
+						.if(selectedSlice != nil) { view in
+							view
+								.opacity(importance.title == selectedSlice!.id.title ? 1 : 0.3)
+						}
+				}
+			}
+			.scenePadding(.horizontal)
 			.padding(.bottom, 32)
 		}
 	}

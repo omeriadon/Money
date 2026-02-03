@@ -7,7 +7,7 @@
 
 import Charts
 import Defaults
-import Foundation
+import SwiftUI
 
 struct CurrentUser: Codable, Defaults.Serializable {
 	let firstName: String
@@ -69,6 +69,29 @@ enum Importance: String, Codable, CaseIterable, Identifiable, Plottable {
 				"zzz"
 			case .oneTime:
 				"1.circle"
+		}
+	}
+
+	var colour: Color {
+		switch self {
+			case .essential:
+				.yellow
+			case .leisure:
+				.red
+			case .investment:
+				.blue
+			case .reward:
+				.brown
+			case .emergency:
+				.purple
+			case .occasional:
+				.orange
+			case .dayJob:
+				.teal
+			case .passiveIncome:
+				.mint
+			case .oneTime:
+				.blue
 		}
 	}
 }

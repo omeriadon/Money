@@ -54,6 +54,9 @@ struct TransactionDetailView: View {
 					amount = abs(Double(t.change))
 					importance = t.importance
 				}
+				if let change = transaction?.change {
+					isPositive = change > 0.0
+				}
 			}
 			.toolbar {
 				if isNew {
@@ -80,7 +83,8 @@ struct TransactionDetailView: View {
 								title == transaction!.title &&
 								description == transaction!.desc &&
 								change == transaction!.change &&
-								importance == transaction!.importance)
+								importance == transaction!.importance) ||
+							change == 0.0
 					)
 					.buttonStyle(.glassProminent)
 					.buttonBorderShape(.circle)
