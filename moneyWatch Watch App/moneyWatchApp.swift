@@ -4,40 +4,40 @@ import SwiftUI
 
 @main
 struct moneyWatch_Watch_AppApp: App {
-	@StateObject private var session = WatchWatchSessionManager.shared
-	@StateObject private var networkManager = NetworkManager.shared
-	@StateObject private var repoHolder = RepoHolder()
+    @StateObject private var session = WatchWatchSessionManager.shared
+    @StateObject private var networkManager = NetworkManager.shared
+    @StateObject private var repoHolder = RepoHolder()
 
-	var body: some Scene {
-		WindowGroup {
-			ZStack {
-				if let repo = repoHolder.repo {
-					if session.hasToken {
-						ContentView()
-							.environmentObject(session)
-							.environmentObject(networkManager)
-							.environmentObject(repo)
-							.transition(.blurReplace)
-					} else {
-						ContentUnavailableView(
-							"No Token Saved",
-							systemImage: "key.shield",
-							description: Text("Sign in on your iPhone to create a token and use this app.")
-						)
-						.transition(.blurReplace)
-					}
-				}
-			}
-			.fontDesign(.monospaced)
-			.animation(.easeInOut, value: session.hasToken)
-			.task {
-				networkManager.token = TokenStore.shared.load()
-				if repoHolder.repo == nil {
-					repoHolder.repo = TransactionRepository(
-						network: networkManager
-					)
-				}
-			}
-		}
-	}
+    var body: some Scene {
+        WindowGroup {
+            ZStack {
+                if let repo = repoHolder.repo {
+                    if session.hasToken {
+                        ContentView()
+                            .environmentObject(session)
+                            .environmentObject(networkManager)
+                            .environmentObject(repo)
+                            .transition(.blurReplace)
+                    } else {
+                        ContentUnavailableView(
+                            "No Token Saved",
+                            systemImage: "key.shield",
+                            description: Text("Sign in on your iPhone to create a token and use this app.")
+                        )
+                        .transition(.blurReplace)
+                    }
+                }
+            }
+            .fontDesign(.monospaced)
+            .animation(.easeInOut, value: session.hasToken)
+            .task {
+                networkManager.token = TokenStore.shared.load()
+                if repoHolder.repo == nil {
+                    repoHolder.repo = TransactionRepository(
+                        network: networkManager
+                    )
+                }
+            }
+        }
+    }
 }
