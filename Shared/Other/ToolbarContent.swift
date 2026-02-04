@@ -24,6 +24,7 @@ var toolbarContent: some ToolbarContent {
 			)
 			.frame(width: 35, height: 35)
 		}
+		.padding(2)
 	}
 	#if os(iOS)
 	.sharedBackgroundVisibility(.hidden)

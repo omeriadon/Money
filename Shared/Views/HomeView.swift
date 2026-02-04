@@ -1,4 +1,14 @@
+//
+//  HomeView.swift
+//  Money
+//
+//  Created by Adon Omeri on 22/1/2026.
+//
 
+#if os(iOS)
+	import ColorfulX
+	import Glur
+#endif
 import SwiftUI
 
 struct HomeView: View {
@@ -13,6 +23,23 @@ struct HomeView: View {
 	@State private var showSuccess = false
 	@State private var errorMessage: String?
 	@State private var showAddTransaction = false
+
+	#if canImport(ColorfulX)
+		@State private var frameLimit: Int = 120
+		@State private var renderScale: Double = 1.0
+
+		@State private var positivePreset: ColorfulPreset = .summer
+		@State private var positiveSpeed: Double = 1.0
+		@State private var positiveBias: Double = 0.01
+		@State private var positiveNoise: Double = 20.0
+		@State private var positiveTransition: Double = 10
+
+		@State private var negativeColours: [Color] = [.red, .orange, .red, .red, .pink, .red]
+		@State private var negativeSpeed: Double = 1.0
+		@State private var negativeBias: Double = 0.01
+		@State private var negativeNoise: Double = 20.0
+		@State private var negativeTransition: Double = 10
+	#endif // canImport(ColorfulX)
 
 	var body: some View {
 		NavigationStack {
@@ -34,15 +61,40 @@ struct HomeView: View {
 			.containerBackground(total < 0 ? Color.red.gradient : Color.clear.gradient, for: .tabView)
 			.navigationTitle(Text("Money"))
 			#else
-			.containerBackground(total < 0 ? Color.red.gradient : Color.clear.gradient, for: .navigation)
+			.containerBackground(for: .navigation) {
+				if total < 0 {
+					ColorfulView(
+						color: $negativeColours,
+						speed: $negativeSpeed,
+						bias: $negativeBias,
+						noise: $negativeNoise,
+						transitionSpeed: $negativeTransition,
+						frameLimit: $frameLimit,
+						renderScale: $renderScale
+					)
+				} else {
+					ColorfulView(
+						color: $positivePreset,
+						speed: $positiveSpeed,
+						bias: $positiveBias,
+						noise: $positiveNoise,
+						transitionSpeed: $positiveTransition,
+						frameLimit: $frameLimit,
+						renderScale: $renderScale
+					)
+				}
+			}
 			#endif
 			.toolbar { toolbarContent }
 			.toolbar {
 				#if os(iOS)
 					ToolbarItem(placement: .title) {
 						Text("Money")
+							.padding(.horizontal, 8)
+							.padding(.vertical, 5)
+							.glassEffect(.regular.interactive())
 					}
-				#endif
+				#endif // os(iOS)
 
 				ToolbarItem(placement: isiPhone() == true ? .topBarTrailing : .bottomBar) {
 					Button {
@@ -85,5 +137,13 @@ struct HomeView: View {
 			isLoading = false
 			errorMessage = error.localizedDescription
 		}
+	}
+}
+
+struct HomeView_Previews: PreviewProvider {
+	static var previews: some View {
+		HomeView()
+			.environmentObject(TransactionRepository(network: NetworkManager.shared))
+			.monospaced()
 	}
 }

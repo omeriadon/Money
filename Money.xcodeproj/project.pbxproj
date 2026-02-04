@@ -12,6 +12,8 @@
 		A75630642F20FEB400AA3CA5 /* DefaultsMacros in Frameworks */ = {isa = PBXBuildFile; productRef = A75630632F20FEB400AA3CA5 /* DefaultsMacros */; };
 		A75630662F20FEBA00AA3CA5 /* DefaultsMacros in Frameworks */ = {isa = PBXBuildFile; productRef = A75630652F20FEBA00AA3CA5 /* DefaultsMacros */; };
 		A75824B52F20B4AE00ADCD20 /* moneyWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = A75824AB2F20B4AC00ADCD20 /* moneyWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A7B54CC12F3374B400910001 /* ColorfulX in Frameworks */ = {isa = PBXBuildFile; productRef = A7B54CC02F3374B400910001 /* ColorfulX */; };
+		A7B54CC62F337A2E00910001 /* Glur in Frameworks */ = {isa = PBXBuildFile; productRef = A7B54CC52F337A2E00910001 /* Glur */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +78,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				A756305F2F20FE0000AA3CA5 /* Defaults in Frameworks */,
+				A7B54CC12F3374B400910001 /* ColorfulX in Frameworks */,
+				A7B54CC62F337A2E00910001 /* Glur in Frameworks */,
 				A75630662F20FEBA00AA3CA5 /* DefaultsMacros in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -160,6 +164,8 @@
 			packageProductDependencies = (
 				A756305E2F20FE0000AA3CA5 /* Defaults */,
 				A75630652F20FEBA00AA3CA5 /* DefaultsMacros */,
+				A7B54CC02F3374B400910001 /* ColorfulX */,
+				A7B54CC52F337A2E00910001 /* Glur */,
 			);
 			productName = Money;
 			productReference = A7B9C9B72F1B905400529CE2 /* Money.app */;
@@ -194,6 +200,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				A756305D2F20FE0000AA3CA5 /* XCRemoteSwiftPackageReference "Defaults" */,
+				A7B54CBF2F3374B400910001 /* XCRemoteSwiftPackageReference "ColorfulX" */,
+				A7B54CC42F337A2E00910001 /* XCRemoteSwiftPackageReference "Glur" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A7B9C9B82F1B905400529CE2 /* Products */;
@@ -571,6 +579,22 @@
 				minimumVersion = 9.0.6;
 			};
 		};
+		A7B54CBF2F3374B400910001 /* XCRemoteSwiftPackageReference "ColorfulX" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Lakr233/ColorfulX";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.0.2;
+			};
+		};
+		A7B54CC42F337A2E00910001 /* XCRemoteSwiftPackageReference "Glur" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/joogps/Glur";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -593,6 +617,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A756305D2F20FE0000AA3CA5 /* XCRemoteSwiftPackageReference "Defaults" */;
 			productName = DefaultsMacros;
+		};
+		A7B54CC02F3374B400910001 /* ColorfulX */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A7B54CBF2F3374B400910001 /* XCRemoteSwiftPackageReference "ColorfulX" */;
+			productName = ColorfulX;
+		};
+		A7B54CC52F337A2E00910001 /* Glur */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A7B54CC42F337A2E00910001 /* XCRemoteSwiftPackageReference "Glur" */;
+			productName = Glur;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
