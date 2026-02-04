@@ -136,11 +136,11 @@ struct AnalyseView: View {
 
 	var selectedBalancePoint: BalancePoint? {
 		guard let rawSelectedDate else { return nil }
+		guard !cumulativeBalance.isEmpty else { return nil }
 
-		return cumulativeBalance.last {
-			calendar.isDate($0.date, equalTo: rawSelectedDate, toGranularity: .day)
-				|| $0.date < rawSelectedDate
-		}
+		return cumulativeBalance.min(by: {
+			abs($0.date.timeIntervalSince(rawSelectedDate)) < abs($1.date.timeIntervalSince(rawSelectedDate))
+		})
 	}
 
 	var selectedSlice: ImportanceSlice? {
@@ -186,29 +186,29 @@ struct AnalyseView: View {
 
 			BalanceHeader(
 				selected: selectedBalancePoint,
-				rangeDelta: rangeTotalChange
+				rangeDelta: rangeTotalChange,
+				transactions: transactionRepo.transactions
 			)
 
-			Chart(cumulativeBalance, id: \.id) { point in
-				if let selected = selectedBalancePoint,
-				   calendar.isDate(point.date, equalTo: selected.date, toGranularity: .day)
-				{
-					RuleMark(
-						x: .value("Selected", selected.date, unit: .day)
+			Chart {
+				ForEach(cumulativeBalance) { point in
+					LineMark(
+						x: .value("Date", point.date, unit: .day),
+						y: .value("Balance", point.balance)
 					)
-					.foregroundStyle(.accent)
-					.offset(yStart: -10)
-					.zIndex(-1)
 				}
-
-				LineMark(
-					x: .value("Date", point.date, unit: .day),
-					y: .value("Balance", point.balance)
-				)
-				.zIndex(1)
 				.lineStyle(StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round))
 				.foregroundStyle(chartGradient)
 				.interpolationMethod(.stepEnd)
+
+				if let selected = selectedBalancePoint {
+					RuleMark(
+						x: .value("Selected", selected.date, unit: .day)
+					)
+					.lineStyle(StrokeStyle(lineWidth: 4))
+					.foregroundStyle(Color.gray.opacity(0.3))
+					.zIndex(-1)
+				}
 			}
 			.chartXSelection(value: $rawSelectedDate)
 			.if(selectedRange.seconds != nil) { chart in
@@ -361,27 +361,42 @@ struct AnalyseView: View {
 struct BalanceHeader: View {
 	let selected: BalancePoint?
 	let rangeDelta: Double
+	let transactions: [Transaction]
+
+	private var selectedDayTransactions: [Transaction] {
+		guard let selected else { return [] }
+		return transactions.filter { Calendar.current.isDate($0.dateCreated, inSameDayAs: selected.date) }
+	}
 
 	var body: some View {
-		VStack(alignment: .leading, spacing: 4) {
-			if let selected {
-				Text(selected.date, style: .date)
+		HStack {
+			Text(selected != nil ?
+				selected!.balance.formatted(.currency(code: "AUD")) :
+				rangeDelta.formatted(.currency(code: "AUD"))
+			)
+			.contentTransition(.numericText())
+			.font(.largeTitle.bold())
+			.foregroundStyle((selected?.balance ?? 0) >= 0 ? .green : .red)
+
+			Spacer()
+
+			VStack(alignment: .trailing) {
+				Text(selected != nil ? "\(selected!.date, style: .date)" : "Total")
+					.contentTransition(.numericText())
 					.font(.caption)
 					.foregroundStyle(.secondary)
 
-				Text(selected.balance, format: .currency(code: "AUD"))
-					.font(.title.bold())
-					.foregroundStyle(selected.balance > 0 ? .green : .red)
-			} else {
-				Text("Total")
+				Text(!selectedDayTransactions.isEmpty ?
+					"\(selectedDayTransactions.count) transaction\(selectedDayTransactions.count == 1 ? "" : "s")" :
+					"")
+					.contentTransition(.numericText())
 					.font(.caption)
-					.foregroundStyle(.secondary)
-
-				Text(rangeDelta, format: .currency(code: "AUD"))
-					.font(.title.bold())
+					.foregroundStyle(!selectedDayTransactions.isEmpty ? .secondary : .primary)
+					.transition(.opacity)
 			}
 		}
 		.padding(.horizontal)
+		.animation(.easeInOut, value: selected?.date)
 	}
 }
 
