@@ -1,8 +1,35 @@
+<img width="324" alt="AppIcon-iOS-Default-1024x1024@1x" src="https://github.com/user-attachments/assets/b2935300-3021-45c4-928c-7ecdc3dca1f1" />
+
 # Money
 
-Track money | Analyse expenses | Budget better | watchOS support
+iOS 26+ - watchOS 26+
 
-For FlavorTown
+<br/>
+
+- Track money
+- Analyse expenses
+- Budget better
+- watchOS support
+
+<br/>
+
+## Technology
+
+- SwiftUI
+- UIKit for some iPhone or watch-specific features
+- ChartKit to add a chart to analyse money usage
+
+## Backend
+
+I'm especially proud of this app because I run and manage the server for this app, my first full stack app.
+The server is at [omeriadon/moneyServer](https://github.com/omeriadon/moneyServer).
+It uses Vapor to host a Swift server, which makes easier because they are the same language, so I can jsut copy over structs and types and have them in sync better.
+
+<br/>
+
+> For FlavorTown (GitHub hackathon for young coders)
+
+<br/>
 
 <img width="220" alt="IMG_0335" src="https://github.com/user-attachments/assets/043b76a6-6a41-4a37-baad-63eb4828e8b5" />
 <img width="220" alt="IMG_0334" src="https://github.com/user-attachments/assets/d5f6b031-8d27-4328-a292-e49f6a587fa1" />
