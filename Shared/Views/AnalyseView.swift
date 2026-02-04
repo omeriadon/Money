@@ -118,15 +118,8 @@ struct AnalyseView: View {
 		}
 	}
 
-	var rangeTotalChange: Double {
-		guard let seconds = selectedRange.seconds else {
-			return transactionRepo.transactions.reduce(0) { $0 + $1.change }
-		}
-
-		let cutoff = Date().addingTimeInterval(-Double(seconds))
-		return transactionRepo.transactions
-			.filter { $0.dateCreated >= cutoff }
-			.reduce(0) { $0 + $1.change }
+	var currentBalance: Double {
+		transactionRepo.transactions.reduce(0) { $0 + $1.change }
 	}
 
 	@State private var selectedRange: TimeRange = .month
@@ -186,7 +179,7 @@ struct AnalyseView: View {
 
 			BalanceHeader(
 				selected: selectedBalancePoint,
-				rangeDelta: rangeTotalChange,
+				currentBalance: currentBalance,
 				transactions: transactionRepo.transactions
 			)
 
@@ -360,7 +353,7 @@ struct AnalyseView: View {
 
 struct BalanceHeader: View {
 	let selected: BalancePoint?
-	let rangeDelta: Double
+	let currentBalance: Double
 	let transactions: [Transaction]
 
 	private var selectedDayTransactions: [Transaction] {
@@ -372,16 +365,16 @@ struct BalanceHeader: View {
 		HStack {
 			Text(selected != nil ?
 				selected!.balance.formatted(.currency(code: "AUD")) :
-				rangeDelta.formatted(.currency(code: "AUD"))
+				currentBalance.formatted(.currency(code: "AUD"))
 			)
 			.contentTransition(.numericText())
 			.font(.largeTitle.bold())
-			.foregroundStyle((selected?.balance ?? 0) >= 0 ? .green : .red)
+			.foregroundStyle((selected?.balance ?? currentBalance) >= 0 ? .green : .red)
 
 			Spacer()
 
 			VStack(alignment: .trailing) {
-				Text(selected != nil ? "\(selected!.date, style: .date)" : "Total")
+				Text(selected != nil ? "\(selected!.date, style: .date)" : "Current")
 					.contentTransition(.numericText())
 					.font(.caption)
 					.foregroundStyle(.secondary)
