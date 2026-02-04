@@ -7,7 +7,16 @@ final class NetworkManager: ObservableObject {
 	static let shared = NetworkManager()
 
 	@Published var token: String? {
-		didSet { Defaults[.userToken] = token }
+		didSet {
+			Defaults[.userToken] = token
+			#if os(iOS)
+				if let token {
+					iPhoneWatchSessionManager.shared.sendAuthToken(token)
+				} else {
+					iPhoneWatchSessionManager.shared.sendLogout()
+				}
+			#endif // os(iOS)
+		}
 	}
 
 	@Published var email: String? {
@@ -93,13 +102,8 @@ final class NetworkManager: ObservableObject {
 
 			let decoded = try JSONDecoder().decode(UserLoginResponse.self, from: data)
 
-			iPhoneWatchSessionManager.shared.sendAuthToken(decoded.token)
+			token = decoded.token
 
-			Task {
-				// SO THAT THE SUCCESS ANIMATIONS PLAYS NICELY
-				try await Task.sleep(nanoseconds: 1_000_000_000)
-				token = decoded.token
-			}
 			self.email = decoded.user.email
 			firstName = decoded.user.firstName
 		}
@@ -137,13 +141,8 @@ final class NetworkManager: ObservableObject {
 
 			let decoded = try JSONDecoder().decode(UserLoginResponse.self, from: data)
 
-			iPhoneWatchSessionManager.shared.sendAuthToken(decoded.token)
+			token = decoded.token
 
-			Task {
-				// SO THAT THE SUCCESS ANIMATIONS PLAYS NICELY
-				try await Task.sleep(nanoseconds: 1_000_000_000)
-				token = decoded.token
-			}
 			self.email = decoded.user.email
 			self.firstName = decoded.user.firstName
 		}
@@ -240,9 +239,9 @@ final class NetworkManager: ObservableObject {
 			throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: message])
 		}
 
-		print(data.base64EncodedString())
 		let decoder = JSONDecoder()
 		decoder.dateDecodingStrategy = .iso8601
+
 		return try decoder.decode(TransactionDTO.self, from: data)
 	}
 
@@ -312,8 +311,6 @@ final class NetworkManager: ObservableObject {
 				throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to log out"])
 			}
 
-			iPhoneWatchSessionManager.shared.sendLogout()
-
 			self.token = nil
 			email = nil
 			firstName = nil
@@ -341,8 +338,6 @@ final class NetworkManager: ObservableObject {
 				throw NSError(domain: "", code: 0,
 				              userInfo: [NSLocalizedDescriptionKey: "Failed to delete user"])
 			}
-
-			iPhoneWatchSessionManager.shared.sendLogout()
 
 			self.token = nil
 			email = nil

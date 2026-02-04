@@ -12,7 +12,7 @@ struct moneyWatch_Watch_AppApp: App {
 		WindowGroup {
 			ZStack {
 				if let repo = repoHolder.repo {
-					if session.hasToken {
+					if networkManager.token != nil {
 						ContentView()
 							.environmentObject(session)
 							.environmentObject(networkManager)
@@ -29,14 +29,15 @@ struct moneyWatch_Watch_AppApp: App {
 				}
 			}
 			.fontDesign(.monospaced)
-			.animation(.easeInOut, value: session.hasToken)
+			.animation(.easeInOut, value: networkManager.token)
 			.task {
-				networkManager.token = TokenStore.shared.load()
+				session.configure(networkManager: networkManager)
 				if repoHolder.repo == nil {
 					repoHolder.repo = TransactionRepository(
 						network: networkManager
 					)
 				}
+				session.refresh()
 			}
 		}
 	}
