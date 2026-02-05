@@ -5,6 +5,7 @@
 //  Created by Adon Omeri on 19/1/2026.
 //
 
+import Defaults
 import SwiftUI
 
 struct SettingsView: View {
@@ -24,6 +25,8 @@ struct SettingsView: View {
 
 	@State private var isSaving = false
 	@State private var saveSuccess = false
+
+	@Default(.useNewGradient) var useNewGradient
 
 	var body: some View {
 		NavigationStack {
@@ -77,6 +80,10 @@ struct SettingsView: View {
 				}
 				.task {
 					await transactionRepo.network.refreshCurrentUser()
+				}
+
+				Section {
+					Toggle("Use New Gradient on Home Screen", isOn: $useNewGradient)
 				}
 
 				Section("Danger Zone") {

@@ -27,9 +27,13 @@ struct RefreshButton: View {
 				ProgressView()
 					.transition(.blurReplace)
 			} else {
-				Image(systemName: iconName)
-					.contentTransition(.symbolEffect(.replace))
-					.transition(.blurReplace)
+				if showSuccess {
+					Image(systemName: "checkmark")
+						.transition(.blurReplace)
+				} else {
+					Image(systemName: "arrow.triangle.2.circlepath")
+						.transition(.blurReplace)
+				}
 			}
 		}
 		.animation(.easeInOut, value: "\(isLoading)\(showSuccess)")

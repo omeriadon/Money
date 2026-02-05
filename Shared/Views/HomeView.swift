@@ -9,6 +9,7 @@
 	import ColorfulX
 	import Glur
 #endif
+import Defaults
 import SwiftUI
 
 struct HomeView: View {
@@ -17,6 +18,8 @@ struct HomeView: View {
 	var total: Double {
 		transactionRepo.transactions.reduce(0) { $0 + $1.change }
 	}
+
+	@Default(.useNewGradient) var useNewGradient
 
 	@State private var didSyncOnce = false
 	@State private var isLoading = false
@@ -62,26 +65,40 @@ struct HomeView: View {
 			.navigationTitle(Text("Money"))
 			#else
 			.containerBackground(for: .navigation) {
-				if total < 0 {
-					ColorfulView(
-						color: $negativeColours,
-						speed: $negativeSpeed,
-						bias: $negativeBias,
-						noise: $negativeNoise,
-						transitionSpeed: $negativeTransition,
-						frameLimit: $frameLimit,
-						renderScale: $renderScale
-					)
+				if useNewGradient {
+					if total < 0 {
+						ColorfulView(
+							color: $negativeColours,
+							speed: $negativeSpeed,
+							bias: $negativeBias,
+							noise: $negativeNoise,
+							transitionSpeed: $negativeTransition,
+							frameLimit: $frameLimit,
+							renderScale: $renderScale
+						)
+					} else {
+						ColorfulView(
+							color: $positivePreset,
+							speed: $positiveSpeed,
+							bias: $positiveBias,
+							noise: $positiveNoise,
+							transitionSpeed: $positiveTransition,
+							frameLimit: $frameLimit,
+							renderScale: $renderScale
+						)
+					}
 				} else {
-					ColorfulView(
-						color: $positivePreset,
-						speed: $positiveSpeed,
-						bias: $positiveBias,
-						noise: $positiveNoise,
-						transitionSpeed: $positiveTransition,
-						frameLimit: $frameLimit,
-						renderScale: $renderScale
-					)
+					Group {
+						if total < 0 {
+							LinearGradient(
+								colors: [.red, .red.opacity(0.4)],
+								startPoint: .top,
+								endPoint: .bottom
+							)
+						} else {
+							Color.clear
+						}
+					}
 				}
 			}
 			#endif
@@ -96,6 +113,16 @@ struct HomeView: View {
 					}
 				#endif // os(iOS)
 
+				ToolbarItem(placement: .topBarTrailing) {
+					RefreshButton(isLoading: $isLoading, showSuccess: $showSuccess) {
+						await refresh()
+					}
+				}
+
+				#if os(iOS)
+					ToolbarSpacer(.fixed, placement: .topBarTrailing)
+				#endif
+
 				ToolbarItem(placement: isiPhone() == true ? .topBarTrailing : .bottomBar) {
 					Button {
 						showAddTransaction = true
@@ -104,16 +131,6 @@ struct HomeView: View {
 					}
 					.buttonStyle(.glassProminent)
 					.foregroundStyle(.black)
-				}
-
-				#if os(iOS)
-					ToolbarSpacer(.fixed, placement: .topBarTrailing)
-				#endif
-
-				ToolbarItem(placement: .topBarTrailing) {
-					RefreshButton(isLoading: $isLoading, showSuccess: $showSuccess) {
-						await refresh()
-					}
 				}
 			}
 			.sheet(isPresented: $showAddTransaction) {

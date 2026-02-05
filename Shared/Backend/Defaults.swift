@@ -13,4 +13,6 @@ extension Defaults.Keys {
 	static let userEmail = Key<String?>("userEmail", default: nil)
 	static let userFirstName = Key<String?>("userFirstName", default: nil)
 	static let transactions = Key<[Transaction]>("transactions", default: [])
+
+	static let useNewGradient = Key<Bool>("useNewGradient", default: true)
 }
