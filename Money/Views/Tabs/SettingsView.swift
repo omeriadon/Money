@@ -83,7 +83,10 @@ struct SettingsView: View {
 				}
 
 				Section {
-					Toggle("Use New Gradient on Home Screen", isOn: $useNewGradient)
+					Toggle(isOn: $useNewGradient) {
+						Text("Use animated background")
+						Text("Uses a shader instead of colour gradient on home screen.")
+					}
 				}
 
 				Section("Danger Zone") {

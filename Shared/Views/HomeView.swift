@@ -62,7 +62,6 @@ struct HomeView: View {
 			}
 			#if !os(iOS)
 			.containerBackground(total < 0 ? Color.red.gradient : Color.clear.gradient, for: .tabView)
-			.navigationTitle(Text("Money"))
 			#else
 			.containerBackground(for: .navigation) {
 				if useNewGradient {
@@ -104,15 +103,6 @@ struct HomeView: View {
 			#endif
 			.toolbar { toolbarContent }
 			.toolbar {
-				#if os(iOS)
-					ToolbarItem(placement: .title) {
-						Text("Money")
-							.padding(.horizontal, 8)
-							.padding(.vertical, 5)
-							.glassEffect(.regular.interactive())
-					}
-				#endif // os(iOS)
-
 				ToolbarItem(placement: .topBarTrailing) {
 					RefreshButton(isLoading: $isLoading, showSuccess: $showSuccess) {
 						await refresh()
