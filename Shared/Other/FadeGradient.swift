@@ -9,16 +9,17 @@ import SwiftUI
 
 enum FadeGradient {
 	static let stops: [Gradient.Stop] = {
-		let start: CGFloat = 0.5
-		let steps = 20
-		let gamma: CGFloat = 1
+		let steps = 30
+		let maxOpacity: CGFloat = 0.8
 
 		return (0 ... steps).map { i in
 			let t = CGFloat(i) / CGFloat(steps)
-			let curved = pow(1 - t, gamma)
+			let eased = t < 0.5
+				? 4 * t * t * t
+				: 1 - pow(-2 * t + 2, 3) / 2
 			return .init(
-				color: .black.opacity(0.8 * curved),
-				location: start + t * (1 - start)
+				color: .black.opacity(maxOpacity * (1 - eased)),
+				location: t
 			)
 		}
 	}()
