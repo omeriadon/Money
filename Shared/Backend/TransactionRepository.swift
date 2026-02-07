@@ -4,10 +4,10 @@ import Foundation
 
 @MainActor
 final class TransactionRepository: ObservableObject {
-	// Backing store (unsorted, single mutation point)
+	/// Backing store (unsorted, single mutation point)
 	@Published private var _transactions: [Transaction] = Defaults[.transactions]
 
-	// Public view: always newest first
+	/// Public view: always newest first
 	var transactions: [Transaction] {
 		_transactions.sorted { $0.dateCreated > $1.dateCreated }
 	}

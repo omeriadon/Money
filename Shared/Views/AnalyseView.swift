@@ -11,7 +11,9 @@ import SwiftUI
 struct BalancePoint: Identifiable {
 	let date: Date
 	let balance: Double
-	var id: Date { date }
+	var id: Date {
+		date
+	}
 }
 
 struct ImportanceSlice: Identifiable, Equatable {
@@ -162,7 +164,6 @@ struct AnalyseView: View {
 		}
 	}
 
-	@ViewBuilder
 	var totalOverTime: some View {
 		VStack(alignment: .leading, spacing: 12) {
 			Picker("Range", selection: $selectedRange) {
@@ -220,7 +221,6 @@ struct AnalyseView: View {
 		.padding(.bottom, 32)
 	}
 
-	@ViewBuilder
 	var differentTypes: some View {
 		VStack(alignment: .leading, spacing: 12) {
 			Picker("Type", selection: $selectedPieChart) {
@@ -345,7 +345,10 @@ struct AnalyseView: View {
 	}
 
 	enum AnalyseTabItem: String, Identifiable, CaseIterable {
-		var id: String { rawValue }
+		var id: String {
+			rawValue
+		}
+
 		case tot
 		case dt
 	}
@@ -365,11 +368,10 @@ struct BalanceHeader: View {
 		HStack {
 			Text(selected != nil ?
 				selected!.balance.formatted(.currency(code: "AUD")) :
-				currentBalance.formatted(.currency(code: "AUD"))
-			)
-			.contentTransition(.numericText())
-			.font(.largeTitle.bold())
-			.foregroundStyle((selected?.balance ?? currentBalance) >= 0 ? .green : .red)
+				currentBalance.formatted(.currency(code: "AUD")))
+				.contentTransition(.numericText())
+				.font(.largeTitle.bold())
+				.foregroundStyle((selected?.balance ?? currentBalance) >= 0 ? .green : .red)
 
 			Spacer()
 
@@ -394,13 +396,18 @@ struct BalanceHeader: View {
 }
 
 enum TypeOfPieChart: String, CaseIterable, Identifiable {
-	var id: String { rawValue }
+	var id: String {
+		rawValue
+	}
+
 	case count = "Amount of Transactions"
 	case total = "Total Transaction Cost"
 }
 
 enum TimeRange: String, CaseIterable, Identifiable {
-	var id: String { rawValue }
+	var id: String {
+		rawValue
+	}
 
 	case week = "1W"
 	case month = "1M"

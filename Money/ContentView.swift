@@ -3,19 +3,24 @@ import SwiftUI
 struct ContentView: View {
 	@EnvironmentObject var transactionRepo: TransactionRepository
 
-	@State var currentTab = TabItem.home
+	@State var currentTab = TabItem.home.title
 
 	let generator = UIImpactFeedbackGenerator(style: .medium)
 
 	var body: some View {
 		TabView(selection: $currentTab) {
 			ForEach(TabItem.allCases) { tab in
-				Tab(value: tab) {
+				Tab(value: tab.title) {
 					tab.view
 				} label: {
 					Label(tab.title, systemImage: tab.symbol)
-						.fontDesign(.monospaced)
 				}
+			}
+
+			Tab(value: "Search", role: .search) {
+				ListView()
+			} label: {
+				Label("Transactions", systemImage: "mail.stack")
 			}
 		}
 
@@ -33,16 +38,16 @@ struct ContentView: View {
 }
 
 enum TabItem: CaseIterable, Identifiable {
-	case home, list, analyse, settings
+	case home, analyse, settings
 
-	var id: String { title }
+	var id: String {
+		title
+	}
 
 	var title: String {
 		switch self {
 			case .home:
 				"Money"
-			case .list:
-				"Transactions"
 			case .settings:
 				"Settings"
 			case .analyse:
@@ -55,8 +60,6 @@ enum TabItem: CaseIterable, Identifiable {
 		switch self {
 			case .home:
 				HomeView()
-			case .list:
-				ListView()
 			case .settings:
 				SettingsView()
 			case .analyse:
@@ -68,8 +71,6 @@ enum TabItem: CaseIterable, Identifiable {
 		switch self {
 			case .home:
 				"house"
-			case .list:
-				"mail.stack"
 			case .settings:
 				"gearshape"
 			case .analyse:

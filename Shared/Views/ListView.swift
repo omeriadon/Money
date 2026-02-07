@@ -1,4 +1,12 @@
-
+//
+//  ListView.swift
+//  Money
+//
+//  Created by Adon Omeri on 22/1/2026.
+//
+#if canImport(Glur)
+	import Glur
+#endif
 import SwiftUI
 
 struct ListView: View {
@@ -7,16 +15,31 @@ struct ListView: View {
 	@State private var isLoading = false
 	@State private var showSuccess = false
 	@State private var errorMessage: String?
+	@State private var searchText = ""
+
+	@State private var keyboardVisible = false
+
+	private var filteredTransactions: [Transaction] {
+		if searchText.isEmpty {
+			return transactionRepo.transactions
+		}
+		return transactionRepo.transactions.filter { transaction in
+			transaction.title.localizedCaseInsensitiveContains(searchText)
+		}
+	}
 
 	var body: some View {
 		NavigationStack {
 			ZStack {
-				if transactionRepo.transactions.isEmpty {
-					ContentUnavailableView("No Transactions", systemImage: "camera.metering.none")
-						.transition(.blurReplace)
+				if filteredTransactions.isEmpty {
+					ContentUnavailableView(
+						searchText.isEmpty ? "No Transactions" : "No Results",
+						systemImage: searchText.isEmpty ? "camera.metering.none" : "magnifyingglass"
+					)
+					.transition(.blurReplace)
 				} else {
 					List {
-						ForEach(transactionRepo.transactions) { transaction in
+						ForEach(filteredTransactions) { transaction in
 							NavigationLink {
 								TransactionDetailView(
 									isNew: false,
@@ -44,7 +67,7 @@ struct ListView: View {
 							.transition(.blurReplace)
 						}
 						.onDelete { indexSet in
-							let ids = indexSet.map { transactionRepo.transactions[$0].id }
+							let ids = indexSet.map { filteredTransactions[$0].id }
 
 							Task {
 								do {
@@ -55,10 +78,12 @@ struct ListView: View {
 							}
 						}
 					}
+					.animation(.easeInOut, value: filteredTransactions.count)
+					.searchable(text: $searchText, prompt: "Search transactions")
 					.transition(.blurReplace)
 				}
 			}
-			.animation(.easeInOut, value: transactionRepo.transactions.isEmpty)
+			.animation(.easeInOut, value: filteredTransactions.isEmpty)
 			.toolbar { toolbarContent }
 			.toolbar {
 				#if os(iOS)
@@ -80,7 +105,23 @@ struct ListView: View {
 					}
 				}
 			}
+			.animation(.easeInOut, value: keyboardVisible)
 		}
+		#if os(iOS)
+		.overlay(alignment: .top) {
+			if keyboardVisible {
+				VariableBlurView(maxBlurRadius: 3, direction: .blurredTopClearBottom)
+					.frame(height: 60)
+					.ignoresSafeArea()
+			}
+		}
+		.onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+			keyboardVisible = true
+		}
+		.onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+			keyboardVisible = false
+		}
+		#endif // os(iOS)
 	}
 
 	private func refresh() async {

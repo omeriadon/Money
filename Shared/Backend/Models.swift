@@ -20,7 +20,9 @@ enum Importance: String, Codable, CaseIterable, Identifiable, Plottable {
 
 	case dayJob, passiveIncome, oneTime
 
-	var id: String { rawValue }
+	var id: String {
+		rawValue
+	}
 
 	static let negative: [Importance] = [.essential, .leisure, .investment, .reward, .emergency, .occasional]
 
