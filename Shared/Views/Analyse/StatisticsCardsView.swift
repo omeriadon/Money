@@ -194,7 +194,7 @@ struct StatCard: View {
 			Spacer(minLength: 0)
 
 			Text(title)
-				.font(.caption)
+				.font(.caption2)
 				.foregroundStyle(.secondary)
 
 			Text(value)
