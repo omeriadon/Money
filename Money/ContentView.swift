@@ -23,7 +23,6 @@ struct ContentView: View {
 				Label("Transactions", systemImage: "mail.stack")
 			}
 		}
-
 		.onChange(of: currentTab) {
 			generator.impactOccurred(intensity: 1)
 			generator.prepare()
@@ -74,7 +73,7 @@ enum TabItem: CaseIterable, Identifiable {
 			case .settings:
 				"gearshape"
 			case .analyse:
-				"magnifyingglass"
+				"chart.xyaxis.line"
 		}
 	}
 }
