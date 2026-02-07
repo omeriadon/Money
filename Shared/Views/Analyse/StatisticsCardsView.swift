@@ -105,13 +105,13 @@ struct StatisticsCardsView: View {
 			StatCardData(
 				title: "Highest Gain",
 				value: highestGain.formatted(.currency(code: "AUD")),
-				icon: "arrow.up.right.circle.fill",
+				icon: "plus.circle.fill",
 				color: .green
 			),
 			StatCardData(
 				title: "Highest Loss",
 				value: highestLoss.formatted(.currency(code: "AUD")),
-				icon: "arrow.down.right.circle.fill",
+				icon: "minus.circle.fill",
 				color: .red
 			),
 			StatCardData(
@@ -129,13 +129,13 @@ struct StatisticsCardsView: View {
 			StatCardData(
 				title: "Total Gains",
 				value: "\(gainsCount)",
-				icon: "arrow.up.circle.fill",
+				icon: "arrow.up.right.circle.fill",
 				color: .green
 			),
 			StatCardData(
 				title: "Total Losses",
 				value: "\(lossesCount)",
-				icon: "arrow.down.circle.fill",
+				icon: "arrow.down.right.circle.fill",
 				color: .red
 			),
 		]
@@ -183,33 +183,27 @@ struct StatCard: View {
 	let color: Color
 
 	var body: some View {
-		VStack(alignment: .leading, spacing: 8) {
+		VStack(alignment: .leading, spacing: 5) {
 			HStack {
 				Image(systemName: icon)
-					.font(.title2)
+					.font(.title)
 					.foregroundStyle(color)
 				Spacer()
 			}
 
-			Spacer()
+			Spacer(minLength: 0)
 
 			Text(title)
 				.font(.caption)
 				.foregroundStyle(.secondary)
-				.lineLimit(1)
 
 			Text(value)
-				.font(.title3.bold())
+				.font(.title2.bold())
 				.foregroundStyle(.primary)
 				.lineLimit(1)
-				.minimumScaleFactor(0.5)
 		}
 		.padding()
 		.frame(maxWidth: .infinity, maxHeight: .infinity)
-		#if os(iOS)
-			.glassEffect(.clear.tint(color.opacity(0.3)).interactive(), in: RoundedRectangle(cornerRadius: 16))
-		#else
-			.background(color.opacity(0.1), in: RoundedRectangle(cornerRadius: 16))
-		#endif
+		.glassEffect(.clear.tint(color.opacity(0.3)).interactive(), in: RoundedRectangle(cornerRadius: 30))
 	}
 }
