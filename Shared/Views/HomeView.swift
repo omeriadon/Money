@@ -49,7 +49,9 @@ struct HomeView: View {
 			VStack {
 				Text(total.formatted(.currency(code: "AUD")))
 					.foregroundStyle(.white)
+				#if os(iOS)
 					.padding(.horizontal)
+				#endif
 					.font(.system(size: 300))
 					.lineLimit(1)
 					.minimumScaleFactor(0.01)

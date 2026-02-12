@@ -31,14 +31,19 @@ struct ListView: View {
 	var body: some View {
 		NavigationStack {
 			ZStack {
-				if filteredTransactions.isEmpty {
-					ContentUnavailableView(
-						searchText.isEmpty ? "No Transactions" : "No Results",
-						systemImage: searchText.isEmpty ? "camera.metering.none" : "magnifyingglass"
-					)
-					.transition(.blurReplace)
-				} else {
-					List {
+				List {
+					if filteredTransactions.isEmpty {
+						HStack {
+							Spacer()
+							ContentUnavailableView(
+								searchText.isEmpty ? "No Transactions" : "No Results",
+								systemImage: searchText.isEmpty ? "camera.metering.none" : "magnifyingglass"
+							)
+							Spacer()
+						}
+						.listRowBackground(Color.clear)
+						.transition(.blurReplace)
+					} else {
 						ForEach(filteredTransactions) { transaction in
 							NavigationLink {
 								TransactionDetailView(
@@ -78,16 +83,16 @@ struct ListView: View {
 							}
 						}
 					}
-					.refreshable {
-						Task {
-							await refresh()
-						}
-					}
-					.animation(.easeInOut, value: filteredTransactions.count)
-					.transition(.blurReplace)
 				}
+				.refreshable {
+					Task {
+						await refresh()
+					}
+				}
+				.animation(.easeInOut, value: filteredTransactions.count)
+				.transition(.blurReplace)
 			}
-			.searchable(text: $searchText, prompt: "Search transactions")
+			.searchable(text: $searchText, prompt: isiPhone() ? "Search transactions" : "Search")
 			.animation(.easeInOut, value: filteredTransactions.isEmpty)
 			.toolbar { toolbarContent }
 			.toolbar {
