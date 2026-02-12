@@ -4,10 +4,8 @@ import Foundation
 
 @MainActor
 final class TransactionRepository: ObservableObject {
-	/// Backing store (unsorted, single mutation point)
 	@Published private var _transactions: [Transaction] = Defaults[.transactions]
 
-	/// Public view: always newest first
 	var transactions: [Transaction] {
 		_transactions.sorted { $0.dateCreated > $1.dateCreated }
 	}
@@ -28,22 +26,16 @@ final class TransactionRepository: ObservableObject {
 	func syncTransactions() async throws {
 		let remote = try await network.fetchTransactions()
 
-		for r in remote {
-			let t = Transaction(
-				id: r.id,
-				change: r.change,
-				title: r.title,
-				desc: r.description,
-				importance: r.importance,
-				dateCreated: r.dateCreated,
-				dateUpdated: r.dateUpdated
+		_transactions = remote.map {
+			Transaction(
+				id: $0.id,
+				change: $0.change,
+				title: $0.title,
+				desc: $0.description,
+				importance: $0.importance,
+				dateCreated: $0.dateCreated,
+				dateUpdated: $0.dateUpdated
 			)
-
-			if let index = _transactions.firstIndex(where: { $0.id == r.id }) {
-				_transactions[index] = t
-			} else {
-				_transactions.append(t)
-			}
 		}
 
 		Defaults[.transactions] = _transactions
@@ -62,22 +54,16 @@ final class TransactionRepository: ObservableObject {
 			importance: importance
 		)
 
-		for r in remote {
-			let t = Transaction(
-				id: r.id,
-				change: r.change,
-				title: r.title,
-				desc: r.description,
-				importance: r.importance,
-				dateCreated: r.dateCreated,
-				dateUpdated: r.dateUpdated
+		_transactions = remote.map {
+			Transaction(
+				id: $0.id,
+				change: $0.change,
+				title: $0.title,
+				desc: $0.description,
+				importance: $0.importance,
+				dateCreated: $0.dateCreated,
+				dateUpdated: $0.dateUpdated
 			)
-
-			if let index = _transactions.firstIndex(where: { $0.id == r.id }) {
-				_transactions[index] = t
-			} else {
-				_transactions.append(t)
-			}
 		}
 
 		Defaults[.transactions] = _transactions
@@ -112,7 +98,20 @@ final class TransactionRepository: ObservableObject {
 
 	func delete(ids: [UUID]) async throws {
 		_transactions.removeAll { ids.contains($0.id) }
-		_ = try await network.deleteTransactions(ids: ids)
+		Defaults[.transactions] = _transactions
+
+		let remaining = try await network.deleteTransactions(ids: ids)
+		_transactions = remaining.map {
+			Transaction(
+				id: $0.id,
+				change: $0.change,
+				title: $0.title,
+				desc: $0.description,
+				importance: $0.importance,
+				dateCreated: $0.dateCreated,
+				dateUpdated: $0.dateUpdated
+			)
+		}
 		Defaults[.transactions] = _transactions
 	}
 
