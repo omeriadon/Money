@@ -4,6 +4,7 @@ import SwiftUI
 struct TransactionDetailView: View {
 	@EnvironmentObject var networkManager: NetworkManager
 	@EnvironmentObject var transactionRepo: TransactionRepository
+	@Environment(\.colorScheme) var colorScheme
 
 	@Environment(\.dismiss) private var dismiss
 
@@ -109,7 +110,7 @@ struct TransactionDetailView: View {
 		.onChange(of: isPositive) { updateChange() }
 		#if os(iOS)
 			.pickerStyle(.segmented)
-			.controlSize(.large)
+			.controlSize(.extraLarge)
 			.font(.largeTitle)
 
 		#else
@@ -131,6 +132,8 @@ struct TransactionDetailView: View {
 		#if os(iOS)
 			.frame(maxWidth: 150)
 			.padding(5)
+			.controlSize(.extraLarge)
+			.foregroundStyle(.white)
 			.font(.title)
 			.glassEffect(.clear.tint(isPositive ? .green : .red).interactive(), in: RoundedRectangle(cornerRadius: 30))
 			.keyboardType(.numberPad)
@@ -142,10 +145,7 @@ struct TransactionDetailView: View {
 		#endif
 	}
 
-	@ViewBuilder
 	var iPhoneHeader: some View {
-		HStack(alignment: .center) {}
-
 		HStack {
 			picker
 			Spacer()
@@ -157,11 +157,11 @@ struct TransactionDetailView: View {
 
 	@ViewBuilder
 	var form: some View {
-		if isiPhone() {
+		#if os(iOS)
 			iPhoneHeader
-		}
+		#endif
 
-		Form {
+		List {
 			if !isiPhone() {
 				Section {
 					picker
@@ -177,10 +177,16 @@ struct TransactionDetailView: View {
 				TextField("Title", text: $title)
 					.focused($focusedField, equals: .title)
 					.onSubmit { focusedField = .description }
+				#if os(iOS)
+					.listRowBackground(Color(uiColor: .quaternarySystemFill))
+				#endif
 
 				TextField("Description", text: $description)
 					.focused($focusedField, equals: .description)
 					.onSubmit { focusedField = .amount }
+				#if os(iOS)
+					.listRowBackground(Color(uiColor: .quaternarySystemFill))
+				#endif
 
 				Picker("Importance", selection: $importance) {
 					if isPositive {
@@ -213,20 +219,30 @@ struct TransactionDetailView: View {
 							}
 						}
 					}
+				#if os(iOS)
+					.listRowBackground(Color(uiColor: .quaternarySystemFill))
+				#endif
 			}
 			if let dateCreated = transaction?.dateCreated {
 				Section("Created") {
 					Text(dateCreated, format: .dateTime.minute().hour().day().month().year())
+					#if os(iOS)
+						.listRowBackground(Color(uiColor: .quaternarySystemFill))
+					#endif
 				}
 			}
 			if let dateUpdated = transaction?.dateUpdated {
 				if dateUpdated != transaction?.dateCreated {
 					Section("Updated") {
 						Text(dateUpdated, format: .dateTime.minute().hour().day().month().year())
+						#if os(iOS)
+							.listRowBackground(Color(uiColor: .quaternarySystemFill))
+						#endif
 					}
 				}
 			}
 		}
+		.scrollContentBackground(.hidden)
 	}
 
 	private func updateChange() {
