@@ -4,7 +4,7 @@
 <dict>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.omeriadon.money</string>
+		<string>group.omeriadon-hackclub-release.money</string>
 	</array>
 </dict>
 </plist>

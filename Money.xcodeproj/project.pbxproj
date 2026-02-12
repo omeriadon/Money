@@ -88,9 +88,9 @@
 		A70133C42F3E01A50027A60C /* Money WidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Money WidgetsExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A70133C52F3E01A50027A60C /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		A70133C72F3E01A50027A60C /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		A737692B2F3E0889003FC757 /* Money WidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Money WidgetsExtension.entitlements"; sourceTree = "<group>"; };
+		A737692B2F3E0889003FC757 /* Release.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Release.entitlements; sourceTree = "<group>"; };
 		A73769302F3E0A3C003FC757 /* Money Watch WidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Money Watch WidgetsExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
-		A73769442F3E0A84003FC757 /* Money Watch WidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Money Watch WidgetsExtension.entitlements"; sourceTree = "<group>"; };
+		A73769442F3E0A84003FC757 /* Debug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Debug.entitlements; sourceTree = "<group>"; };
 		A75824AB2F20B4AC00ADCD20 /* moneyWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "moneyWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7B9C9B72F1B905400529CE2 /* Money.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Money.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -245,8 +245,8 @@
 		A7B9C9AE2F1B905400529CE2 = {
 			isa = PBXGroup;
 			children = (
-				A73769442F3E0A84003FC757 /* Money Watch WidgetsExtension.entitlements */,
-				A737692B2F3E0889003FC757 /* Money WidgetsExtension.entitlements */,
+				A73769442F3E0A84003FC757 /* Debug.entitlements */,
+				A737692B2F3E0889003FC757 /* Release.entitlements */,
 				A756303F2F20F8C500AA3CA5 /* Shared */,
 				A7B9C9B92F1B905400529CE2 /* Money */,
 				A75824AC2F20B4AC00ADCD20 /* moneyWatch Watch App */,
@@ -512,7 +512,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = "Money WidgetsExtension.entitlements";
+				CODE_SIGN_ENTITLEMENTS = Debug.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2HN547N49;
@@ -545,7 +545,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = "Money WidgetsExtension.entitlements";
+				CODE_SIGN_ENTITLEMENTS = Release.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = P6PV2R9443;
@@ -579,7 +579,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = "Money Watch WidgetsExtension.entitlements";
+				CODE_SIGN_ENTITLEMENTS = Debug.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2HN547N49;
@@ -613,7 +613,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = "Money Watch WidgetsExtension.entitlements";
+				CODE_SIGN_ENTITLEMENTS = Release.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = P6PV2R9443;
@@ -682,7 +682,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "moneyWatch Watch App/moneyWatch Watch App.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "moneyWatch Watch App/moneyWatch Watch App Release.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = P6PV2R9443;
