@@ -15,4 +15,5 @@ extension Defaults.Keys {
 	static let transactions = Key<[Transaction]>("transactions", default: [])
 
 	static let useNewGradient = Key<Bool>("useNewGradient", default: true)
+	static let showAnalyseTab = Key<Bool>("showAnalyseTab", default: true)
 }

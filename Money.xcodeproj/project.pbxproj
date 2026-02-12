@@ -46,6 +46,16 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A70133BF2F3DD7F50027A60C /* Exceptions for "Money" folder in "moneyWatch Watch App" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Views/Tabs/Analyse/AnalyseView.swift,
+				Views/Tabs/Analyse/DifferentTypesView.swift,
+				Views/Tabs/Analyse/StatisticsCardsView.swift,
+				Views/Tabs/Analyse/TotalOverTimeView.swift,
+			);
+			target = A75824AA2F20B4AC00ADCD20 /* moneyWatch Watch App */;
+		};
 		A7578F052F3758B90066A6C4 /* Exceptions for "Shared" folder in "moneyWatch Watch App" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -71,6 +81,9 @@
 		};
 		A7B9C9B92F1B905400529CE2 /* Money */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A70133BF2F3DD7F50027A60C /* Exceptions for "Money" folder in "moneyWatch Watch App" target */,
+			);
 			path = Money;
 			sourceTree = "<group>";
 		};

@@ -1,20 +1,35 @@
+import Defaults
 import SwiftUI
 
 struct ContentView: View {
 	@EnvironmentObject var transactionRepo: TransactionRepository
 
-	@State var currentTab = TabItem.home.title
+	@State var currentTab = "Home"
 
 	let generator = UIImpactFeedbackGenerator(style: .medium)
 
+	@Default(.showAnalyseTab) var showAnalyseTab
+
 	var body: some View {
 		TabView(selection: $currentTab) {
-			ForEach(TabItem.allCases) { tab in
-				Tab(value: tab.title) {
-					tab.view
+			Tab(value: "Home") {
+				HomeView()
+			} label: {
+				Label("Home", systemImage: "house")
+			}
+
+			if showAnalyseTab {
+				Tab(value: "Analyse") {
+					AnalyseView()
 				} label: {
-					Label(tab.title, systemImage: tab.symbol)
+					Label("Analyse", systemImage: "chart.xyaxis.line")
 				}
+			}
+
+			Tab(value: "Settings") {
+				SettingsView()
+			} label: {
+				Label("Settings", systemImage: "gearshape")
 			}
 
 			Tab(value: "Search", role: .search) {
@@ -32,48 +47,6 @@ struct ContentView: View {
 		}
 		.task {
 			await transactionRepo.network.refreshCurrentUser()
-		}
-	}
-}
-
-enum TabItem: CaseIterable, Identifiable {
-	case home, analyse, settings
-
-	var id: String {
-		title
-	}
-
-	var title: String {
-		switch self {
-			case .home:
-				"Money"
-			case .settings:
-				"Settings"
-			case .analyse:
-				"Analyse"
-		}
-	}
-
-	@ViewBuilder
-	var view: some View {
-		switch self {
-			case .home:
-				HomeView()
-			case .settings:
-				SettingsView()
-			case .analyse:
-				AnalyseView()
-		}
-	}
-
-	var symbol: String {
-		switch self {
-			case .home:
-				"house"
-			case .settings:
-				"gearshape"
-			case .analyse:
-				"chart.xyaxis.line"
 		}
 	}
 }

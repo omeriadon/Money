@@ -27,10 +27,23 @@ struct SettingsView: View {
 	@State private var saveSuccess = false
 
 	@Default(.useNewGradient) var useNewGradient
+	@Default(.showAnalyseTab) var showAnalyseTab
 
 	var body: some View {
 		NavigationStack {
 			List {
+				Section {
+					Toggle(isOn: $useNewGradient) {
+						Text("Use animated background")
+						Text("Uses a shader instead of colour gradient on home screen.")
+					}
+
+					Toggle(isOn: $showAnalyseTab) {
+						Text("Show Analyse Tab")
+						Text("Detailed statistics and charts")
+					}
+				}
+
 				Section {
 					TextField("First Name", text: $firstName)
 						.autocapitalization(.words)
@@ -80,13 +93,6 @@ struct SettingsView: View {
 				}
 				.task {
 					await transactionRepo.network.refreshCurrentUser()
-				}
-
-				Section {
-					Toggle(isOn: $useNewGradient) {
-						Text("Use animated background")
-						Text("Uses a shader instead of colour gradient on home screen.")
-					}
 				}
 
 				Section("Danger Zone") {
