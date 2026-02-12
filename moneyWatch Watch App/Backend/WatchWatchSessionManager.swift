@@ -108,7 +108,11 @@ final class WatchWatchSessionManager: NSObject, WCSessionDelegate, ObservableObj
 
 	func session(
 		_: WCSession,
-		activationDidCompleteWith _: WCSessionActivationState,
+		activationDidCompleteWith activationState: WCSessionActivationState,
 		error _: Error?
-	) {}
+	) {
+		if activationState == .activated {
+			refresh()
+		}
+	}
 }

@@ -22,7 +22,7 @@ struct moneyWatch_Watch_AppApp: App {
 						ContentUnavailableView(
 							"No Token Saved",
 							systemImage: "key.shield",
-							description: Text("Sign in on your iPhone to create a token and use this app.")
+							description: Text("Sign in on your iPhone to create a token and use this app.\niPhone app must be open to sync.")
 						)
 						.transition(.opacity)
 					}

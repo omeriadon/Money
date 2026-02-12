@@ -92,9 +92,13 @@ final class iPhoneWatchSessionManager: NSObject, WCSessionDelegate {
 
 	func session(
 		_: WCSession,
-		activationDidCompleteWith _: WCSessionActivationState,
+		activationDidCompleteWith activationState: WCSessionActivationState,
 		error _: Error?
-	) {}
+	) {
+		if activationState == .activated {
+			syncNow()
+		}
+	}
 
 	func sessionDidBecomeInactive(_: WCSession) {}
 	func sessionDidDeactivate(_: WCSession) {
