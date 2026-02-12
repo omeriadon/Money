@@ -1,6 +1,7 @@
 import Combine
 import Defaults
 import SwiftUI
+import WidgetKit
 
 @MainActor
 final class NetworkManager: ObservableObject {
@@ -71,6 +72,8 @@ final class NetworkManager: ObservableObject {
 
 		let decoder = JSONDecoder()
 		decoder.dateDecodingStrategy = .iso8601
+
+		WidgetCenter.shared.reloadAllTimelines()
 
 		return try decoder.decode([TransactionDTO].self, from: data)
 	}
@@ -195,6 +198,8 @@ final class NetworkManager: ObservableObject {
 			throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: message])
 		}
 
+		WidgetCenter.shared.reloadAllTimelines()
+
 		return try await fetchTransactions()
 	}
 
@@ -241,6 +246,8 @@ final class NetworkManager: ObservableObject {
 
 		let decoder = JSONDecoder()
 		decoder.dateDecodingStrategy = .iso8601
+
+		WidgetCenter.shared.reloadAllTimelines()
 
 		return try decoder.decode(TransactionDTO.self, from: data)
 	}
@@ -289,6 +296,8 @@ final class NetworkManager: ObservableObject {
 				userInfo: [NSLocalizedDescriptionKey: message]
 			)
 		}
+
+		WidgetCenter.shared.reloadAllTimelines()
 
 		return try await fetchTransactions()
 	}
