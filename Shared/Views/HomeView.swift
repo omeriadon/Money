@@ -32,13 +32,13 @@ struct HomeView: View {
 		@State private var renderScale: Double = 1.0
 
 		@State private var positivePreset: ColorfulPreset = .summer
-		@State private var positiveSpeed: Double = 1.0
+		@State private var positiveSpeed: Double = 1.3
 		@State private var positiveBias: Double = 0.01
 		@State private var positiveNoise: Double = 20.0
 		@State private var positiveTransition: Double = 10
 
 		@State private var negativeColours: [Color] = [.red, .orange, .red, .red, .pink, .red]
-		@State private var negativeSpeed: Double = 1.0
+		@State private var negativeSpeed: Double = 2.0
 		@State private var negativeBias: Double = 0.01
 		@State private var negativeNoise: Double = 20.0
 		@State private var negativeTransition: Double = 10
