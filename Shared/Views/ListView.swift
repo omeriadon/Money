@@ -78,6 +78,11 @@ struct ListView: View {
 							}
 						}
 					}
+					.refreshable {
+						Task {
+							await refresh()
+						}
+					}
 					.animation(.easeInOut, value: filteredTransactions.count)
 					.transition(.blurReplace)
 				}
@@ -118,7 +123,7 @@ struct ListView: View {
 						endPoint: .bottom
 					)
 				}
-				.frame(height: 80)
+				.frame(height: 100)
 				.ignoresSafeArea()
 			}
 		}
