@@ -79,10 +79,10 @@ struct ListView: View {
 						}
 					}
 					.animation(.easeInOut, value: filteredTransactions.count)
-					.searchable(text: $searchText, prompt: "Search transactions")
 					.transition(.blurReplace)
 				}
 			}
+			.searchable(text: $searchText, prompt: "Search transactions")
 			.animation(.easeInOut, value: filteredTransactions.isEmpty)
 			.toolbar { toolbarContent }
 			.toolbar {
