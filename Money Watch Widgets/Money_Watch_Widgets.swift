@@ -36,14 +36,47 @@ struct SimpleEntry: TimelineEntry {
 struct Money_Watch_WidgetsEntryView: View {
 	var entry: Provider.Entry
 
+	@Environment(\.widgetFamily) var widgetFamily
+
 	var body: some View {
-		Text(Image("Logo"))
-			.font(.system(size: 10))
-			.widgetCurvesContent()
-			.widgetLabel {
-				Text(entry.total, format: .currency(code: "AUD"))
-					.monospaced()
-			}
+		switch widgetFamily {
+			case .accessoryCorner:
+				Text(Image("Logo"))
+					.font(.system(size: 10))
+					.widgetCurvesContent()
+					.widgetLabel {
+						Text(entry.total, format: .currency(code: "AUD"))
+							.monospaced()
+					}
+			case .accessoryInline:
+				Text("Money \(entry.total, format: .currency(code: "AUD"))")
+			// should be accessoryRectangular
+			// accessoryCircular not supported
+			default:
+				HStack {
+					Color.yellow
+						.mask(
+							Image("BiggerLogo")
+								.renderingMode(.template)
+								.resizable()
+								.aspectRatio(contentMode: .fit)
+								.frame(height: 50)
+								.offset(x: -20)
+						)
+
+					Spacer()
+
+					VStack(alignment: .trailing) {
+						Text("Money")
+							.font(.body)
+
+						Text(entry.total, format: .currency(code: "AUD"))
+							.font(.system(size: 300))
+							.lineLimit(1)
+							.minimumScaleFactor(0.001)
+					}
+				}
+		}
 	}
 }
 
@@ -57,10 +90,23 @@ struct Money_Watch_Widgets: Widget {
 		}
 		.configurationDisplayName("Total")
 		.description("Sum of all transactions.")
+		.supportedFamilies([.accessoryCorner, .accessoryInline, .accessoryRectangular])
 	}
 }
 
 #Preview(as: .accessoryCorner) {
+	Money_Watch_Widgets()
+} timeline: {
+	SimpleEntry(date: .now, total: 1234.56)
+}
+
+#Preview(as: .accessoryInline) {
+	Money_Watch_Widgets()
+} timeline: {
+	SimpleEntry(date: .now, total: 1234.56)
+}
+
+#Preview(as: .accessoryRectangular) {
 	Money_Watch_Widgets()
 } timeline: {
 	SimpleEntry(date: .now, total: 1234.56)
