@@ -17,14 +17,14 @@ struct moneyWatch_Watch_AppApp: App {
 							.environmentObject(session)
 							.environmentObject(networkManager)
 							.environmentObject(repo)
-							.transition(.blurReplace)
+							.transition(.opacity)
 					} else {
 						ContentUnavailableView(
 							"No Token Saved",
 							systemImage: "key.shield",
 							description: Text("Sign in on your iPhone to create a token and use this app.")
 						)
-						.transition(.blurReplace)
+						.transition(.opacity)
 					}
 				}
 			}
