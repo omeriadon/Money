@@ -11,6 +11,7 @@ import WidgetKit
 @main
 struct Money_WidgetsBundle: WidgetBundle {
 	var body: some Widget {
-		Money_Widgets()
+		Money_WidgetsSimple()
+		Money_WidgetsDetailed()
 	}
 }

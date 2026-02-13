@@ -1,5 +1,5 @@
 //
-//  Money_Widgets.swift
+//  Money_Widgets Detailed.swift
 //  Money Widgets
 //
 //  Created by Adon Omeri on 12/2/2026.
@@ -9,32 +9,32 @@ import Defaults
 import SwiftUI
 import WidgetKit
 
-struct SimpleProvider: TimelineProvider {
-	func placeholder(in _: Context) -> SimpleEntry {
-		SimpleEntry(date: Date(), total: 100.00)
+struct DetailedProvider: TimelineProvider {
+	func placeholder(in _: Context) -> DetailedEntry {
+		DetailedEntry(date: Date(), total: 100.00)
 	}
 
-	func getSnapshot(in _: Context, completion: @escaping (SimpleEntry) -> Void) {
+	func getSnapshot(in _: Context, completion: @escaping (DetailedEntry) -> Void) {
 		let total = Defaults[.transactions].reduce(0.0) { $0 + $1.change }
-		let entry = SimpleEntry(date: Date(), total: total)
+		let entry = DetailedEntry(date: Date(), total: total)
 		completion(entry)
 	}
 
-	func getTimeline(in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
+	func getTimeline(in _: Context, completion: @escaping (Timeline<DetailedEntry>) -> Void) {
 		let total = Defaults[.transactions].reduce(0.0) { $0 + $1.change }
-		let entry = SimpleEntry(date: Date(), total: total)
+		let entry = DetailedEntry(date: Date(), total: total)
 		let timeline = Timeline(entries: [entry], policy: .atEnd)
 		completion(timeline)
 	}
 }
 
-struct SimpleEntry: TimelineEntry {
+struct DetailedEntry: TimelineEntry {
 	let date: Date
 	let total: Double
 }
 
-struct Money_WidgetsSimpleEntryView: View {
-	var entry: SimpleProvider.Entry
+struct Money_WidgetsDetailedEntryView: View {
+	var entry: DetailedProvider.Entry
 
 	@Environment(\.widgetFamily) var widgetFamily
 
@@ -73,12 +73,12 @@ struct Money_WidgetsSimpleEntryView: View {
 	}
 }
 
-struct Money_WidgetsSimple: Widget {
+struct Money_WidgetsDetailed: Widget {
 	let kind: String = "Money_Widgets"
 
 	var body: some WidgetConfiguration {
-		StaticConfiguration(kind: kind, provider: SimpleProvider()) { entry in
-			Money_WidgetsSimpleEntryView(entry: entry)
+		StaticConfiguration(kind: kind, provider: DetailedProvider()) { entry in
+			Money_WidgetsDetailedEntryView(entry: entry)
 				.containerBackground(.black, for: .widget)
 		}
 		.configurationDisplayName("Total")
@@ -88,37 +88,37 @@ struct Money_WidgetsSimple: Widget {
 }
 
 #Preview(as: .systemSmall) {
-	Money_WidgetsSimple()
+	Money_WidgetsDetailed()
 } timeline: {
-	SimpleEntry(date: .now, total: 1234.56)
+	DetailedEntry(date: .now, total: 1234.56)
 }
 
 #Preview(as: .systemMedium) {
-	Money_WidgetsSimple()
+	Money_WidgetsDetailed()
 } timeline: {
-	SimpleEntry(date: .now, total: 1234.56)
+	DetailedEntry(date: .now, total: 1234.56)
 }
 
 #Preview(as: .systemLarge) {
-	Money_WidgetsSimple()
+	Money_WidgetsDetailed()
 } timeline: {
-	SimpleEntry(date: .now, total: 1234.56)
+	DetailedEntry(date: .now, total: 1234.56)
 }
 
 #Preview(as: .systemExtraLarge) {
-	Money_WidgetsSimple()
+	Money_WidgetsDetailed()
 } timeline: {
-	SimpleEntry(date: .now, total: 1234.56)
+	DetailedEntry(date: .now, total: 1234.56)
 }
 
 #Preview(as: .accessoryInline) {
-	Money_WidgetsSimple()
+	Money_WidgetsDetailed()
 } timeline: {
-	SimpleEntry(date: .now, total: 1234.56)
+	DetailedEntry(date: .now, total: 1234.56)
 }
 
 #Preview(as: .accessoryRectangular) {
-	Money_WidgetsSimple()
+	Money_WidgetsDetailed()
 } timeline: {
-	SimpleEntry(date: .now, total: 1234.56)
+	DetailedEntry(date: .now, total: 1234.56)
 }
