@@ -16,36 +16,42 @@ struct CurrentUser: Codable, Defaults.Serializable {
 }
 
 enum Importance: String, Codable, CaseIterable, Identifiable, Plottable {
-	case essential, leisure, investment, reward, emergency, occasional
+	// Expense (negative) categories
+	case essential // renamed: Groceries
+	case leisure // renamed: Dining
+	case investment // renamed: Auto + Transport
+	case reward // renamed: Entertainment
+	case occasional
 
-	case dayJob, passiveIncome, oneTime
+	// Income (positive) categories
+	case dayJob // renamed: Job
+	case passiveIncome // renamed: Passive
+	case oneTime
 
 	var id: String {
 		rawValue
 	}
 
-	static let negative: [Importance] = [.essential, .leisure, .investment, .reward, .emergency, .occasional]
+	static let negative: [Importance] = [.essential, .leisure, .investment, .reward, .occasional]
 
 	static let positive: [Importance] = [.dayJob, .passiveIncome, .oneTime]
 
 	var title: String {
 		switch self {
 			case .essential:
-				"Essential"
+				"Groceries"
 			case .leisure:
-				"Leisure"
+				"Dining"
 			case .investment:
-				"Investment"
+				"Auto + Transport"
 			case .reward:
-				"Reward"
-			case .emergency:
-				"Emergency"
+				"Entertainment"
 			case .occasional:
 				"Occasional"
 			case .dayJob:
-				"Day Job"
+				"Job"
 			case .passiveIncome:
-				"Passive Income"
+				"Passive"
 			case .oneTime:
 				"One Time"
 		}
@@ -54,19 +60,17 @@ enum Importance: String, Codable, CaseIterable, Identifiable, Plottable {
 	var symbol: String {
 		switch self {
 			case .essential:
-				"carrot"
+				"cart"
 			case .leisure:
-				"scooter"
+				"fork.knife"
 			case .investment:
-				"banknote"
+				"car"
 			case .reward:
-				"star"
-			case .emergency:
-				"cross.case"
+				"tv"
 			case .occasional:
 				"calendar"
 			case .dayJob:
-				"figure.walk"
+				"briefcase"
 			case .passiveIncome:
 				"zzz"
 			case .oneTime:
@@ -84,8 +88,6 @@ enum Importance: String, Codable, CaseIterable, Identifiable, Plottable {
 				.blue
 			case .reward:
 				.brown
-			case .emergency:
-				.purple
 			case .occasional:
 				.orange
 			case .dayJob:
