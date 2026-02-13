@@ -1,5 +1,5 @@
 //
-//  Money_Widgets.swift
+//  Money_Widgets Simple.swift
 //  Money Widgets
 //
 //  Created by Adon Omeri on 12/2/2026.
@@ -11,7 +11,7 @@ import WidgetKit
 
 struct SimpleProvider: TimelineProvider {
 	func placeholder(in _: Context) -> SimpleEntry {
-		SimpleEntry(date: Date(), total: 100.00)
+		SimpleEntry(date: Date(), total: 0)
 	}
 
 	func getSnapshot(in _: Context, completion: @escaping (SimpleEntry) -> Void) {
@@ -74,7 +74,7 @@ struct Money_WidgetsSimpleEntryView: View {
 }
 
 struct Money_WidgetsSimple: Widget {
-	let kind: String = "Money_Widgets"
+	let kind: String = "Money_Widgets_Simple"
 
 	var body: some WidgetConfiguration {
 		StaticConfiguration(kind: kind, provider: SimpleProvider()) { entry in

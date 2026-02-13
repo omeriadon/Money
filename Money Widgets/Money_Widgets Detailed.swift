@@ -11,18 +11,18 @@ import WidgetKit
 
 struct DetailedProvider: TimelineProvider {
 	func placeholder(in _: Context) -> DetailedEntry {
-		DetailedEntry(date: Date(), total: 100.00)
+		DetailedEntry(date: Date(), transactions: [])
 	}
 
 	func getSnapshot(in _: Context, completion: @escaping (DetailedEntry) -> Void) {
-		let total = Defaults[.transactions].reduce(0.0) { $0 + $1.change }
-		let entry = DetailedEntry(date: Date(), total: total)
+		let transactions = Defaults[.transactions]
+		let entry = DetailedEntry(date: Date(), transactions: transactions)
 		completion(entry)
 	}
 
 	func getTimeline(in _: Context, completion: @escaping (Timeline<DetailedEntry>) -> Void) {
-		let total = Defaults[.transactions].reduce(0.0) { $0 + $1.change }
-		let entry = DetailedEntry(date: Date(), total: total)
+		let transactions = Defaults[.transactions]
+		let entry = DetailedEntry(date: Date(), transactions: transactions)
 		let timeline = Timeline(entries: [entry], policy: .atEnd)
 		completion(timeline)
 	}
@@ -30,95 +30,150 @@ struct DetailedProvider: TimelineProvider {
 
 struct DetailedEntry: TimelineEntry {
 	let date: Date
-	let total: Double
+	let transactions: [Transaction]
+
+	var total: Double {
+		transactions.reduce(0.0) { $0 + $1.change }
+	}
 }
 
 struct Money_WidgetsDetailedEntryView: View {
 	var entry: DetailedProvider.Entry
 
 	@Environment(\.widgetFamily) var widgetFamily
+	@Environment(\.colorScheme) var colorScheme
 
 	var body: some View {
-		switch widgetFamily {
-			case .systemLarge, .systemMedium, .systemSmall:
-				Text(entry.total, format: .currency(code: "AUD"))
-					.foregroundStyle(.white)
-					.font(.system(size: 1000))
-					.monospaced()
-					.lineLimit(1)
-					.minimumScaleFactor(0.01)
-			case .accessoryCorner:
-				Text(Image("Logo"))
-					.font(.system(size: 10))
-					.widgetCurvesContent()
-					.widgetLabel {
-						Text(entry.total, format: .currency(code: "AUD"))
-							.monospaced()
+		Group {
+			switch widgetFamily {
+				case .systemSmall:
+					if entry.transactions.isEmpty {
+						Text("No transactions")
+							.foregroundStyle(.white.opacity(0.5))
+							.font(.caption)
+					} else {
+						VStack(alignment: .trailing, spacing: 10) {
+							ForEach(entry.transactions.suffix(3)) { transaction in
+								VStack(alignment: .trailing) {
+									Text(transaction.title)
+										.foregroundStyle(.secondary)
+										.font(.callout)
+									Text(transaction.change, format: .currency(code: "AUD"))
+										.lineLimit(1)
+										.font(.title3)
+										.foregroundStyle(transaction.change > 0 ? .green : .red)
+								}
+							}
+						}
+						.monospaced()
+						.foregroundStyle(.white)
+						.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
 					}
-			case .accessoryInline:
-				Text(entry.total, format: .currency(code: "AUD"))
-			// should be accessoryRectangular
-			// accessoryCircular not supported
-			default:
-				VStack(alignment: .trailing) {
-					Text("Money")
-						.font(.body)
 
-					Text(entry.total, format: .currency(code: "AUD"))
-						.font(.system(size: 300))
-						.lineLimit(1)
-						.minimumScaleFactor(0.001)
-				}
+				case .systemMedium:
+					if entry.transactions.isEmpty {
+						Text("No transactions")
+							.foregroundStyle(.white.opacity(0.5))
+							.font(.caption)
+					} else {
+						VStack(alignment: .trailing, spacing: 10) {
+							ForEach(entry.transactions.suffix(4)) { transaction in
+								HStack {
+									Label {
+										Text(transaction.title)
+
+									} icon: {
+										Image(systemName: transaction.importance.symbol)
+									}
+									.foregroundStyle(.secondary)
+									Spacer(minLength: 0)
+									Text(transaction.change, format: .currency(code: "AUD"))
+										.lineLimit(1)
+										.font(.title3)
+										.foregroundStyle(transaction.change > 0 ? .green : .red)
+								}
+							}
+						}
+						.monospaced()
+						.foregroundStyle(.white)
+						.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+					}
+
+				// should be systemLarge
+				default:
+					if entry.transactions.isEmpty {
+						Text("No transactions")
+							.foregroundStyle(.white.opacity(0.5))
+							.font(.caption)
+					} else {
+						VStack(alignment: .trailing, spacing: 9) {
+							ForEach(entry.transactions.suffix(10)) { transaction in
+								HStack {
+									Label {
+										Text(transaction.title)
+									} icon: {
+										Image(systemName: transaction.importance.symbol)
+									}
+									.foregroundStyle(.secondary)
+									Spacer(minLength: 0)
+									Text(transaction.change, format: .currency(code: "AUD"))
+										.lineLimit(1)
+										.font(.title3)
+										.foregroundStyle(transaction.change > 0 ? .green : .red)
+								}
+							}
+						}
+						.monospaced()
+						.foregroundStyle(.white)
+						.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+					}
+			}
+		}
+		.containerBackground(for: .widget) {
+			Color.primary.colorInvert()
+//			colorScheme == .dark ? Color.black : Color.yellow
 		}
 	}
 }
 
 struct Money_WidgetsDetailed: Widget {
-	let kind: String = "Money_Widgets"
+	let kind: String = "Money_Widgets_Detailed"
 
 	var body: some WidgetConfiguration {
 		StaticConfiguration(kind: kind, provider: DetailedProvider()) { entry in
 			Money_WidgetsDetailedEntryView(entry: entry)
-				.containerBackground(.black, for: .widget)
+				.widgetAccentable()
 		}
-		.configurationDisplayName("Total")
-		.description("Sum of all transactions.")
-		.supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .systemExtraLarge, .accessoryInline, .accessoryRectangular])
+		.configurationDisplayName("Recent Transactions")
+		.description("Details for your recent transactions")
+		.supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
 	}
 }
 
-#Preview(as: .systemSmall) {
+#Preview("Widgets", as: .systemLarge) {
 	Money_WidgetsDetailed()
 } timeline: {
-	DetailedEntry(date: .now, total: 1234.56)
-}
+	DetailedEntry(date: .now, transactions: [
+		Transaction(change: 1250.00, title: "Salary", desc: "Monthly payment", importance: .dayJob),
+		Transaction(change: -4005.50, title: "Groceries", desc: "Weekly shopping", importance: .emergency),
+		Transaction(change: -120.00, title: "Bills", desc: "Utilities", importance: .oneTime),
+		Transaction(change: -120.00, title: "Bills", desc: "Utilities", importance: .oneTime),
+		Transaction(change: 1250.00, title: "Salary", desc: "Monthly payment", importance: .dayJob),
+		Transaction(change: -4005.50, title: "Groceries", desc: "Weekly shopping", importance: .emergency),
+		Transaction(change: -120.00, title: "Bills", desc: "Utilities", importance: .oneTime),
+		Transaction(change: 30.00, title: "Freelance", desc: "Side project", importance: .passiveIncome),
+		Transaction(change: 300.00, title: "Freelance", desc: "Side project", importance: .passiveIncome),
+		Transaction(change: 30.00, title: "Freelance", desc: "Side project", importance: .passiveIncome),
+		Transaction(change: 300.00, title: "Freelance", desc: "Side project", importance: .passiveIncome),
+		Transaction(change: 1250.00, title: "Salary", desc: "Monthly payment", importance: .dayJob),
+		Transaction(change: -4005.50, title: "Groceries", desc: "Weekly shopping", importance: .emergency),
+		Transaction(change: 30.00, title: "Freelance", desc: "Side project", importance: .passiveIncome),
+		Transaction(change: 300.00, title: "Freelance", desc: "Side project", importance: .passiveIncome),
+		Transaction(change: 20.00, title: "Freelance", desc: "Side project", importance: .passiveIncome),
 
-#Preview(as: .systemMedium) {
-	Money_WidgetsDetailed()
-} timeline: {
-	DetailedEntry(date: .now, total: 1234.56)
-}
-
-#Preview(as: .systemLarge) {
-	Money_WidgetsDetailed()
-} timeline: {
-	DetailedEntry(date: .now, total: 1234.56)
-}
-
-#Preview(as: .systemExtraLarge) {
-	Money_WidgetsDetailed()
-} timeline: {
-	DetailedEntry(date: .now, total: 1234.56)
-}
-
-#Preview(as: .accessoryInline) {
-	Money_WidgetsDetailed()
-} timeline: {
-	DetailedEntry(date: .now, total: 1234.56)
-}
-
-#Preview(as: .accessoryRectangular) {
-	Money_WidgetsDetailed()
-} timeline: {
-	DetailedEntry(date: .now, total: 1234.56)
+	])
+//	DetailedEntry(date: .now, transactions: [
+//		Transaction(change: 1250.00, title: "Salary", desc: "Monthly payment", importance: .dayJob),
+//	])
+//	DetailedEntry(date: .now, transactions: [])
 }

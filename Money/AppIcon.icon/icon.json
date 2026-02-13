@@ -11,7 +11,7 @@
             {
               "appearance" : "dark",
               "value" : {
-                "solid" : "extended-gray:1.00000,1.00000"
+                "solid" : "extended-srgb:1.00000,0.80000,0.00000,1.00000"
               }
             },
             {
@@ -46,7 +46,7 @@
         }
       ],
       "shadow" : {
-        "kind" : "layer-color",
+        "kind" : "neutral",
         "opacity" : 1
       },
       "specular" : true,
