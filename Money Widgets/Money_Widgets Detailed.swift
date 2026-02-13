@@ -131,7 +131,6 @@ struct Money_WidgetsDetailedEntryView: View {
 		}
 		.containerBackground(for: .widget) {
 			Color.primary.colorInvert()
-//			colorScheme == .dark ? Color.black : Color.yellow
 		}
 	}
 }
