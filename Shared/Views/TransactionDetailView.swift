@@ -112,7 +112,6 @@ struct TransactionDetailView: View {
 			.pickerStyle(.segmented)
 			.controlSize(.extraLarge)
 			.font(.largeTitle)
-
 		#else
 			.pickerStyle(.wheel)
 			.font(.title2)
@@ -128,21 +127,21 @@ struct TransactionDetailView: View {
 			.focused($focusedField, equals: .amount)
 			.onSubmit { focusedField = nil }
 			.onChange(of: amount) { updateChange() }
-			.animation(.easeInOut, value: isPositive)
 		#if os(iOS)
 			.frame(maxWidth: 150)
 			.padding(5)
 			.controlSize(.extraLarge)
 			.foregroundStyle(.white)
 			.font(.title)
-			.glassEffect(.clear.tint(isPositive ? .green : .red).interactive(), in: RoundedRectangle(cornerRadius: 30))
-			.keyboardType(.numberPad)
+			.glassEffect(.clear.tint(isPositive ? .green : .red).interactive(), in: Capsule())
+			.keyboardType(.decimalPad)
 		#else
 			.font(.title)
 			.foregroundStyle(isPositive ? .green : .red)
 			.frame(height: 20)
 			.padding(.horizontal)
 		#endif
+			.animation(.easeInOut, value: isPositive)
 	}
 
 	var iPhoneHeader: some View {
@@ -188,39 +187,33 @@ struct TransactionDetailView: View {
 					.listRowBackground(Color(uiColor: .quaternarySystemFill))
 				#endif
 
-				Picker("Importance", selection: $importance) {
+				ValuePicker("Importance", selection: $importance) {
+					HStack {
+						Image(systemName: importance.symbol)
+						Text(importance.title)
+							.fontDesign(.monospaced)
+							.padding(.trailing, 10)
+						Image(systemName: "chevron.up.chevron.down")
+					}
+				} content: {
+					ForEach(isPositive ? Importance.positive : Importance.negative) { item in
+						Label(item.title, systemImage: item.symbol)
+							.pickerTag(item)
+					}
+				}
+				.onChange(of: isPositive) {
 					if isPositive {
-						ForEach(Importance.positive) { importance in
-							Label(importance.title, systemImage: importance.symbol)
-								.fontDesign(.monospaced)
-								.tag(importance)
+						if Importance.negative.contains(importance) {
+							importance = Importance.positive.randomElement()!
 						}
 					} else {
-						ForEach(Importance.negative) { importance in
-							Label(importance.title, systemImage: importance.symbol)
-								.fontDesign(.monospaced)
-								.tag(importance)
+						if Importance.positive.contains(importance) {
+							importance = Importance.negative.randomElement()!
 						}
 					}
 				}
-				.foregroundStyle(.primary)
-				.tint(.primary)
 				#if os(iOS)
-					.pickerStyle(.menu)
-				#endif
-					.onChange(of: isPositive) {
-						if isPositive {
-							if Importance.negative.contains(importance) {
-								importance = Importance.positive.randomElement()!
-							}
-						} else {
-							if Importance.positive.contains(importance) {
-								importance = Importance.negative.randomElement()!
-							}
-						}
-					}
-				#if os(iOS)
-					.listRowBackground(Color(uiColor: .quaternarySystemFill))
+				.listRowBackground(Color(uiColor: .quaternarySystemFill))
 				#endif
 			}
 			if let dateCreated = transaction?.dateCreated {

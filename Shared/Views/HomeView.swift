@@ -21,7 +21,6 @@ struct HomeView: View {
 
 	@Default(.useNewGradient) var useNewGradient
 
-	@State private var didSyncOnce = false
 	@State private var isLoading = false
 	@State private var showSuccess = false
 	@State private var errorMessage: String?
@@ -51,16 +50,14 @@ struct HomeView: View {
 					.foregroundStyle(.white)
 				#if os(iOS)
 					.padding(.horizontal)
+					.fontWeight(.ultraLight)
 				#endif
 					.font(.system(size: 300))
 					.lineLimit(1)
 					.minimumScaleFactor(0.01)
 					.contentTransition(.numericText())
 					.task {
-						if !didSyncOnce {
-							didSyncOnce = true
-							await refresh()
-						}
+						await refresh()
 					}
 			}
 			#if !os(iOS)
@@ -147,13 +144,5 @@ struct HomeView: View {
 			isLoading = false
 			errorMessage = error.localizedDescription
 		}
-	}
-}
-
-struct HomeView_Previews: PreviewProvider {
-	static var previews: some View {
-		HomeView()
-			.environmentObject(TransactionRepository(network: NetworkManager.shared))
-			.monospaced()
 	}
 }

@@ -19,3 +19,9 @@ struct MoneyApp: App {
 		}
 	}
 }
+
+#Preview {
+	RootView()
+		.environmentObject(NetworkManager.shared)
+		.fontDesign(.monospaced)
+}
