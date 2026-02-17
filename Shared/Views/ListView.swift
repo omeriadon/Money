@@ -84,6 +84,7 @@ struct ListView: View {
 						}
 					}
 				}
+				.searchable(text: $searchText, prompt: isiPhone() ? "Search transactions" : "Search")
 				.refreshable {
 					Task {
 						await refresh()
@@ -92,7 +93,6 @@ struct ListView: View {
 				.animation(.easeInOut, value: filteredTransactions.count)
 				.transition(.blurReplace)
 			}
-			.searchable(text: $searchText, prompt: isiPhone() ? "Search transactions" : "Search")
 			.animation(.easeInOut, value: filteredTransactions.isEmpty)
 			.toolbar { toolbarContent }
 			.toolbar {
