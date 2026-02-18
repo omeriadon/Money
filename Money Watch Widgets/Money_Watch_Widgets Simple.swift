@@ -1,5 +1,5 @@
 //
-//  Money_Watch_Widgets.swift
+//  Money_Watch_Widgets Simple.swift
 //  Money Watch Widgets
 //
 //  Created by Adon Omeri on 12/2/2026.
@@ -53,29 +53,34 @@ struct Money_Watch_WidgetsEntryView: View {
 			// should be accessoryRectangular
 			// accessoryCircular not supported
 			default:
-				HStack {
-					Color.yellow
-						.mask(
-							Image("BiggerLogo")
-								.renderingMode(.template)
-								.resizable()
-								.aspectRatio(contentMode: .fit)
-								.frame(height: 50)
-								.offset(x: -20)
-						)
+				VStack(alignment: .trailing, spacing: 0) {
+					HStack {
+						Color.yellow
+							.mask(
+								Image("BiggerLogo")
+									.renderingMode(.template)
+									.resizable()
+									.aspectRatio(contentMode: .fit)
+							)
+							.frame(width: 25)
 
-					Spacer()
+						Spacer()
 
-					VStack(alignment: .trailing) {
-						Text("Money")
-							.font(.body)
+						Text("Balance")
+							.font(.subheadline)
+					}
 
-						Text(entry.total, format: .currency(code: "AUD"))
-							.font(.system(size: 300))
+					Spacer(minLength: 0)
+
+					HStack {
+						Spacer(minLength: 0)
+						Text(entry.total, format: .currency(code: "AUD").precision(.fractionLength(0)))
+							.foregroundStyle(entry.total >= 0 ? .green : .red)
+							.font(.title)
 							.lineLimit(1)
-							.minimumScaleFactor(0.001)
 					}
 				}
+				.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
 		}
 	}
 }

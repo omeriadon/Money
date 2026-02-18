@@ -1,8 +1,8 @@
 //
-//  Money_Widgets_Chart.swift
-//  Money Widgets
+//  moneyWatch_Widgets Chart.swift
+//  moneyWatch Watch App
 //
-//  Created by Adon Omeri on 13/2/2026.
+//  Created by Adon Omeri on 17/2/2026.
 //
 
 import Charts
@@ -10,7 +10,7 @@ import Defaults
 import SwiftUI
 import WidgetKit
 
-struct ChartProvider: TimelineProvider {
+struct WatchChartProvider: TimelineProvider {
 	func placeholder(in _: Context) -> ChartEntry {
 		ChartEntry(date: Date(), transactions: [])
 	}
@@ -56,8 +56,8 @@ struct BalancePoint: Identifiable {
 	let balance: Double
 }
 
-struct Money_WidgetsChartEntryView: View {
-	var entry: ChartProvider.Entry
+struct moneyWatch_WidgetsChartEntryView: View {
+	var entry: WatchChartProvider.Entry
 
 	@Environment(\.widgetFamily) var widgetFamily
 
@@ -123,12 +123,23 @@ struct Money_WidgetsChartEntryView: View {
 					.foregroundStyle(.white.opacity(0.5))
 					.font(.caption)
 			} else {
-				VStack(alignment: .trailing, spacing: widgetFamily == .systemSmall ? 4 : 10) {
-					Text(entry.currentBalance, format: .currency(code: "AUD"))
-						.font(widgetFamily == .systemSmall ? .title3 : .title2)
-						.fontWeight(.semibold)
-						.foregroundStyle(entry.currentBalance >= 0 ? .green : .red)
-						.monospaced()
+				VStack(alignment: .leading, spacing: 3) {
+					HStack(alignment: .center) {
+						Color.yellow
+							.mask(
+								Image("BiggerLogo")
+									.renderingMode(.template)
+									.resizable()
+									.aspectRatio(contentMode: .fit)
+							)
+							.frame(width: 20)
+
+						Spacer()
+
+						Text(entry.currentBalance, format: .currency(code: "AUD"))
+							.foregroundStyle(entry.currentBalance >= 0 ? .green : .red)
+					}
+					.frame(height: 18)
 
 					Chart {
 						ForEach(entry.cumulativeBalance) { point in
@@ -138,58 +149,45 @@ struct Money_WidgetsChartEntryView: View {
 							)
 						}
 						.lineStyle(StrokeStyle(
-							lineWidth: widgetFamily == .systemSmall ? 2 : 3,
+							lineWidth: widgetFamily == .accessoryRectangular ? 2 : 3,
 							lineCap: .round,
 							lineJoin: .round
 						))
 						.foregroundStyle(chartGradient)
 						.interpolationMethod(.stepEnd)
 					}
-					.chartYAxis(widgetFamily == .systemSmall ? .hidden : .visible)
-					.chartXAxis(widgetFamily == .systemLarge ? .visible : .hidden)
-					.chartYAxis {
-						AxisMarks(position: .trailing) { value in
-							AxisValueLabel {
-								if let balance = value.as(Double.self) {
-									Text(balance, format: .currency(code: "AUD").precision(.fractionLength(0)))
-										.font(.caption2)
-								}
-							}
-							AxisGridLine()
-						}
-					}
-					.chartXAxis {
-						AxisMarks(values: .stride(by: .day, count: 7)) { _ in
-							AxisValueLabel(format: .dateTime.month(.abbreviated).day())
-								.font(.caption2)
-						}
-					}
+					.chartYAxis(.visible)
+					.chartXAxis(.visible)
 				}
 				.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+				.padding(.top, 4)
+				.padding(.horizontal, 7)
+				.padding(.bottom, 2)
 			}
 		}
 		.containerBackground(for: .widget) {
-			Color.primary.colorInvert()
+			Color.black
 		}
 	}
 }
 
-struct Money_WidgetsChart: Widget {
-	let kind: String = "Money_Widgets_Chart"
+struct moneyWatch_WidgetsChart: Widget {
+	let kind: String = "moneyWatch_Widgets_Chart"
 
 	var body: some WidgetConfiguration {
-		StaticConfiguration(kind: kind, provider: ChartProvider()) { entry in
-			Money_WidgetsChartEntryView(entry: entry)
+		StaticConfiguration(kind: kind, provider: WatchChartProvider()) { entry in
+			moneyWatch_WidgetsChartEntryView(entry: entry)
 				.widgetAccentable()
 		}
+		.contentMarginsDisabled()
 		.configurationDisplayName("Balance Over Time")
-		.description("Your balance trend across all transactions")
-		.supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
+		.description("Your balance trend across over time.")
+		.supportedFamilies([.accessoryRectangular])
 	}
 }
 
-#Preview("Chart Widget", as: .systemLarge) {
-	Money_WidgetsChart()
+#Preview("Watch Chart Widget", as: .accessoryRectangular) {
+	moneyWatch_WidgetsChart()
 } timeline: {
 	ChartEntry(date: .now, transactions: [
 		Transaction(change: 1250.00, title: "Salary", desc: "Monthly payment", importance: .dayJob),
