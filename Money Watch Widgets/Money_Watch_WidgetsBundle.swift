@@ -13,5 +13,6 @@ struct Money_Watch_WidgetsBundle: WidgetBundle {
 	var body: some Widget {
 		Money_Watch_Widgets()
 		moneyWatch_WidgetsChart()
+		Money_Watch_WidgetsDetailed()
 	}
 }

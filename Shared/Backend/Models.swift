@@ -100,7 +100,11 @@ enum Importance: String, Codable, CaseIterable, Identifiable, Plottable {
 	}
 }
 
-final class Transaction: Identifiable, Codable, Defaults.Serializable {
+final class Transaction: Equatable, Identifiable, Codable, Defaults.Serializable {
+	static func == (lhs: Transaction, rhs: Transaction) -> Bool {
+		lhs.id == rhs.id
+	}
+
 	var id: UUID
 	var change: Double
 	var title: String
