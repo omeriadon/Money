@@ -124,15 +124,12 @@ struct moneyWatch_WidgetsChartEntryView: View {
 					.font(.caption)
 			} else {
 				VStack(alignment: .leading, spacing: 3) {
-					HStack(alignment: .center) {
-						Color.yellow
-							.mask(
-								Image("BiggerLogo")
-									.renderingMode(.template)
-									.resizable()
-									.aspectRatio(contentMode: .fit)
-							)
-							.frame(width: 20)
+					HStack(alignment: .top) {
+						Image("BiggerLogo")
+							.renderingMode(.template)
+							.resizable()
+							.aspectRatio(contentMode: .fit)
+							.foregroundStyle(Color.yellow)
 
 						Spacer()
 

@@ -53,16 +53,13 @@ struct Money_Watch_WidgetsEntryView: View {
 			// should be accessoryRectangular
 			// accessoryCircular not supported
 			default:
-				VStack(alignment: .trailing, spacing: 0) {
-					HStack {
-						Color.yellow
-							.mask(
-								Image("BiggerLogo")
-									.renderingMode(.template)
-									.resizable()
-									.aspectRatio(contentMode: .fit)
-							)
-							.frame(width: 25)
+				VStack(alignment: .leading, spacing: 0) {
+					HStack(alignment: .top) {
+						Image("BiggerLogo")
+							.renderingMode(.template)
+							.resizable()
+							.aspectRatio(contentMode: .fit)
+							.foregroundStyle(Color.yellow)
 
 						Spacer()
 
@@ -81,6 +78,9 @@ struct Money_Watch_WidgetsEntryView: View {
 					}
 				}
 				.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+				.padding(.trailing)
+				.padding(.top, 5)
+				.padding(.leading, 4)
 		}
 	}
 }
@@ -93,6 +93,7 @@ struct Money_Watch_Widgets: Widget {
 			Money_Watch_WidgetsEntryView(entry: entry)
 				.containerBackground(.black, for: .widget)
 		}
+		.contentMarginsDisabled()
 		.configurationDisplayName("Total")
 		.description("Sum of all transactions.")
 		.supportedFamilies([.accessoryCorner, .accessoryInline, .accessoryRectangular])
