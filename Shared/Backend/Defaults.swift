@@ -12,6 +12,7 @@ extension Defaults.Keys {
 	static let userToken = Key<String?>("userToken", default: nil)
 	static let userEmail = Key<String?>("userEmail", default: nil)
 	static let userFirstName = Key<String?>("userFirstName", default: nil)
+	static let hasSeenIntroSplash = Key<Bool>("hasSeenIntroSplash", default: false)
 	#if DEBUG
 		static let transactions = Key<[Transaction]>("transactions", default: [], suite: .init(suiteName: "group.omeriadon.money")!)
 	#else

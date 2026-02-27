@@ -28,6 +28,7 @@ struct SettingsView: View {
 
 	@Default(.useNewGradient) var useNewGradient
 	@Default(.showAnalyseTab) var showAnalyseTab
+	@Default(.hasSeenIntroSplash) var hasSeenIntroSplash
 
 	var body: some View {
 		NavigationStack {
@@ -41,6 +42,14 @@ struct SettingsView: View {
 					Toggle(isOn: $showAnalyseTab) {
 						Text("Show Analyse Tab")
 						Text("Detailed statistics and charts")
+					}
+				}
+
+				Section {
+					Button {
+						hasSeenIntroSplash = false
+					} label: {
+						Text("Show onboarding")
 					}
 				}
 

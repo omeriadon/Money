@@ -5,12 +5,15 @@
 //  Created by Adon Omeri on 20/1/2026.
 //
 
+import Defaults
 import SwiftUI
 
 struct RootView: View {
 	@EnvironmentObject var networkManager: NetworkManager
 
 	@StateObject private var repoHolder = RepoHolder()
+	@Default(.hasSeenIntroSplash) private var hasSeenIntroSplash
+	@State private var showIntroSplash = false
 
 	var body: some View {
 		ZStack {
@@ -32,6 +35,15 @@ struct RootView: View {
 					network: networkManager
 				)
 			}
+
+			if !hasSeenIntroSplash {
+				showIntroSplash = true
+			}
+		}
+		.sheet(isPresented: $showIntroSplash, onDismiss: {
+			hasSeenIntroSplash = true
+		}) {
+			FirstLaunchSplashSheetView(isPresented: $showIntroSplash)
 		}
 		.dynamicTypeSize(...DynamicTypeSize.large)
 	}

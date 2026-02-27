@@ -1,0 +1,79 @@
+//
+//  FirstLaunchSplashSheetView.swift
+//  Money
+//
+//  Created by GitHub Copilot on 27/2/2026.
+//
+
+import ColorfulX
+import SwiftUI
+
+struct FirstLaunchSplashSheetView: View {
+	@Binding var isPresented: Bool
+
+	@State private var colourfulColors: [Color] = [.black, .yellow, .black, .yellow, .black, .yellow]
+	@State private var colourfulSpeed: Double = 1.8
+	@State private var colourfulBias: Double = 0.015
+	@State private var colourfulNoise: Double = 30.0
+	@State private var colourfulTransition: Double = 10.0
+	@State private var frameLimit: Int = 120
+	@State private var renderScale: Double = 1.0
+
+	var body: some View {
+		ZStack {
+			ColorfulView(
+				color: $colourfulColors,
+				speed: $colourfulSpeed,
+				bias: $colourfulBias,
+				noise: $colourfulNoise,
+				transitionSpeed: $colourfulTransition,
+				frameLimit: $frameLimit,
+				renderScale: $renderScale
+			)
+			.ignoresSafeArea()
+
+			VStack(spacing: 24) {
+				Spacer()
+
+				Image("Logo")
+					.renderingMode(.template)
+					.resizable()
+					.aspectRatio(contentMode: .fit)
+					.foregroundStyle(.black)
+					.frame(maxWidth: 260)
+					.padding(24)
+					.glassEffect(.clear.interactive(), in: RoundedRectangle(cornerRadius: 70))
+					.padding(.bottom, 20)
+
+				VStack(spacing: 10) {
+					Text("Welcome to Money")
+						.font(.largeTitle.bold())
+
+					Text("Track every dollar with a clean, fast, and focused experience.")
+						.font(.headline)
+						.multilineTextAlignment(.center)
+				}
+				.padding(.horizontal, 24)
+				.foregroundStyle(.white)
+
+				Spacer()
+
+				Button {
+					isPresented = false
+				} label: {
+					Label("Go", systemImage: "arrow.right")
+						.font(.title)
+						.padding(.vertical, 14)
+						.frame(maxWidth: .infinity)
+				}
+				.buttonStyle(.glassProminent)
+				.tint(.yellow)
+				.foregroundStyle(.black)
+				.padding(.horizontal, 28)
+			}
+		}
+		.interactiveDismissDisabled()
+		.presentationDetents([.large])
+		.presentationDragIndicator(.hidden)
+	}
+}
