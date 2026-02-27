@@ -15,7 +15,6 @@ struct MoneyApp: App {
 		WindowGroup {
 			RootView()
 				.environmentObject(networkManager)
-				.fontDesign(.monospaced)
 		}
 	}
 }

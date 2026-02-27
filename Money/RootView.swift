@@ -49,5 +49,6 @@ struct RootView: View {
 			FirstLaunchSplashSheetView()
 		}
 		.dynamicTypeSize(...DynamicTypeSize.large)
+		.fontDesign(.monospaced)
 	}
 }
