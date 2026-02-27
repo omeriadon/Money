@@ -22,6 +22,16 @@ struct TransactionDTO: Codable, Identifiable {
 	let dateUpdated: Date
 }
 
+struct GoalDTO: Codable, Identifiable {
+	let id: UUID
+	let name: String
+	let description: String
+	let goalAmount: Double
+	let userID: UUID
+	let dateCreated: Date
+	let dateUpdated: Date
+}
+
 struct UserLoginResponse: Codable {
 	let token: String
 	let user: UserDTO

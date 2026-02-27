@@ -3,12 +3,14 @@ import SwiftUI
 
 struct ContentView: View {
 	@EnvironmentObject var transactionRepo: TransactionRepository
+	@EnvironmentObject var goalRepo: GoalRepository
 
 	@State var currentTab = "Home"
 
 	let generator = UIImpactFeedbackGenerator(style: .medium)
 
 	@Default(.showAnalyseTab) var showAnalyseTab
+	@Default(.showGoalsTab) var showGoalsTab
 
 	var body: some View {
 		TabView(selection: $currentTab) {
@@ -18,6 +20,14 @@ struct ContentView: View {
 				Label("Home", systemImage: "house")
 			}
 
+			if showGoalsTab {
+				Tab(value: "Goals") {
+					GoalListView()
+				} label: {
+					Label("Goals", systemImage: "target")
+				}
+			}
+			
 			if showAnalyseTab {
 				Tab(value: "Analyse") {
 					AnalyseView()
@@ -37,6 +47,7 @@ struct ContentView: View {
 			} label: {
 				Label("Transactions", systemImage: "mail.stack")
 			}
+
 		}
 		.onChange(of: currentTab) {
 			generator.impactOccurred(intensity: 1)
@@ -47,6 +58,7 @@ struct ContentView: View {
 		}
 		.task {
 			await transactionRepo.network.refreshCurrentUser()
+			try? await goalRepo.syncGoals()
 		}
 	}
 }

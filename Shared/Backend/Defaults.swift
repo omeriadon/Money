@@ -15,10 +15,14 @@ extension Defaults.Keys {
 	static let hasSeenIntroSplash = Key<Bool>("hasSeenIntroSplash", default: false)
 	#if DEBUG
 		static let transactions = Key<[Transaction]>("transactions", default: [], suite: .init(suiteName: "group.omeriadon.money")!)
+		static let goals = Key<[Goal]>("goals", default: [], suite: .init(suiteName: "group.omeriadon.money")!)
 	#else
 		static let transactions = Key<[Transaction]>("transactions", default: [], suite: .init(suiteName: "group.omeriadon-hackclub-release.money")!)
+		static let goals = Key<[Goal]>("goals", default: [], suite: .init(suiteName: "group.omeriadon-hackclub-release.money")!)
 	#endif
 
 	static let useNewGradient = Key<Bool>("useNewGradient", default: true)
 	static let showAnalyseTab = Key<Bool>("showAnalyseTab", default: true)
+	static let showGoalsTab = Key<Bool>("showGoalsTab", default: true)
+	static let useMonospacedFont = Key<Bool>("useMonospacedFont", default: true)
 }

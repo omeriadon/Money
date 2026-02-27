@@ -150,3 +150,51 @@ final class Transaction: Equatable, Identifiable, Codable, Defaults.Serializable
 		dateCreated = dto.dateCreated
 	}
 }
+
+final class Goal: Equatable, Identifiable, Codable, Defaults.Serializable {
+	static func == (lhs: Goal, rhs: Goal) -> Bool {
+		lhs.id == rhs.id
+	}
+
+	var id: UUID
+	var name: String
+	var desc: String
+	var goalAmount: Double
+	var dateCreated: Date
+	var dateUpdated: Date
+
+	init(
+		id: UUID = UUID(),
+		name: String,
+		desc: String,
+		goalAmount: Double,
+		dateCreated: Date = Date(),
+		dateUpdated: Date = Date()
+	) {
+		self.id = id
+		self.name = name
+		self.desc = desc
+		self.goalAmount = goalAmount
+		self.dateCreated = dateCreated
+		self.dateUpdated = dateUpdated
+	}
+
+	convenience init(from dto: GoalDTO) {
+		self.init(
+			id: dto.id,
+			name: dto.name,
+			desc: dto.description,
+			goalAmount: dto.goalAmount,
+			dateCreated: dto.dateCreated,
+			dateUpdated: dto.dateUpdated
+		)
+	}
+
+	func update(from dto: GoalDTO) {
+		name = dto.name
+		desc = dto.description
+		goalAmount = dto.goalAmount
+		dateCreated = dto.dateCreated
+		dateUpdated = dto.dateUpdated
+	}
+}

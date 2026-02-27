@@ -79,6 +79,7 @@ final class WatchWatchSessionManager: NSObject, WCSessionDelegate, ObservableObj
 					Defaults[.userToken] = nil
 					networkManager.token = nil
 					Defaults[.transactions] = []
+					Defaults[.goals] = []
 
 				default:
 					break

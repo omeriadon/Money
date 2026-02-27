@@ -120,12 +120,14 @@ final class TransactionRepository: ObservableObject {
 			try await network.logout()
 			_transactions.removeAll()
 			Defaults[.transactions] = _transactions
+			Defaults[.goals] = []
 		}
 
 		func deleteUser() async throws {
 			try await network.deleteCurrentUser()
 			_transactions.removeAll()
 			Defaults[.transactions] = _transactions
+			Defaults[.goals] = []
 		}
 	#endif // os(iOS)
 

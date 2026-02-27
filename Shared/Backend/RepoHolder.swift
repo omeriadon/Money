@@ -9,4 +9,5 @@ import Combine
 
 final class RepoHolder: ObservableObject {
 	@Published var repo: TransactionRepository?
+	@Published var goalRepo: GoalRepository?
 }

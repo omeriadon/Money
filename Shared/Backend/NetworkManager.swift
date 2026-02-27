@@ -78,6 +78,48 @@ final class NetworkManager: ObservableObject {
 		return try decoder.decode([TransactionDTO].self, from: data)
 	}
 
+	func fetchGoals() async throws -> [GoalDTO] {
+		guard let token else {
+			throw NSError(
+				domain: "",
+				code: 401,
+				userInfo: [NSLocalizedDescriptionKey: "Not authenticated"]
+			)
+		}
+
+		let url = URL(string: "https://money.adonis.pt/goals")!
+		var request = URLRequest(url: url)
+		request.httpMethod = "GET"
+		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+		request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+		let (data, response) = try await URLSession.shared.data(for: request)
+
+		guard let httpResponse = response as? HTTPURLResponse else {
+			throw URLError(.badServerResponse)
+		}
+
+		guard (200 ... 299).contains(httpResponse.statusCode) else {
+			let message: String = if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+			                         let error = json["error"] as? String
+			{
+				error
+			} else {
+				"\(httpResponse.statusCode)"
+			}
+			throw NSError(
+				domain: "",
+				code: httpResponse.statusCode,
+				userInfo: [NSLocalizedDescriptionKey: message]
+			)
+		}
+
+		let decoder = JSONDecoder()
+		decoder.dateDecodingStrategy = .iso8601
+
+		return try decoder.decode([GoalDTO].self, from: data)
+	}
+
 	#if os(iOS)
 		func login(email: String, password: String) async throws {
 			let url = URL(string: "https://money.adonis.pt/users/login")!
@@ -252,6 +294,99 @@ final class NetworkManager: ObservableObject {
 		return try decoder.decode(TransactionDTO.self, from: data)
 	}
 
+	func createGoal(
+		name: String,
+		description: String,
+		goalAmount: Double
+	) async throws -> [GoalDTO] {
+		guard let token else {
+			throw NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Not authenticated"])
+		}
+
+		let url = URL(string: "https://money.adonis.pt/goals")!
+		var request = URLRequest(url: url)
+		request.httpMethod = "POST"
+		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+		let body: [String: Any] = [
+			"name": name,
+			"description": description,
+			"goalAmount": abs(goalAmount),
+		]
+		request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+		let (data, response) = try await URLSession.shared.data(for: request)
+
+		guard let httpResponse = response as? HTTPURLResponse else {
+			throw URLError(.badServerResponse)
+		}
+
+		guard (200 ... 299).contains(httpResponse.statusCode) else {
+			let message: String = if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+			                         let error = json["error"] as? String
+			{
+				error
+			} else {
+				switch httpResponse.statusCode {
+					case 400: "Bad request"
+					case 401: "Unauthorized"
+					case 404: "Not found"
+					case 409: "Conflict"
+					default: "\(httpResponse.statusCode)"
+				}
+			}
+			throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: message])
+		}
+
+		return try await fetchGoals()
+	}
+
+	func updateGoal(
+		id: UUID,
+		name: String? = nil,
+		description: String? = nil,
+		goalAmount: Double? = nil
+	) async throws -> GoalDTO {
+		let url = URL(string: "https://money.adonis.pt/goals/\(id)")!
+		var request = URLRequest(url: url)
+		request.httpMethod = "PATCH"
+		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+		if let token {
+			request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+		}
+
+		var body: [String: Any] = [:]
+		if let name { body["name"] = name }
+		if let description { body["description"] = description }
+		if let goalAmount { body["goalAmount"] = abs(goalAmount) }
+
+		request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+		let (data, response) = try await URLSession.shared.data(for: request)
+
+		guard let httpResponse = response as? HTTPURLResponse else {
+			throw URLError(.badServerResponse)
+		}
+
+		guard (200 ... 299).contains(httpResponse.statusCode) else {
+			let message: String = if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+			                         let error = json["error"] as? String
+			{
+				error
+			} else {
+				"\(httpResponse.statusCode)"
+			}
+			throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: message])
+		}
+
+		let decoder = JSONDecoder()
+		decoder.dateDecodingStrategy = .iso8601
+
+		return try decoder.decode(GoalDTO.self, from: data)
+	}
+
 	func deleteTransactions(ids: [UUID]) async throws -> [TransactionDTO] {
 		guard let token else {
 			throw NSError(
@@ -300,6 +435,54 @@ final class NetworkManager: ObservableObject {
 		WidgetCenter.shared.reloadAllTimelines()
 
 		return try await fetchTransactions()
+	}
+
+	func deleteGoals(ids: [UUID]) async throws -> [GoalDTO] {
+		guard let token else {
+			throw NSError(
+				domain: "",
+				code: 401,
+				userInfo: [NSLocalizedDescriptionKey: "Not authenticated"]
+			)
+		}
+
+		let url = URL(string: "https://money.adonis.pt/goals/deleteMultiple")!
+		var request = URLRequest(url: url)
+		request.httpMethod = "POST"
+		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+		let body: [String: Any] = [
+			"ids": ids.map(\.uuidString),
+		]
+		request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+		let (data, response) = try await URLSession.shared.data(for: request)
+
+		guard let httpResponse = response as? HTTPURLResponse else {
+			throw URLError(.badServerResponse)
+		}
+
+		guard (200 ... 299).contains(httpResponse.statusCode) else {
+			let message: String = if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+			                         let error = json["error"] as? String
+			{
+				error
+			} else {
+				switch httpResponse.statusCode {
+					case 400: "Bad request"
+					case 401: "Unauthorized"
+					default: "\(httpResponse.statusCode)"
+				}
+			}
+			throw NSError(
+				domain: "",
+				code: httpResponse.statusCode,
+				userInfo: [NSLocalizedDescriptionKey: message]
+			)
+		}
+
+		return try await fetchGoals()
 	}
 
 	#if os(iOS)

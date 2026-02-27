@@ -13,6 +13,7 @@ struct RootView: View {
 
 	@StateObject private var repoHolder = RepoHolder()
 	@Default(.hasSeenIntroSplash) private var hasSeenIntroSplash
+	@Default(.useMonospacedFont) private var useMonospacedFont
 	
 	private var showIntroBinding: Binding<Bool> {
 		Binding(
@@ -25,10 +26,11 @@ struct RootView: View {
 
 	var body: some View {
 		ZStack {
-			if let repo = repoHolder.repo {
+			if let repo = repoHolder.repo, let goalRepo = repoHolder.goalRepo {
 				if networkManager.token != nil {
 					ContentView()
 						.environmentObject(repo)
+						.environmentObject(goalRepo)
 						.transition(.opacity)
 				} else {
 					LoginSignupView()
@@ -44,11 +46,17 @@ struct RootView: View {
 				)
 			}
 
+			if repoHolder.goalRepo == nil {
+				repoHolder.goalRepo = GoalRepository(
+					network: networkManager
+				)
+			}
+
 		}
 		.sheet(isPresented: showIntroBinding) {
 			FirstLaunchSplashSheetView()
 		}
 		.dynamicTypeSize(...DynamicTypeSize.large)
-		.fontDesign(.monospaced)
+		.fontDesign(useMonospacedFont ? .monospaced : .default)
 	}
 }

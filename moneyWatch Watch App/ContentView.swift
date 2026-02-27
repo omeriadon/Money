@@ -18,6 +18,13 @@ struct ContentView: View {
 			}
 
 			Tab {
+				GoalListView()
+
+			} label: {
+				Label("Goals", systemImage: "target")
+			}
+
+			Tab {
 				ListView()
 
 			} label: {

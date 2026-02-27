@@ -10,6 +10,7 @@ import SwiftUI
 
 struct SettingsView: View {
 	@EnvironmentObject var transactionRepo: TransactionRepository
+	@EnvironmentObject var goalRepo: GoalRepository
 
 	@State private var showAlert = false
 	@State private var errorMessage = ""
@@ -28,28 +29,40 @@ struct SettingsView: View {
 
 	@Default(.useNewGradient) var useNewGradient
 	@Default(.showAnalyseTab) var showAnalyseTab
+	@Default(.showGoalsTab) var showGoalsTab
 	@Default(.hasSeenIntroSplash) var hasSeenIntroSplash
+	@Default(.useMonospacedFont) var useMonospacedFont
 
 	var body: some View {
 		NavigationStack {
 			List {
-				Section {
+				Section("Appearance") {
+					Toggle(isOn: $useMonospacedFont) {
+						Text("Use monospaced font")
+						Text("Applies app-wide typography style")
+					}
+
 					Toggle(isOn: $useNewGradient) {
 						Text("Use animated background")
 						Text("Uses a shader instead of colour gradient on home screen.")
 					}
 
-					Toggle(isOn: $showAnalyseTab) {
-						Text("Show Analyse Tab")
-						Text("Detailed statistics and charts")
-					}
-				}
-
-				Section {
 					Button {
 						hasSeenIntroSplash = false
 					} label: {
 						Text("Show onboarding")
+					}
+				}
+
+				Section("Tabs") {
+					Toggle(isOn: $showAnalyseTab) {
+						Text("Show Analyse Tab")
+						Text("Detailed statistics and charts")
+					}
+
+					Toggle(isOn: $showGoalsTab) {
+						Text("Show Goals Tab")
+						Text("Track savings and target milestones")
 					}
 				}
 
@@ -128,7 +141,7 @@ struct SettingsView: View {
 							Task { try? await transactionRepo.deleteUser() }
 						} label: { Text("Yes") }
 						Button(role: .cancel) {} label: { Text("No") }
-					} message: { Text("This will permanently delete all your transactions.") }
+					} message: { Text("This will permanently delete all your transactions and goals.") }
 				}
 			}
 			.toolbar {
