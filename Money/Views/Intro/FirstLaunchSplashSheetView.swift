@@ -7,11 +7,13 @@
 
 import ColorfulX
 import SwiftUI
+import Defaults
 
 struct FirstLaunchSplashSheetView: View {
-	@Binding var isPresented: Bool
+	@Environment(\.dismiss) private var dismiss
 
-	@State private var colourfulColors: [Color] = [.black, .yellow, .black, .yellow, .black, .yellow]
+	@Default(.hasSeenIntroSplash) var hasSeenIntroSplash
+	@State private var colourfulColors: [Color] = [.black, .yellow, .black, .yellow, .white]
 	@State private var colourfulSpeed: Double = 1.8
 	@State private var colourfulBias: Double = 0.015
 	@State private var colourfulNoise: Double = 30.0
@@ -39,7 +41,7 @@ struct FirstLaunchSplashSheetView: View {
 					.renderingMode(.template)
 					.resizable()
 					.aspectRatio(contentMode: .fit)
-					.foregroundStyle(.black)
+					.foregroundStyle(.white)
 					.frame(maxWidth: 260)
 					.padding(24)
 					.glassEffect(.clear.interactive(), in: RoundedRectangle(cornerRadius: 70))
@@ -59,7 +61,8 @@ struct FirstLaunchSplashSheetView: View {
 				Spacer()
 
 				Button {
-					isPresented = false
+					hasSeenIntroSplash = true
+					dismiss()
 				} label: {
 					Label("Go", systemImage: "arrow.right")
 						.font(.title)

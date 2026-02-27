@@ -13,7 +13,15 @@ struct RootView: View {
 
 	@StateObject private var repoHolder = RepoHolder()
 	@Default(.hasSeenIntroSplash) private var hasSeenIntroSplash
-	@State private var showIntroSplash = false
+	
+	private var showIntroBinding: Binding<Bool> {
+		Binding(
+			get: { !hasSeenIntroSplash },
+			set: { isPresented in
+				hasSeenIntroSplash = !isPresented
+			}
+		)
+	}
 
 	var body: some View {
 		ZStack {
@@ -36,14 +44,9 @@ struct RootView: View {
 				)
 			}
 
-			if !hasSeenIntroSplash {
-				showIntroSplash = true
-			}
 		}
-		.sheet(isPresented: $showIntroSplash, onDismiss: {
-			hasSeenIntroSplash = true
-		}) {
-			FirstLaunchSplashSheetView(isPresented: $showIntroSplash)
+		.sheet(isPresented: showIntroBinding) {
+			FirstLaunchSplashSheetView()
 		}
 		.dynamicTypeSize(...DynamicTypeSize.large)
 	}
