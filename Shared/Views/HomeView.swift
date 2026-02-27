@@ -50,7 +50,6 @@ struct HomeView: View {
 					.foregroundStyle(.white)
 				#if os(iOS)
 					.padding(.horizontal)
-					.fontWeight(.ultraLight)
 				#endif
 					.font(.system(size: 300))
 					.lineLimit(1)
