@@ -8,7 +8,11 @@ struct moneyWatch_Watch_AppApp: App {
 	@StateObject private var session = WatchWatchSessionManager.shared
 	@StateObject private var networkManager = NetworkManager.shared
 	@StateObject private var repoHolder = RepoHolder()
-	@Default(.useMonospacedFont) private var useMonospacedFont
+	@Default(.fontDesignStyle) private var fontDesignStyle
+
+	private var appFontDesign: Font.Design {
+		AppFontDesign(rawValue: fontDesignStyle)?.fontDesign ?? .monospaced
+	}
 
 	var body: some Scene {
 		WindowGroup {
@@ -31,7 +35,7 @@ struct moneyWatch_Watch_AppApp: App {
 					}
 				}
 			}
-			.fontDesign(useMonospacedFont ? .monospaced : .default)
+			.fontDesign(appFontDesign)
 			.animation(.easeInOut, value: networkManager.token)
 			.task {
 				session.configure(networkManager: networkManager)

@@ -25,4 +25,5 @@ extension Defaults.Keys {
 	static let showAnalyseTab = Key<Bool>("showAnalyseTab", default: true)
 	static let showGoalsTab = Key<Bool>("showGoalsTab", default: true)
 	static let useMonospacedFont = Key<Bool>("useMonospacedFont", default: true)
+	static let fontDesignStyle = Key<String>("fontDesignStyle", default: "monospaced")
 }

@@ -31,15 +31,16 @@ struct SettingsView: View {
 	@Default(.showAnalyseTab) var showAnalyseTab
 	@Default(.showGoalsTab) var showGoalsTab
 	@Default(.hasSeenIntroSplash) var hasSeenIntroSplash
-	@Default(.useMonospacedFont) var useMonospacedFont
+	@Default(.fontDesignStyle) var fontDesignStyle
 
 	var body: some View {
 		NavigationStack {
 			List {
 				Section("Appearance") {
-					Toggle(isOn: $useMonospacedFont) {
-						Text("Use monospaced font")
-						Text("Applies app-wide typography style")
+					Picker("Font Style", selection: $fontDesignStyle) {
+						ForEach(AppFontDesign.allCases) { style in
+							Text(style.title).tag(style.rawValue)
+						}
 					}
 
 					Toggle(isOn: $useNewGradient) {

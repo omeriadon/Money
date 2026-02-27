@@ -38,6 +38,7 @@ final class GoalRepository: ObservableObject {
 		}
 
 		Defaults[.goals] = _goals
+		GoalGaugeWidgetStore.saveGoals(_goals)
 	}
 
 	func createGoal(
@@ -63,6 +64,7 @@ final class GoalRepository: ObservableObject {
 		}
 
 		Defaults[.goals] = _goals
+		GoalGaugeWidgetStore.saveGoals(_goals)
 	}
 
 	func updateGoal(
@@ -94,11 +96,13 @@ final class GoalRepository: ObservableObject {
 		}
 
 		Defaults[.goals] = _goals
+		GoalGaugeWidgetStore.saveGoals(_goals)
 	}
 
 	func delete(ids: [UUID]) async throws {
 		_goals.removeAll { ids.contains($0.id) }
 		Defaults[.goals] = _goals
+		GoalGaugeWidgetStore.saveGoals(_goals)
 
 		let remaining = try await network.deleteGoals(ids: ids)
 		_goals = remaining.map {
@@ -112,5 +116,6 @@ final class GoalRepository: ObservableObject {
 			)
 		}
 		Defaults[.goals] = _goals
+		GoalGaugeWidgetStore.saveGoals(_goals)
 	}
 }

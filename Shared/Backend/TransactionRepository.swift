@@ -39,6 +39,7 @@ final class TransactionRepository: ObservableObject {
 		}
 
 		Defaults[.transactions] = _transactions
+		GoalGaugeWidgetStore.saveTransactions(_transactions)
 	}
 
 	func createTransaction(
@@ -67,6 +68,7 @@ final class TransactionRepository: ObservableObject {
 		}
 
 		Defaults[.transactions] = _transactions
+		GoalGaugeWidgetStore.saveTransactions(_transactions)
 	}
 
 	func updateTransaction(id: UUID, change: Double? = nil, title: String? = nil, description: String? = nil, importance: Importance? = nil) async throws {
@@ -94,11 +96,13 @@ final class TransactionRepository: ObservableObject {
 		}
 
 		Defaults[.transactions] = _transactions
+		GoalGaugeWidgetStore.saveTransactions(_transactions)
 	}
 
 	func delete(ids: [UUID]) async throws {
 		_transactions.removeAll { ids.contains($0.id) }
 		Defaults[.transactions] = _transactions
+		GoalGaugeWidgetStore.saveTransactions(_transactions)
 
 		let remaining = try await network.deleteTransactions(ids: ids)
 		_transactions = remaining.map {
@@ -113,6 +117,7 @@ final class TransactionRepository: ObservableObject {
 			)
 		}
 		Defaults[.transactions] = _transactions
+		GoalGaugeWidgetStore.saveTransactions(_transactions)
 	}
 
 	#if os(iOS)
@@ -121,6 +126,8 @@ final class TransactionRepository: ObservableObject {
 			_transactions.removeAll()
 			Defaults[.transactions] = _transactions
 			Defaults[.goals] = []
+			GoalGaugeWidgetStore.saveTransactions(_transactions)
+			GoalGaugeWidgetStore.saveGoals([])
 		}
 
 		func deleteUser() async throws {
@@ -128,6 +135,8 @@ final class TransactionRepository: ObservableObject {
 			_transactions.removeAll()
 			Defaults[.transactions] = _transactions
 			Defaults[.goals] = []
+			GoalGaugeWidgetStore.saveTransactions(_transactions)
+			GoalGaugeWidgetStore.saveGoals([])
 		}
 	#endif // os(iOS)
 

@@ -79,7 +79,9 @@ struct Money_WidgetsSimple: Widget {
 	var body: some WidgetConfiguration {
 		StaticConfiguration(kind: kind, provider: SimpleProvider()) { entry in
 			Money_WidgetsSimpleEntryView(entry: entry)
-				.containerBackground(.black, for: .widget)
+				.containerBackground(for: .widget) {
+					Color.primary.colorInvert()
+				}
 		}
 		.configurationDisplayName("Total")
 		.description("Sum of all transactions.")

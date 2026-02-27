@@ -13,7 +13,7 @@ struct RootView: View {
 
 	@StateObject private var repoHolder = RepoHolder()
 	@Default(.hasSeenIntroSplash) private var hasSeenIntroSplash
-	@Default(.useMonospacedFont) private var useMonospacedFont
+	@Default(.fontDesignStyle) private var fontDesignStyle
 
 	private var showIntroBinding: Binding<Bool> {
 		Binding(
@@ -22,6 +22,10 @@ struct RootView: View {
 				hasSeenIntroSplash = !isPresented
 			}
 		)
+	}
+
+	private var appFontDesign: Font.Design {
+		AppFontDesign(rawValue: fontDesignStyle)?.fontDesign ?? .monospaced
 	}
 
 	var body: some View {
@@ -56,6 +60,6 @@ struct RootView: View {
 			FirstLaunchSplashSheetView()
 		}
 		.dynamicTypeSize(...DynamicTypeSize.large)
-		.fontDesign(useMonospacedFont ? .monospaced : .default)
+		.fontDesign(appFontDesign)
 	}
 }

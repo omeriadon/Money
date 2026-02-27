@@ -12,6 +12,14 @@ struct GoalListView: View {
 	@State private var searchText = ""
 	@State private var showAddGoal = false
 
+	private var hasNoItems: Bool {
+		goalRepo.goals.isEmpty
+	}
+
+	private var hasNoSearchResults: Bool {
+		!searchText.isEmpty && filteredGoals.isEmpty
+	}
+
 	private var filteredGoals: [Goal] {
 		if searchText.isEmpty {
 			return goalRepo.goals
@@ -25,51 +33,63 @@ struct GoalListView: View {
 	var body: some View {
 		NavigationStack {
 			ZStack {
-				if filteredGoals.isEmpty {
+				if hasNoItems {
 					VStack {
 						Spacer()
 						ContentUnavailableView(
-							searchText.isEmpty ? "No Goals" : "No Results",
-							systemImage: "magnifyingglass"
+							"No Goals",
+							systemImage: "target"
 						)
 						Spacer()
 					}
 					.transition(.blurReplace)
 				} else {
 					List {
-						ForEach(filteredGoals) { goal in
-							NavigationLink {
-								GoalDetailView(
-									isNew: false,
-									goal: goal
+						if hasNoSearchResults {
+							HStack {
+								Spacer()
+								ContentUnavailableView(
+									"No Results",
+									systemImage: "magnifyingglass"
 								)
-							} label: {
-								HStack {
-									Image(systemName: "target")
-									Text(goal.name)
-
-									Spacer()
-
-									Text(
-										abs(goal.goalAmount),
-										format: .currency(code: "AUD")
-									)
-									.foregroundStyle(.green)
-									.font(.title3)
-									.lineLimit(1)
-									.minimumScaleFactor(0.01)
-								}
+								Spacer()
 							}
-							.transition(.blurReplace)
-						}
-						.onDelete { indexSet in
-							let ids = indexSet.map { filteredGoals[$0].id }
+							.listRowBackground(Color.clear)
+						} else {
+							ForEach(filteredGoals) { goal in
+								NavigationLink {
+									GoalDetailView(
+										isNew: false,
+										goal: goal
+									)
+								} label: {
+									HStack {
+										Image(systemName: "target")
+										Text(goal.name)
 
-							Task {
-								do {
-									try await goalRepo.delete(ids: ids)
-								} catch {
-									errorMessage = error.localizedDescription
+										Spacer()
+
+										Text(
+											abs(goal.goalAmount),
+											format: .currency(code: "AUD")
+										)
+										.foregroundStyle(.green)
+										.font(.title3)
+										.lineLimit(1)
+										.minimumScaleFactor(0.01)
+									}
+								}
+								.transition(.blurReplace)
+							}
+							.onDelete { indexSet in
+								let ids = indexSet.map { filteredGoals[$0].id }
+
+								Task {
+									do {
+										try await goalRepo.delete(ids: ids)
+									} catch {
+										errorMessage = error.localizedDescription
+									}
 								}
 							}
 						}

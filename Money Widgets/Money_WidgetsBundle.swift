@@ -14,5 +14,6 @@ struct Money_WidgetsBundle: WidgetBundle {
 		Money_WidgetsSimple()
 		Money_WidgetsDetailed()
 		Money_WidgetsChart()
+		Money_WidgetsGoalGauge()
 	}
 }
