@@ -79,7 +79,6 @@ struct GoalDetailView: View {
 		}
 	}
 
-	@ViewBuilder
 	private var form: some View {
 		List {
 			Section {

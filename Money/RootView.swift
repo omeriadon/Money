@@ -14,7 +14,7 @@ struct RootView: View {
 	@StateObject private var repoHolder = RepoHolder()
 	@Default(.hasSeenIntroSplash) private var hasSeenIntroSplash
 	@Default(.useMonospacedFont) private var useMonospacedFont
-	
+
 	private var showIntroBinding: Binding<Bool> {
 		Binding(
 			get: { !hasSeenIntroSplash },
@@ -51,7 +51,6 @@ struct RootView: View {
 					network: networkManager
 				)
 			}
-
 		}
 		.sheet(isPresented: showIntroBinding) {
 			FirstLaunchSplashSheetView()

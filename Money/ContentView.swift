@@ -27,7 +27,7 @@ struct ContentView: View {
 					Label("Goals", systemImage: "target")
 				}
 			}
-			
+
 			if showAnalyseTab {
 				Tab(value: "Analyse") {
 					AnalyseView()
@@ -47,7 +47,6 @@ struct ContentView: View {
 			} label: {
 				Label("Transactions", systemImage: "mail.stack")
 			}
-
 		}
 		.onChange(of: currentTab) {
 			generator.impactOccurred(intensity: 1)

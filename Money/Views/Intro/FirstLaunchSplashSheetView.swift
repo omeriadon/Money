@@ -6,8 +6,8 @@
 //
 
 import ColorfulX
-import SwiftUI
 import Defaults
+import SwiftUI
 
 struct FirstLaunchSplashSheetView: View {
 	@Environment(\.dismiss) private var dismiss
