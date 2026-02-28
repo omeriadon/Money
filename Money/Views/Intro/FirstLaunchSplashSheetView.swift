@@ -16,7 +16,7 @@ struct FirstLaunchSplashSheetView: View {
 	@State private var colourfulColors: [Color] = [.black, .yellow, .black, .yellow, .white]
 	@State private var colourfulSpeed: Double = 1.8
 	@State private var colourfulBias: Double = 0.015
-	@State private var colourfulNoise: Double = 30.0
+	@State private var colourfulNoise: Double = 50.0
 	@State private var colourfulTransition: Double = 10.0
 	@State private var frameLimit: Int = 120
 	@State private var renderScale: Double = 1.0

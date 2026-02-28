@@ -56,7 +56,7 @@ struct RootView: View {
 				)
 			}
 		}
-		.sheet(isPresented: showIntroBinding) {
+		.fullScreenCover(isPresented: showIntroBinding) {
 			FirstLaunchSplashSheetView()
 		}
 		.dynamicTypeSize(...DynamicTypeSize.large)

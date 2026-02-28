@@ -91,7 +91,7 @@ struct GoalListView: View {
 							}
 						}
 					}
-					.searchable(text: $searchText, placement: .toolbar, prompt: isiPhone() ? "Search goals" : "Search")
+					.searchable(text: $searchText, prompt: isiPhone() ? "Search goals" : "Search")
 					.tint(.secondary)
 //					.refreshable {
 //						Task {

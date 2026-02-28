@@ -10,6 +10,7 @@
 		A70133C62F3E01A50027A60C /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A70133C52F3E01A50027A60C /* WidgetKit.framework */; };
 		A70133C82F3E01A50027A60C /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A70133C72F3E01A50027A60C /* SwiftUI.framework */; };
 		A70133D32F3E01A70027A60C /* Money WidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A70133C42F3E01A50027A60C /* Money WidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A719E4CC2F52CC8300A49E9D /* IrregularGradient in Frameworks */ = {isa = PBXBuildFile; productRef = A719E4CB2F52CC8300A49E9D /* IrregularGradient */; };
 		A73769282F3E05D0003FC757 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = A73769272F3E05D0003FC757 /* Defaults */; };
 		A73769312F3E0A3C003FC757 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A70133C52F3E01A50027A60C /* WidgetKit.framework */; };
 		A73769322F3E0A3C003FC757 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A70133C72F3E01A50027A60C /* SwiftUI.framework */; };
@@ -212,6 +213,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A719E4CC2F52CC8300A49E9D /* IrregularGradient in Frameworks */,
 				A75630622F20FEA900AA3CA5 /* Defaults in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -334,6 +336,7 @@
 			name = "moneyWatch Watch App";
 			packageProductDependencies = (
 				A75630612F20FEA900AA3CA5 /* Defaults */,
+				A719E4CB2F52CC8300A49E9D /* IrregularGradient */,
 			);
 			productName = "moneyWatch Watch App";
 			productReference = A75824AB2F20B4AC00ADCD20 /* moneyWatch Watch App.app */;
@@ -406,6 +409,7 @@
 				A756305D2F20FE0000AA3CA5 /* XCRemoteSwiftPackageReference "Defaults" */,
 				A7B54CBF2F3374B400910001 /* XCRemoteSwiftPackageReference "ColorfulX" */,
 				A7B54CC42F337A2E00910001 /* XCRemoteSwiftPackageReference "Glur" */,
+				A719E4CA2F52CC8300A49E9D /* XCRemoteSwiftPackageReference "IrregularGradient" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A7B9C9B82F1B905400529CE2 /* Products */;
@@ -983,6 +987,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		A719E4CA2F52CC8300A49E9D /* XCRemoteSwiftPackageReference "IrregularGradient" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/joogps/IrregularGradient";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.1.0;
+			};
+		};
 		A756305D2F20FE0000AA3CA5 /* XCRemoteSwiftPackageReference "Defaults" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/Defaults";
@@ -1010,6 +1022,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		A719E4CB2F52CC8300A49E9D /* IrregularGradient */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A719E4CA2F52CC8300A49E9D /* XCRemoteSwiftPackageReference "IrregularGradient" */;
+			productName = IrregularGradient;
+		};
 		A73769272F3E05D0003FC757 /* Defaults */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A756305D2F20FE0000AA3CA5 /* XCRemoteSwiftPackageReference "Defaults" */;
