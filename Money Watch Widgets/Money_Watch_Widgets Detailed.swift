@@ -51,7 +51,6 @@ struct Money_Watch_WidgetsDetailedEntryView: View {
 					.font(.caption)
 			} else {
 				Group {
-					Spacer()
 					ForEach(entry.transactions.suffix(2)) { transaction in
 						HStack {
 							Label {
@@ -70,9 +69,7 @@ struct Money_Watch_WidgetsDetailedEntryView: View {
 							Spacer()
 						}
 					}
-					Spacer()
 				}
-				.padding(.horizontal)
 			}
 		}
 		.containerBackground(for: .widget) {
@@ -89,7 +86,6 @@ struct Money_Watch_WidgetsDetailed: Widget {
 			Money_Watch_WidgetsDetailedEntryView(entry: entry)
 				.widgetAccentable()
 		}
-		.contentMarginsDisabled()
 		.configurationDisplayName("Recent Transactions")
 		.description("Details for your recent transactions")
 		.supportedFamilies([.accessoryRectangular])

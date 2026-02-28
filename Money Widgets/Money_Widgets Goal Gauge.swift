@@ -1,6 +1,6 @@
+import AppIntents
 import SwiftUI
 import WidgetKit
-import AppIntents
 
 // MARK: - Data Models
 
@@ -41,7 +41,7 @@ private enum SharedStore {
 
 	static func loadGoals() -> [WidgetGoal] {
 		guard let data = UserDefaults(suiteName: suiteName)?.data(forKey: goalsKey),
-			  let goals = try? JSONDecoder().decode([WidgetGoal].self, from: data)
+		      let goals = try? JSONDecoder().decode([WidgetGoal].self, from: data)
 		else {
 			return []
 		}
@@ -50,7 +50,7 @@ private enum SharedStore {
 
 	static func loadTransactions() -> [WidgetTransaction] {
 		guard let data = UserDefaults(suiteName: suiteName)?.data(forKey: transactionsKey),
-			  let transactions = try? JSONDecoder().decode([WidgetTransaction].self, from: data)
+		      let transactions = try? JSONDecoder().decode([WidgetTransaction].self, from: data)
 		else {
 			return []
 		}
@@ -73,7 +73,6 @@ struct GoalChoiceEntity: AppEntity, Identifiable {
 }
 
 struct GoalChoiceQuery: EntityQuery {
-
 	@MainActor
 	func entities(for identifiers: [UUID]) async throws -> [GoalChoiceEntity] {
 		let goals: [WidgetGoal] = SharedStore.loadGoals()
@@ -121,22 +120,21 @@ struct GoalGaugeEntry: TimelineEntry {
 // MARK: - Timeline Provider
 
 struct GoalGaugeProvider: AppIntentTimelineProvider {
-
-	func placeholder(in context: Context) -> GoalGaugeEntry {
+	func placeholder(in _: Context) -> GoalGaugeEntry {
 		GoalGaugeEntry(
 			date: .now,
 			hasGoal: true,
 			goalName: "Emergency Fund",
-			goalAmount: 10_000,
-			currentAmount: 4_200
+			goalAmount: 10000,
+			currentAmount: 4200
 		)
 	}
 
-	func snapshot(for configuration: GoalGaugeIntent, in context: Context) async -> GoalGaugeEntry {
+	func snapshot(for configuration: GoalGaugeIntent, in _: Context) async -> GoalGaugeEntry {
 		makeEntry(configuration: configuration)
 	}
 
-	func timeline(for configuration: GoalGaugeIntent, in context: Context) async -> Timeline<GoalGaugeEntry> {
+	func timeline(for configuration: GoalGaugeIntent, in _: Context) async -> Timeline<GoalGaugeEntry> {
 		let entry = makeEntry(configuration: configuration)
 		return Timeline(entries: [entry], policy: .atEnd)
 	}
@@ -174,39 +172,59 @@ struct Money_WidgetsGoalGaugeEntryView: View {
 			Text("No Goal").font(.caption)
 		} else {
 			switch family {
-			case .accessoryCircular:
-				Gauge(value: entry.progress) {
-					Image(systemName: "target")
-				} currentValueLabel: {
-					Text("\(Int(entry.progress * 100))%")
-				}
-				.gaugeStyle(.accessoryCircular)
-
-			case .accessoryInline:
-				Text("\(entry.goalName): \(Int(entry.progress * 100))%")
-
-			case .accessoryRectangular:
-				VStack(alignment: .leading) {
-					Text(entry.goalName).font(.caption)
+				case .accessoryCircular:
 					Gauge(value: entry.progress) {
-						Text("Progress")
-					}
-					.gaugeStyle(.accessoryLinear)
-					Text("\(entry.currentAmount) / \(entry.goalAmount)")
-						.font(.caption2)
-				}
-
-			default:
-				VStack(alignment: .leading) {
-					Text(entry.goalName).font(.headline)
-					Gauge(value: entry.progress) {
-						Text("Goal")
+						Image(systemName: "target")
 					} currentValueLabel: {
 						Text("\(Int(entry.progress * 100))%")
 					}
-					Text("\(entry.currentAmount) of \(entry.goalAmount)")
-						.font(.caption)
-				}
+					.gaugeStyle(.accessoryCircular)
+
+				case .accessoryInline:
+					Label("\(entry.goalName): \(Int(entry.progress * 100))%", systemImage: "target")
+
+				case .accessoryRectangular:
+					VStack(alignment: .leading) {
+						Text(entry.goalName)
+							.font(.headline)
+						Spacer()
+						Gauge(value: entry.progress) {
+							Text("Progress")
+						}
+						.gaugeStyle(.accessoryLinear)
+						Spacer()
+						HStack {
+							Text("$\(entry.currentAmount, format: .number.precision(.fractionLength(0))) / $\(entry.goalAmount, format: .number.precision(.fractionLength(0)))")
+							Spacer()
+							Text("\(entry.progress*100, format: .number.precision(.fractionLength(0)))%")
+						}
+						.font(.subheadline)
+					}
+
+				default:
+					VStack(alignment: .leading) {
+						Text(entry.goalName)
+							.font(family == .systemSmall ? .headline : .largeTitle)
+						Spacer()
+						Gauge(value: entry.progress) {
+							Text("")
+						}
+						.labelsHidden()
+						.gaugeStyle(.accessoryLinear)
+						.foregroundStyle(.yellow)
+						Spacer()
+						if family == .systemMedium {
+							HStack {
+								Text("$\(entry.currentAmount, format: .number.precision(.fractionLength(0))) / $\(entry.goalAmount, format: .number.precision(.fractionLength(0)))")
+								Spacer()
+								Text("\(entry.progress * 100, format: .number.precision(.fractionLength(0)))%")
+							}
+						} else {
+							Text("$\(entry.currentAmount, format: .number.precision(.fractionLength(0))) / $\(entry.goalAmount, format: .number.precision(.fractionLength(0)))")
+							Spacer()
+							Text("\(entry.progress * 100, format: .number.precision(.fractionLength(0)))%")
+						}
+					}
 			}
 		}
 	}

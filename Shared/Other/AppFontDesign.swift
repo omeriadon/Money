@@ -5,7 +5,9 @@ enum AppFontDesign: String, CaseIterable, Identifiable {
 	case rounded
 	case monospaced
 
-	var id: String { rawValue }
+	var id: String {
+		rawValue
+	}
 
 	var title: String {
 		switch self {
