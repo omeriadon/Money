@@ -117,6 +117,7 @@
 			membershipExceptions = (
 				Backend/Defaults.swift,
 				Backend/DTOs.swift,
+				Backend/Infrastructure/AppConfig.swift,
 				Backend/Models.swift,
 			);
 			target = A70133C32F3E01A50027A60C /* Money WidgetsExtension */;
@@ -133,6 +134,7 @@
 			membershipExceptions = (
 				Backend/Defaults.swift,
 				Backend/DTOs.swift,
+				Backend/Infrastructure/AppConfig.swift,
 				Backend/Models.swift,
 			);
 			target = A737692F2F3E0A3C003FC757 /* Money Watch WidgetsExtension */;
