@@ -36,7 +36,7 @@ struct ContentView: View {
 				await transactionRepo.network.refreshCurrentUser()
 				try? await goalRepo.syncGoals()
 			}
-			.sheet(isPresented: $showWhatsNewSheet, onDismiss: clearPendingRelease) {
+			.sheet(isPresented: $showWhatsNewSheet, onDismiss: handleWhatsNewSheetDismiss) {
 				whatsNewSheet
 			}
 	}
@@ -103,12 +103,16 @@ struct ContentView: View {
 		#endif
 
 		guard let currentRelease = WhatsNewReleaseCatalog.currentRelease else { return }
+		print(currentRelease)
 		guard let items = WhatsNewReleaseCatalog.items(for: currentRelease), !items.isEmpty else { return }
+		print(items)
 
 		switch whatsNewSeenState {
 			case let .release(shownRelease) where shownRelease == currentRelease:
+			print("same")
 				return
 			case .unseen, .resetRequested, .release:
+			print("unseen")
 				pendingWhatsNewRelease = currentRelease
 				pendingWhatsNewItems = items
 				showWhatsNewSheet = true
@@ -116,16 +120,28 @@ struct ContentView: View {
 	}
 
 	private func dismissWhatsNew() {
-		if let release = pendingWhatsNewRelease {
-			whatsNewSeenState = .release(release)
-		}
+		print("dismissWhatsNew")
+		markPendingReleaseAsSeen()
 		showWhatsNewSheet = false
+		clearPendingRelease()
+	}
+
+	private func handleWhatsNewSheetDismiss() {
+		print("handleWhatsNewSheetDismiss")
+		markPendingReleaseAsSeen()
 		clearPendingRelease()
 	}
 
 	private func clearPendingRelease() {
 		pendingWhatsNewRelease = nil
 		pendingWhatsNewItems = []
+	}
+
+	private func markPendingReleaseAsSeen() {
+		print("markPendingReleaseAsSeen \(whatsNewSeenState)")
+		if let release = pendingWhatsNewRelease {
+			whatsNewSeenState = .release(release)
+		}
 	}
 }
 
