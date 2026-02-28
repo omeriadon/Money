@@ -1,0 +1,12 @@
+# Xcode user-specific state
+**/xcuserdata/
+**/*.xcuserstate
+**/*.xcbkptlist
+
+# Derived/build artifacts
+DerivedData/
+build/
+
+# SwiftPM local artifacts
+.build/
+.swiftpm/
