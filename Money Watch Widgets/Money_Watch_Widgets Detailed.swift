@@ -62,7 +62,7 @@ struct Money_Watch_WidgetsDetailedEntryView: View {
 							Spacer(minLength: 0)
 							Text(transaction.change, format: .currency(code: "AUD").precision(.fractionLength(0)))
 								.lineLimit(1)
-								.font(.title3)
+								.font(.headline)
 								.foregroundStyle(transaction.change > 0 ? .green : .red)
 						}
 						if transaction == entry.transactions.suffix(2).first {
