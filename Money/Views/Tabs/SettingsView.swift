@@ -170,7 +170,14 @@ struct SettingsView: View {
 			} message: { Text("Your account has been updated.") }
 			.task { loadCurrentUser() }
 		}
+		#if os(iOS)
+		.enableInjection()
+		#endif
 	}
+
+	#if DEBUG && os(iOS)
+		@ObserveInjection var forceRedraw
+	#endif
 
 	// MARK: - Field Change Detection
 

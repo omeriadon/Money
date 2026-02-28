@@ -148,7 +148,14 @@ struct SignupView: View {
 				}
 			}
 		}
+		#if os(iOS)
+		.enableInjection()
+		#endif
 	}
+
+	#if DEBUG && os(iOS)
+		@ObserveInjection var forceRedraw
+	#endif
 
 	@ViewBuilder
 	var progressView: some View {

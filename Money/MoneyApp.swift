@@ -24,3 +24,11 @@ struct MoneyApp: App {
 		.environmentObject(NetworkManager.shared)
 		.fontDesign(.monospaced)
 }
+
+#if canImport(HotSwiftUI)
+	@_exported import HotSwiftUI
+#elseif canImport(Inject)
+	@_exported import Inject
+#elseif canImport(InjectionNext)
+	@_exported import InjectionNext
+#endif

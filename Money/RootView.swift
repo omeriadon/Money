@@ -61,5 +61,12 @@ struct RootView: View {
 		}
 		.dynamicTypeSize(...DynamicTypeSize.large)
 		.fontDesign(appFontDesign)
+		#if os(iOS)
+			.enableInjection()
+		#endif
 	}
+
+	#if DEBUG && os(iOS)
+		@ObserveInjection var forceRedraw
+	#endif
 }

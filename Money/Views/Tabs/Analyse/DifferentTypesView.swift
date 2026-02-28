@@ -166,5 +166,12 @@ struct DifferentTypesView: View {
 			.scenePadding(.horizontal)
 			.padding(.bottom, 32)
 		}
+		#if os(iOS)
+		.enableInjection()
+		#endif
 	}
+
+	#if DEBUG && os(iOS)
+		@ObserveInjection var forceRedraw
+	#endif
 }

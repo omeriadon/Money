@@ -1,5 +1,5 @@
 {
-  "originHash" : "4dcc88f9e36d73c93cc8278d4ea48a6879a02e4fbb6658af2345d1c15a8f358b",
+  "originHash" : "d51c51d6e39bbbb850b227b44ea57393ec86edf2b9582a5b1295c246b2e68543",
   "pins" : [
     {
       "identity" : "colorfulx",
@@ -35,6 +35,24 @@
       "state" : {
         "revision" : "178af6499ed7957c7f91187fdee2b09d322f5b87",
         "version" : "1.1.0"
+      }
+    },
+    {
+      "identity" : "inject",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/krzysztofzablocki/Inject.git",
+      "state" : {
+        "revision" : "728c56639ecb3df441d51d5bc6747329afabcfc9",
+        "version" : "1.5.2"
+      }
+    },
+    {
+      "identity" : "injectionnext",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/johnno1962/InjectionNext",
+      "state" : {
+        "revision" : "6782244a22a6ac4cae8bc0bf5e42b33bb106371b",
+        "version" : "1.5.2"
       }
     },
     {

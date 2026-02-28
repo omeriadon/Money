@@ -38,5 +38,12 @@ struct RefreshButton: View {
 		}
 		.animation(.easeInOut, value: "\(isLoading)\(showSuccess)")
 		.disabled(isLoading)
+		#if os(iOS)
+			.enableInjection()
+		#endif
 	}
+
+	#if DEBUG && os(iOS)
+		@ObserveInjection var forceRedraw
+	#endif
 }

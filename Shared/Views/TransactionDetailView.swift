@@ -99,7 +99,14 @@ struct TransactionDetailView: View {
 				)
 			}
 		}
+		#if os(iOS)
+		.enableInjection()
+		#endif
 	}
+
+	#if DEBUG && os(iOS)
+		@ObserveInjection var forceRedraw
+	#endif
 
 	@ViewBuilder
 	var picker: some View {

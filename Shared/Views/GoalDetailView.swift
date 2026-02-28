@@ -77,7 +77,14 @@ struct GoalDetailView: View {
 				)
 			}
 		}
+		#if os(iOS)
+		.enableInjection()
+		#endif
 	}
+
+	#if DEBUG && os(iOS)
+		@ObserveInjection var forceRedraw
+	#endif
 
 	private var form: some View {
 		List {

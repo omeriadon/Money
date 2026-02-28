@@ -71,5 +71,12 @@ struct LoginSignupView: View {
 				}
 			}
 		}
+		#if os(iOS)
+		.enableInjection()
+		#endif
 	}
+
+	#if DEBUG && os(iOS)
+		@ObserveInjection var forceRedraw
+	#endif
 }

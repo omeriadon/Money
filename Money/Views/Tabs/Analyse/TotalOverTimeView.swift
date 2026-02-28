@@ -151,5 +151,12 @@ struct TotalOverTimeView: View {
 			.animation(.easeInOut, value: selectedRange)
 		}
 		.padding(.bottom, 32)
+		#if os(iOS)
+			.enableInjection()
+		#endif
 	}
+
+	#if DEBUG && os(iOS)
+		@ObserveInjection var forceRedraw
+	#endif
 }

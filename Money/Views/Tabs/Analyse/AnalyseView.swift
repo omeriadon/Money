@@ -36,7 +36,14 @@ struct AnalyseView: View {
 			}
 			.tabViewStyle(.page)
 		}
+		#if os(iOS)
+		.enableInjection()
+		#endif
 	}
+
+	#if DEBUG && os(iOS)
+		@ObserveInjection var forceRedraw
+	#endif
 
 	@ViewBuilder
 	private func tabView(for tab: AnalyseTabItem) -> some View {
@@ -102,7 +109,14 @@ struct BalanceHeader: View {
 		}
 		.padding(.horizontal)
 		.animation(.easeInOut, value: selected?.date)
+		#if os(iOS)
+			.enableInjection()
+		#endif
 	}
+
+	#if DEBUG && os(iOS)
+		@ObserveInjection var forceRedraw
+	#endif
 }
 
 enum TypeOfPieChart: String, CaseIterable, Identifiable {

@@ -33,7 +33,8 @@ struct ContentView: View {
 						presentWhatsNewIfNeeded()
 					case let .release(shownRelease):
 						if let currentRelease = WhatsNewReleaseCatalog.currentRelease,
-							shownRelease < currentRelease {
+						   shownRelease < currentRelease
+						{
 							presentWhatsNewIfNeeded()
 						}
 					default:
@@ -47,7 +48,14 @@ struct ContentView: View {
 			.sheet(isPresented: $showWhatsNewSheet, onDismiss: handleWhatsNewSheetDismiss) {
 				whatsNewSheet
 			}
+		#if os(iOS)
+			.enableInjection()
+		#endif
 	}
+
+	#if DEBUG && os(iOS)
+		@ObserveInjection var forceRedraw
+	#endif
 
 	var tabView: some View {
 		TabView(selection: $currentTab) {
@@ -160,4 +168,3 @@ struct ContentView: View {
 		}
 	}
 }
-

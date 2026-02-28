@@ -184,7 +184,14 @@ struct HomeView: View {
 					.presentationDragIndicator(.hidden)
 			}
 		}
+		#if os(iOS)
+		.enableInjection()
+		#endif
 	}
+
+	#if DEBUG && os(iOS)
+		@ObserveInjection var forceRedraw
+	#endif
 
 	private func refresh() async {
 		do {

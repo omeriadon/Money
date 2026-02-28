@@ -16,9 +16,11 @@
 		A73769322F3E0A3C003FC757 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A70133C72F3E01A50027A60C /* SwiftUI.framework */; };
 		A737693D2F3E0A3D003FC757 /* Money Watch WidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A73769302F3E0A3C003FC757 /* Money Watch WidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A737694A2F3E0B53003FC757 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = A73769492F3E0B53003FC757 /* Defaults */; };
-		A756305F2F20FE0000AA3CA5 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = A756305E2F20FE0000AA3CA5 /* Defaults */; };
+		A756305F2F20FE0000AA3CA5 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = A756305E2F20FE0000AA3CA5 /* Defaults */; settings = {ATTRIBUTES = (Required, ); }; };
 		A75630622F20FEA900AA3CA5 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = A75630612F20FEA900AA3CA5 /* Defaults */; };
 		A75824B52F20B4AE00ADCD20 /* moneyWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = A75824AB2F20B4AC00ADCD20 /* moneyWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A78B90972F5326950074A35E /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = A78B90962F5326950074A35E /* Inject */; };
+		A78C01742F533D5F00B05EA4 /* InjectionNext in Frameworks */ = {isa = PBXBuildFile; productRef = A78C01732F533D5F00B05EA4 /* InjectionNext */; };
 		A7B54CC12F3374B400910001 /* ColorfulX in Frameworks */ = {isa = PBXBuildFile; productRef = A7B54CC02F3374B400910001 /* ColorfulX */; };
 		A7B54CC62F337A2E00910001 /* Glur in Frameworks */ = {isa = PBXBuildFile; productRef = A7B54CC52F337A2E00910001 /* Glur */; };
 /* End PBXBuildFile section */
@@ -226,7 +228,9 @@
 			files = (
 				A756305F2F20FE0000AA3CA5 /* Defaults in Frameworks */,
 				A7B54CC12F3374B400910001 /* ColorfulX in Frameworks */,
+				A78C01742F533D5F00B05EA4 /* InjectionNext in Frameworks */,
 				A7B54CC62F337A2E00910001 /* Glur in Frameworks */,
+				A78B90972F5326950074A35E /* Inject in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -353,6 +357,7 @@
 				A7B9C9B52F1B905400529CE2 /* Resources */,
 				A75824B92F20B4AE00ADCD20 /* Embed Watch Content */,
 				A70133D82F3E01A70027A60C /* Embed Foundation Extensions */,
+				A7FA0FE42F5333DB0004411A /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -369,6 +374,8 @@
 				A756305E2F20FE0000AA3CA5 /* Defaults */,
 				A7B54CC02F3374B400910001 /* ColorfulX */,
 				A7B54CC52F337A2E00910001 /* Glur */,
+				A78B90962F5326950074A35E /* Inject */,
+				A78C01732F533D5F00B05EA4 /* InjectionNext */,
 			);
 			productName = Money;
 			productReference = A7B9C9B72F1B905400529CE2 /* Money.app */;
@@ -412,6 +419,8 @@
 				A7B54CBF2F3374B400910001 /* XCRemoteSwiftPackageReference "ColorfulX" */,
 				A7B54CC42F337A2E00910001 /* XCRemoteSwiftPackageReference "Glur" */,
 				A719E4CA2F52CC8300A49E9D /* XCRemoteSwiftPackageReference "IrregularGradient" */,
+				A78B90952F5326950074A35E /* XCRemoteSwiftPackageReference "Inject" */,
+				A78C01722F533D5F00B05EA4 /* XCRemoteSwiftPackageReference "InjectionNext" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A7B9C9B82F1B905400529CE2 /* Products */;
@@ -456,6 +465,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A7FA0FE42F5333DB0004411A /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\ndefaults write com.johnholdsworth.InjectionIII \"$PROJECT_FILE_PATH\" \"$EXPANDED_CODE_SIGN_IDENTITY\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A70133C02F3E01A50027A60C /* Sources */ = {
@@ -527,6 +557,10 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-Xlinker",
+					"-interposable",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.omeriadon.Money.Money-Widgets";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -596,6 +630,10 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-Xlinker",
+					"-interposable",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.omeriadon.Money.watchkitapp.Money-Watch-Widgets";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -655,6 +693,7 @@
 				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = C2HN547N49;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Money;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
@@ -664,6 +703,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-Xlinker",
+					"-interposable",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.omeriadon.Money.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -689,6 +732,7 @@
 				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = P6PV2R9443;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Money;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
@@ -844,10 +888,12 @@
 				CURRENT_PROJECT_VERSION = 8;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C2HN547N49;
+				EMIT_FRONTEND_COMMAND_LINES = YES;
 				ENABLE_APP_SANDBOX = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Money;
@@ -868,6 +914,10 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-Xlinker",
+					"-interposable",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.omeriadon.Money;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -900,6 +950,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Money;
@@ -1005,6 +1056,22 @@
 				minimumVersion = 8.2.0;
 			};
 		};
+		A78B90952F5326950074A35E /* XCRemoteSwiftPackageReference "Inject" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/krzysztofzablocki/Inject.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.2;
+			};
+		};
+		A78C01722F533D5F00B05EA4 /* XCRemoteSwiftPackageReference "InjectionNext" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/johnno1962/InjectionNext";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.2;
+			};
+		};
 		A7B54CBF2F3374B400910001 /* XCRemoteSwiftPackageReference "ColorfulX" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Lakr233/ColorfulX";
@@ -1048,6 +1115,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A756305D2F20FE0000AA3CA5 /* XCRemoteSwiftPackageReference "Defaults" */;
 			productName = Defaults;
+		};
+		A78B90962F5326950074A35E /* Inject */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A78B90952F5326950074A35E /* XCRemoteSwiftPackageReference "Inject" */;
+			productName = Inject;
+		};
+		A78C01732F533D5F00B05EA4 /* InjectionNext */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A78C01722F533D5F00B05EA4 /* XCRemoteSwiftPackageReference "InjectionNext" */;
+			productName = InjectionNext;
 		};
 		A7B54CC02F3374B400910001 /* ColorfulX */ = {
 			isa = XCSwiftPackageProductDependency;

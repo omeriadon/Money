@@ -173,7 +173,14 @@ struct StatisticsCardsView: View {
 		}
 		.padding(padding)
 		.padding(.bottom, bottomPadding)
+		#if os(iOS)
+			.enableInjection()
+		#endif
 	}
+
+	#if DEBUG && os(iOS)
+		@ObserveInjection var forceRedraw
+	#endif
 }
 
 struct StatCard: View {
@@ -205,5 +212,12 @@ struct StatCard: View {
 		.padding()
 		.frame(maxWidth: .infinity, maxHeight: .infinity)
 		.glassEffect(.clear.tint(color.opacity(0.3)).interactive(), in: RoundedRectangle(cornerRadius: 30))
+		#if os(iOS)
+			.enableInjection()
+		#endif
 	}
+
+	#if DEBUG && os(iOS)
+		@ObserveInjection var forceRedraw
+	#endif
 }

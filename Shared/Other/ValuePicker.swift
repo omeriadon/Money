@@ -56,7 +56,14 @@ public struct ValuePicker<SelectionValue: Hashable, Content: View, CurrentLabel:
 				}
 			#endif
 		}
+		#if os(iOS)
+		.enableInjection()
+		#endif
 	}
+
+	#if DEBUG && os(iOS)
+		@ObserveInjection var forceRedraw
+	#endif
 }
 
 private struct ValuePickerMenuOptions<Value: Hashable>: _VariadicView.MultiViewRoot {
@@ -75,7 +82,14 @@ private struct ValuePickerMenuOptions<Value: Hashable>: _VariadicView.MultiViewR
 				child
 			}
 		}
+		#if os(iOS)
+		.enableInjection()
+		#endif
 	}
+
+	#if DEBUG && os(iOS)
+		@ObserveInjection var forceRedraw
+	#endif
 }
 
 private struct ValuePickerMenuOption<Content: View, Value: Hashable>: View {
@@ -104,7 +118,14 @@ private struct ValuePickerMenuOption<Content: View, Value: Hashable>: View {
 				}
 			}
 		}
+		#if os(iOS)
+		.enableInjection()
+		#endif
 	}
+
+	#if DEBUG && os(iOS)
+		@ObserveInjection var forceRedraw
+	#endif
 
 	private var isSelected: Bool {
 		selectedValue.wrappedValue == value
@@ -127,7 +148,14 @@ private struct ValuePickerOptions<Value: Hashable>: _VariadicView.MultiViewRoot 
 				) { child }
 			}
 		}
+		#if os(iOS)
+		.enableInjection()
+		#endif
 	}
+
+	#if DEBUG && os(iOS)
+		@ObserveInjection var forceRedraw
+	#endif
 }
 
 private struct ValuePickerOption<Content: View, Value: Hashable>: View {
@@ -165,7 +193,14 @@ private struct ValuePickerOption<Content: View, Value: Hashable>: View {
 			.accessibilityElement(children: .combine)
 			.accessibilityAddTraits(isSelected ? .isSelected : [])
 		}
+		#if os(iOS)
+		.enableInjection()
+		#endif
 	}
+
+	#if DEBUG && os(iOS)
+		@ObserveInjection var forceRedraw
+	#endif
 
 	private var isSelected: Bool {
 		selectedValue.wrappedValue == value
