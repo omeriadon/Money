@@ -1,16 +1,10 @@
 import Foundation
 
 enum GoalGaugeWidgetStore {
-	#if DEBUG
-		private static let suiteName = "group.omeriadon.money"
-	#else
-		private static let suiteName = "group.omeriadon-hackclub-release.money"
-	#endif
-
 	private static let goalsKey = "widget_goal_gauge_goals_json"
 	private static let transactionsKey = "widget_goal_gauge_transactions_json"
 
-	private static let userDefaults = UserDefaults(suiteName: suiteName)
+	private static let userDefaults = UserDefaults(suiteName: AppConfig.appGroupSuiteName)
 
 	struct WidgetGoal: Codable, Identifiable {
 		let id: UUID

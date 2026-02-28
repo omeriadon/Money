@@ -9,17 +9,14 @@ import Defaults
 import Foundation
 
 extension Defaults.Keys {
-	static let userToken = Key<String?>("userToken", default: nil)
 	static let userEmail = Key<String?>("userEmail", default: nil)
 	static let userFirstName = Key<String?>("userFirstName", default: nil)
 	static let hasSeenIntroSplash = Key<Bool>("hasSeenIntroSplash", default: false)
-	#if DEBUG
-		static let transactions = Key<[Transaction]>("transactions", default: [], suite: .init(suiteName: "group.omeriadon.money")!)
-		static let goals = Key<[Goal]>("goals", default: [], suite: .init(suiteName: "group.omeriadon.money")!)
-	#else
-		static let transactions = Key<[Transaction]>("transactions", default: [], suite: .init(suiteName: "group.omeriadon-hackclub-release.money")!)
-		static let goals = Key<[Goal]>("goals", default: [], suite: .init(suiteName: "group.omeriadon-hackclub-release.money")!)
-	#endif
+
+	private static let appGroupSuite = UserDefaults(suiteName: AppConfig.appGroupSuiteName)!
+
+	static let transactions = Key<[Transaction]>("transactions", default: [], suite: appGroupSuite)
+	static let goals = Key<[Goal]>("goals", default: [], suite: appGroupSuite)
 
 	static let useNewGradient = Key<Bool>("useNewGradient", default: true)
 	static let showAnalyseTab = Key<Bool>("showAnalyseTab", default: true)

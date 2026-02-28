@@ -19,25 +19,9 @@ struct WidgetTransaction: Codable, Identifiable {
 // MARK: - Shared Store
 
 private enum SharedStore {
-	#if DEBUG
-		static let suiteName = "group.omeriadon.money"
-	#else
-		static let suiteName = "group.omeriadon-hackclub-release.money"
-	#endif
+	static let suiteName = AppConfig.appGroupSuiteName
 	static let goalsKey = "widget_goal_gauge_goals_json"
 	static let transactionsKey = "widget_goal_gauge_transactions_json"
-
-	static func saveGoals(_ goals: [WidgetGoal]) {
-		if let data = try? JSONEncoder().encode(goals) {
-			UserDefaults(suiteName: suiteName)?.set(data, forKey: goalsKey)
-		}
-	}
-
-	static func saveTransactions(_ transactions: [WidgetTransaction]) {
-		if let data = try? JSONEncoder().encode(transactions) {
-			UserDefaults(suiteName: suiteName)?.set(data, forKey: transactionsKey)
-		}
-	}
 
 	static func loadGoals() -> [WidgetGoal] {
 		guard let data = UserDefaults(suiteName: suiteName)?.data(forKey: goalsKey),

@@ -9,7 +9,7 @@ final class NetworkManager: ObservableObject {
 
 	@Published var token: String? {
 		didSet {
-			Defaults[.userToken] = token
+			AuthTokenStore.saveToken(token)
 			#if os(iOS)
 				if let token {
 					iPhoneWatchSessionManager.shared.sendAuthToken(token)
@@ -29,7 +29,7 @@ final class NetworkManager: ObservableObject {
 	}
 
 	private init() {
-		token = Defaults[.userToken]
+		token = AuthTokenStore.readToken()
 		email = Defaults[.userEmail]
 		firstName = Defaults[.userFirstName]
 	}

@@ -68,18 +68,18 @@ final class WatchWatchSessionManager: NSObject, WCSessionDelegate, ObservableObj
 		guard let networkManager else { return }
 
 		Task { @MainActor in
-			switch payload["authState"] as? String {
-				case "loggedIn":
-					if let token = payload["authToken"] as? String {
-						Defaults[.userToken] = token
-						networkManager.token = token
-					}
+				switch payload["authState"] as? String {
+					case "loggedIn":
+						if let token = payload["authToken"] as? String {
+							AuthTokenStore.saveToken(token)
+							networkManager.token = token
+						}
 
-				case "loggedOut":
-					Defaults[.userToken] = nil
-					networkManager.token = nil
-					Defaults[.transactions] = []
-					Defaults[.goals] = []
+					case "loggedOut":
+						AuthTokenStore.clearToken()
+						networkManager.token = nil
+						Defaults[.transactions] = []
+						Defaults[.goals] = []
 
 				default:
 					break
@@ -105,7 +105,7 @@ final class WatchWatchSessionManager: NSObject, WCSessionDelegate, ObservableObj
 	private func rehydrateFromDefaults() {
 		guard let networkManager else { return }
 		Task { @MainActor in
-			if let token = Defaults[.userToken] {
+			if let token = AuthTokenStore.readToken() {
 				networkManager.token = token
 			}
 		}

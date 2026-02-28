@@ -35,19 +35,19 @@ final class iPhoneWatchSessionManager: NSObject, WCSessionDelegate {
 	}
 
 	func sendAuthToken(_ token: String) {
-		Defaults[.userToken] = token
+		AuthTokenStore.saveToken(token)
 		syncNow()
 	}
 
 	func sendLogout() {
-		Defaults[.userToken] = nil
+		AuthTokenStore.clearToken()
 		syncNow()
 	}
 
 	// MARK: - Application Context (authoritative)
 
 	private func writeApplicationContext() {
-		var context: [String: Any] = if let token = Defaults[.userToken] {
+		var context: [String: Any] = if let token = AuthTokenStore.readToken() {
 			[
 				"authState": "loggedIn",
 				"authToken": token,
@@ -71,7 +71,7 @@ final class iPhoneWatchSessionManager: NSObject, WCSessionDelegate {
 	private func pushMessageIfReachable() {
 		guard WCSession.default.isReachable else { return }
 
-		var message: [String: Any] = if let token = Defaults[.userToken] {
+		var message: [String: Any] = if let token = AuthTokenStore.readToken() {
 			[
 				"authState": "loggedIn",
 				"authToken": token,

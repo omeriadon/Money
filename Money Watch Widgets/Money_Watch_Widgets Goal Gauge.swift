@@ -5,11 +5,7 @@ import WidgetKit
 // MARK: - Store
 
 private enum WatchGoalsGaugeStore {
-	#if DEBUG
-		static let suite = UserDefaults(suiteName: "group.omeriadon.money")!
-	#else
-		static let suite = UserDefaults(suiteName: "group.omeriadon-hackclub-release.money")!
-	#endif
+	static let suite = UserDefaults(suiteName: AppConfig.appGroupSuiteName)!
 
 	static let goalsKey = "widget_goal_gauge_goals_json"
 	static let transactionsKey = "widget_goal_gauge_transactions_json"
