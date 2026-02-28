@@ -36,7 +36,7 @@ struct ContentView: View {
 				await transactionRepo.network.refreshCurrentUser()
 				try? await goalRepo.syncGoals()
 			}
-			.sheet(isPresented: $showWhatsNewSheet, onDismiss: markPendingReleaseAsSeen) {
+			.sheet(isPresented: $showWhatsNewSheet, onDismiss: clearPendingRelease) {
 				whatsNewSheet
 			}
 	}
@@ -87,14 +87,15 @@ struct ContentView: View {
 				items: pendingWhatsNewItems,
 				onDismiss: dismissWhatsNew
 			)
-			.presentationDetents([.medium, .large])
+			.presentationDetents([.large])
 		} else {
 			EmptyView()
 		}
 	}
 
 	private func presentWhatsNewIfNeeded() {
-		guard UIDevice.current.userInterfaceIdiom == .phone else { return }
+		
+		print("starting")
 
 		#if DEBUG
 			if ProcessInfo.processInfo.arguments.contains("-reset-whats-new") {
@@ -116,14 +117,16 @@ struct ContentView: View {
 	}
 
 	private func dismissWhatsNew() {
-		markPendingReleaseAsSeen()
-		showWhatsNewSheet = false
-	}
-
-	private func markPendingReleaseAsSeen() {
 		if let release = pendingWhatsNewRelease {
 			whatsNewSeenState = .release(release)
 		}
+		showWhatsNewSheet = false
+		clearPendingRelease()
+	}
+
+	private func clearPendingRelease() {
+		pendingWhatsNewRelease = nil
+		pendingWhatsNewItems = []
 	}
 }
 
