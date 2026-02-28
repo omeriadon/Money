@@ -25,20 +25,7 @@ final class GoalRepository: ObservableObject {
 
 	func syncGoals() async throws {
 		let remote = try await network.fetchGoals()
-
-		_goals = remote.map {
-			Goal(
-				id: $0.id,
-				name: $0.name,
-				desc: $0.description,
-				goalAmount: abs($0.goalAmount),
-				dateCreated: $0.dateCreated,
-				dateUpdated: $0.dateUpdated
-			)
-		}
-
-		Defaults[.goals] = _goals
-		GoalGaugeWidgetStore.saveGoals(_goals)
+		applyRemoteGoals(remote)
 	}
 
 	func createGoal(
@@ -52,19 +39,7 @@ final class GoalRepository: ObservableObject {
 			goalAmount: abs(goalAmount)
 		)
 
-		_goals = remote.map {
-			Goal(
-				id: $0.id,
-				name: $0.name,
-				desc: $0.description,
-				goalAmount: abs($0.goalAmount),
-				dateCreated: $0.dateCreated,
-				dateUpdated: $0.dateUpdated
-			)
-		}
-
-		Defaults[.goals] = _goals
-		GoalGaugeWidgetStore.saveGoals(_goals)
+		applyRemoteGoals(remote)
 	}
 
 	func updateGoal(
@@ -80,14 +55,8 @@ final class GoalRepository: ObservableObject {
 			goalAmount: goalAmount.map(abs)
 		)
 
-		let g = Goal(
-			id: remote.id,
-			name: remote.name,
-			desc: remote.description,
-			goalAmount: abs(remote.goalAmount),
-			dateCreated: remote.dateCreated,
-			dateUpdated: remote.dateUpdated
-		)
+		let g = Goal(from: remote)
+		g.goalAmount = abs(g.goalAmount)
 
 		if let index = _goals.firstIndex(where: { $0.id == remote.id }) {
 			_goals[index] = g
@@ -95,26 +64,24 @@ final class GoalRepository: ObservableObject {
 			_goals.append(g)
 		}
 
-		Defaults[.goals] = _goals
-		GoalGaugeWidgetStore.saveGoals(_goals)
+		persistGoals()
 	}
 
 	func delete(ids: [UUID]) async throws {
-		_goals.removeAll { ids.contains($0.id) }
-		Defaults[.goals] = _goals
-		GoalGaugeWidgetStore.saveGoals(_goals)
-
 		let remaining = try await network.deleteGoals(ids: ids)
-		_goals = remaining.map {
-			Goal(
-				id: $0.id,
-				name: $0.name,
-				desc: $0.description,
-				goalAmount: abs($0.goalAmount),
-				dateCreated: $0.dateCreated,
-				dateUpdated: $0.dateUpdated
-			)
+		applyRemoteGoals(remaining)
+	}
+
+	private func applyRemoteGoals(_ remote: [GoalDTO]) {
+		_goals = remote.map {
+			let goal = Goal(from: $0)
+			goal.goalAmount = abs(goal.goalAmount)
+			return goal
 		}
+		persistGoals()
+	}
+
+	private func persistGoals() {
 		Defaults[.goals] = _goals
 		GoalGaugeWidgetStore.saveGoals(_goals)
 	}

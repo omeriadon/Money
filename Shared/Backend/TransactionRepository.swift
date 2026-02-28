@@ -25,21 +25,7 @@ final class TransactionRepository: ObservableObject {
 
 	func syncTransactions() async throws {
 		let remote = try await network.fetchTransactions()
-
-		_transactions = remote.map {
-			Transaction(
-				id: $0.id,
-				change: $0.change,
-				title: $0.title,
-				desc: $0.description,
-				importance: $0.importance,
-				dateCreated: $0.dateCreated,
-				dateUpdated: $0.dateUpdated
-			)
-		}
-
-		Defaults[.transactions] = _transactions
-		GoalGaugeWidgetStore.saveTransactions(_transactions)
+		applyRemoteTransactions(remote)
 	}
 
 	func createTransaction(
@@ -55,20 +41,7 @@ final class TransactionRepository: ObservableObject {
 			importance: importance
 		)
 
-		_transactions = remote.map {
-			Transaction(
-				id: $0.id,
-				change: $0.change,
-				title: $0.title,
-				desc: $0.description,
-				importance: $0.importance,
-				dateCreated: $0.dateCreated,
-				dateUpdated: $0.dateUpdated
-			)
-		}
-
-		Defaults[.transactions] = _transactions
-		GoalGaugeWidgetStore.saveTransactions(_transactions)
+		applyRemoteTransactions(remote)
 	}
 
 	func updateTransaction(id: UUID, change: Double? = nil, title: String? = nil, description: String? = nil, importance: Importance? = nil) async throws {
@@ -79,15 +52,7 @@ final class TransactionRepository: ObservableObject {
 			description: description,
 			importance: importance
 		)
-		let t = Transaction(
-			id: remote.id,
-			change: remote.change,
-			title: remote.title,
-			desc: remote.description,
-			importance: remote.importance,
-			dateCreated: remote.dateCreated,
-			dateUpdated: remote.dateUpdated
-		)
+		let t = Transaction(from: remote)
 
 		if let index = _transactions.firstIndex(where: { $0.id == remote.id }) {
 			_transactions[index] = t
@@ -95,47 +60,28 @@ final class TransactionRepository: ObservableObject {
 			_transactions.append(t)
 		}
 
-		Defaults[.transactions] = _transactions
-		GoalGaugeWidgetStore.saveTransactions(_transactions)
+		persistTransactions()
 	}
 
 	func delete(ids: [UUID]) async throws {
-		_transactions.removeAll { ids.contains($0.id) }
-		Defaults[.transactions] = _transactions
-		GoalGaugeWidgetStore.saveTransactions(_transactions)
-
 		let remaining = try await network.deleteTransactions(ids: ids)
-		_transactions = remaining.map {
-			Transaction(
-				id: $0.id,
-				change: $0.change,
-				title: $0.title,
-				desc: $0.description,
-				importance: $0.importance,
-				dateCreated: $0.dateCreated,
-				dateUpdated: $0.dateUpdated
-			)
-		}
-		Defaults[.transactions] = _transactions
-		GoalGaugeWidgetStore.saveTransactions(_transactions)
+		applyRemoteTransactions(remaining)
 	}
 
 	#if os(iOS)
 		func logout() async throws {
 			try await network.logout()
 			_transactions.removeAll()
-			Defaults[.transactions] = _transactions
+			persistTransactions()
 			Defaults[.goals] = []
-			GoalGaugeWidgetStore.saveTransactions(_transactions)
 			GoalGaugeWidgetStore.saveGoals([])
 		}
 
 		func deleteUser() async throws {
 			try await network.deleteCurrentUser()
 			_transactions.removeAll()
-			Defaults[.transactions] = _transactions
+			persistTransactions()
 			Defaults[.goals] = []
-			GoalGaugeWidgetStore.saveTransactions(_transactions)
 			GoalGaugeWidgetStore.saveGoals([])
 		}
 	#endif // os(iOS)
@@ -149,4 +95,14 @@ final class TransactionRepository: ObservableObject {
 			network.email = updatedUser.email
 		}
 	#endif // os(iOS)
+
+	private func applyRemoteTransactions(_ remote: [TransactionDTO]) {
+		_transactions = remote.map(Transaction.init(from:))
+		persistTransactions()
+	}
+
+	private func persistTransactions() {
+		Defaults[.transactions] = _transactions
+		GoalGaugeWidgetStore.saveTransactions(_transactions)
+	}
 }
