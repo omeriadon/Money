@@ -5,12 +5,15 @@
 //  Created by Adon Omeri on 21/1/2026.
 //
 
+import Combine
 import Defaults
 import Foundation
 import WatchConnectivity
 
 final class iPhoneWatchSessionManager: NSObject, WCSessionDelegate {
 	static let shared = iPhoneWatchSessionManager()
+
+	private var cancellables = Set<AnyCancellable>()
 
 	override private init() {
 		super.init()
@@ -20,6 +23,8 @@ final class iPhoneWatchSessionManager: NSObject, WCSessionDelegate {
 			session.delegate = self
 			session.activate()
 		}
+
+		setupAppearanceObservers()
 	}
 
 	// MARK: - Public sync triggers (you call these)
@@ -42,7 +47,7 @@ final class iPhoneWatchSessionManager: NSObject, WCSessionDelegate {
 	// MARK: - Application Context (authoritative)
 
 	private func writeApplicationContext() {
-		let context: [String: Any] = if let token = Defaults[.userToken] {
+		var context: [String: Any] = if let token = Defaults[.userToken] {
 			[
 				"authState": "loggedIn",
 				"authToken": token,
@@ -52,6 +57,7 @@ final class iPhoneWatchSessionManager: NSObject, WCSessionDelegate {
 				"authState": "loggedOut",
 			]
 		}
+		context[AppearanceSync.key] = AppearanceSync.payload()
 
 		do {
 			try WCSession.default.updateApplicationContext(context)
@@ -65,7 +71,7 @@ final class iPhoneWatchSessionManager: NSObject, WCSessionDelegate {
 	private func pushMessageIfReachable() {
 		guard WCSession.default.isReachable else { return }
 
-		let message: [String: Any] = if let token = Defaults[.userToken] {
+		var message: [String: Any] = if let token = Defaults[.userToken] {
 			[
 				"authState": "loggedIn",
 				"authToken": token,
@@ -75,6 +81,7 @@ final class iPhoneWatchSessionManager: NSObject, WCSessionDelegate {
 				"authState": "loggedOut",
 			]
 		}
+		message[AppearanceSync.key] = AppearanceSync.payload()
 
 		WCSession.default.sendMessage(message, replyHandler: nil)
 	}
@@ -103,5 +110,37 @@ final class iPhoneWatchSessionManager: NSObject, WCSessionDelegate {
 	func sessionDidBecomeInactive(_: WCSession) {}
 	func sessionDidDeactivate(_: WCSession) {
 		WCSession.default.activate()
+	}
+
+	private func setupAppearanceObservers() {
+		Defaults.publisher(.useNewGradient)
+			.sink { [weak self] _ in
+				self?.syncNow()
+			}
+			.store(in: &cancellables)
+
+		Defaults.publisher(.fontDesignStyle)
+			.sink { [weak self] _ in
+				self?.syncNow()
+			}
+			.store(in: &cancellables)
+
+		Defaults.publisher(.showGoalsTab)
+			.sink { [weak self] _ in
+				self?.syncNow()
+			}
+			.store(in: &cancellables)
+	}
+}
+
+private enum AppearanceSync {
+	static let key = "appearance"
+
+	static func payload() -> [String: Any] {
+		[
+			"useNewGradient": Defaults[.useNewGradient],
+			"fontDesignStyle": Defaults[.fontDesignStyle],
+			"showGoalsTab": Defaults[.showGoalsTab],
+		]
 	}
 }

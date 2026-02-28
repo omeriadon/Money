@@ -39,7 +39,9 @@ struct SettingsView: View {
 				Section("Appearance") {
 					Picker("Font style", selection: $fontDesignStyle) {
 						ForEach(AppFontDesign.allCases) { style in
-							Text(style.title).tag(style.rawValue)
+							Text(style.title)
+								.fontDesign(style.fontDesign)
+								.tag(style.rawValue)
 						}
 					}
 

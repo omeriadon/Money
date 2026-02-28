@@ -74,7 +74,7 @@ struct HomeView: View {
 								noise: $negativeNoise,
 								transitionSpeed: $negativeTransition,
 								frameLimit: $frameLimit,
-								renderScale: $renderScale
+								renderScale: $renderScaleclear
 							)
 						} else {
 							ColorfulView(

@@ -84,6 +84,10 @@ final class WatchWatchSessionManager: NSObject, WCSessionDelegate, ObservableObj
 				default:
 					break
 			}
+
+			if let appearance = payload[AppearanceSync.key] as? [String: Any] {
+				AppearanceSync.applyAppearance(appearance)
+			}
 		}
 	}
 
@@ -114,6 +118,25 @@ final class WatchWatchSessionManager: NSObject, WCSessionDelegate, ObservableObj
 	) {
 		if activationState == .activated {
 			refresh()
+		}
+	}
+}
+
+private enum AppearanceSync {
+	static let key = "appearance"
+
+	static func applyAppearance(_ payload: [String: Any]) {
+		if let useNewGradient = payload["useNewGradient"] as? Bool {
+			Defaults[.useNewGradient] = useNewGradient
+		}
+
+		if let fontDesignStyle = payload["fontDesignStyle"] as? String,
+			AppFontDesign(rawValue: fontDesignStyle) != nil {
+			Defaults[.fontDesignStyle] = fontDesignStyle
+		}
+
+		if let showGoalsTab = payload["showGoalsTab"] as? Bool {
+			Defaults[.showGoalsTab] = showGoalsTab
 		}
 	}
 }
