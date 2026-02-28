@@ -196,7 +196,7 @@ struct Money_WidgetsGoalGaugeEntryView: View {
 						HStack {
 							Text("$\(entry.currentAmount, format: .number.precision(.fractionLength(0))) / $\(entry.goalAmount, format: .number.precision(.fractionLength(0)))")
 							Spacer()
-							Text("\(entry.progress*100, format: .number.precision(.fractionLength(0)))%")
+							Text("\(entry.progress * 100, format: .number.precision(.fractionLength(0)))%")
 						}
 						.font(.subheadline)
 					}

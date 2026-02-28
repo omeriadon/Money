@@ -46,7 +46,6 @@ struct Money_Watch_WidgetsEntryView: View {
 					.widgetCurvesContent()
 					.widgetLabel {
 						Text(entry.total, format: .currency(code: "AUD"))
-							.monospaced()
 					}
 			case .accessoryInline:
 				Text("Money \(entry.total, format: .currency(code: "AUD"))")

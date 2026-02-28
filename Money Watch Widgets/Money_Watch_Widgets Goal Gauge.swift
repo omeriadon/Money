@@ -6,9 +6,9 @@ import WidgetKit
 
 private enum WatchGoalsGaugeStore {
 	#if DEBUG
-	static let suite = UserDefaults(suiteName: "group.omeriadon.money")!
+		static let suite = UserDefaults(suiteName: "group.omeriadon.money")!
 	#else
-	static let suite = UserDefaults(suiteName: "group.omeriadon-hackclub-release.money")!
+		static let suite = UserDefaults(suiteName: "group.omeriadon-hackclub-release.money")!
 	#endif
 
 	static let goalsKey = "widget_goal_gauge_goals_json"
@@ -16,14 +16,14 @@ private enum WatchGoalsGaugeStore {
 
 	static func loadGoals() -> [WatchWidgetGoal] {
 		guard let data = suite.data(forKey: goalsKey),
-			  let goals = try? JSONDecoder().decode([WatchWidgetGoal].self, from: data)
+		      let goals = try? JSONDecoder().decode([WatchWidgetGoal].self, from: data)
 		else { return [] }
 		return goals
 	}
 
 	static func loadTransactions() -> [WatchWidgetTransaction] {
 		guard let data = suite.data(forKey: transactionsKey),
-			  let transactions = try? JSONDecoder().decode([WatchWidgetTransaction].self, from: data)
+		      let transactions = try? JSONDecoder().decode([WatchWidgetTransaction].self, from: data)
 		else { return [] }
 		return transactions
 	}
@@ -157,37 +157,54 @@ struct Money_Watch_WidgetsGoalGaugeEntryView: View {
 				.lineLimit(1)
 		} else {
 			switch family {
-			case .accessoryCircular:
-				Gauge(value: entry.progress) {
-					Image(systemName: "target")
-				} currentValueLabel: {
-					Text("\(Int(entry.progress * 100))%")
-				}
-				.gaugeStyle(.accessoryCircular)
-				.tint(.yellow)
-			case .accessoryRectangular:
-				VStack(alignment: .leading) {
-					Text(entry.goalName)
-						.font(.headline)
-					Spacer()
+				case .accessoryCircular:
 					Gauge(value: entry.progress) {
-						Text("Progress")
-					}
-					.gaugeStyle(.accessoryLinear)
-					Spacer()
-					HStack {
-						Text("$\(entry.currentAmount, format: .number.precision(.fractionLength(0))) / $\(entry.goalAmount, format: .number.precision(.fractionLength(0)))")
-						Spacer()
+						Image(systemName: "target")
+					} currentValueLabel: {
 						Text("\(Int(entry.progress * 100))%")
 					}
-					.font(.subheadline)
+					.gaugeStyle(.accessoryCircular)
 					.tint(.yellow)
-				}
-				.padding(10)
-				.foregroundStyle(.yellow)
-				.tint(.yellow)
-			default:
-				Label("\(Int(entry.progress * 100))%", systemImage: "target")
+				case .accessoryRectangular:
+					VStack(alignment: .leading) {
+						Text(entry.goalName)
+							.font(.headline)
+						Spacer()
+						Gauge(value: entry.progress) {
+							Text("Progress")
+						}
+						.gaugeStyle(.accessoryLinear)
+						Spacer()
+						HStack {
+							Text("$\(entry.currentAmount, format: .number.precision(.fractionLength(0))) / $\(entry.goalAmount, format: .number.precision(.fractionLength(0)))")
+							Spacer()
+							Text("\(Int(entry.progress * 100))%")
+						}
+						.font(.subheadline)
+						.tint(.yellow)
+					}
+					.padding(10)
+					.foregroundStyle(.yellow)
+					.tint(.yellow)
+				case .accessoryCorner:
+					Text("\(Int(entry.progress * 100))%")
+						.widgetCurvesContent()
+						.font(.title)
+						.widgetLabel {
+							Gauge(value: entry.progress) {
+								Image(systemName: "target")
+							} currentValueLabel: {
+								Text("\(entry.currentAmount, format: .number.precision(.fractionLength(0)))")
+							} minimumValueLabel: {
+								Text("\(entry.currentAmount, format: .number.precision(.fractionLength(0)))")
+							} maximumValueLabel: {
+								Text("\(entry.goalAmount, format: .number.precision(.fractionLength(0)))")
+							}
+							.tint(.yellow)
+						}
+						.tint(.yellow)
+				default:
+					Label("\(Int(entry.progress * 100))%", systemImage: "target")
 			}
 		}
 	}
@@ -210,6 +227,6 @@ struct Money_Watch_WidgetsGoalGauge: Widget {
 		.contentMarginsDisabled()
 		.configurationDisplayName("Goal Gauge")
 		.description("Track progress toward a selected goal")
-		.supportedFamilies([.accessoryCircular, .accessoryRectangular, .accessoryInline])
+		.supportedFamilies([.accessoryCircular, .accessoryRectangular, .accessoryInline, .accessoryCorner])
 	}
 }
