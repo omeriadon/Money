@@ -31,7 +31,7 @@ struct ContentView: View {
 				Label("Transactions", systemImage: "mail.stack")
 			}
 		}
-		.tabViewStyle(.carousel)
+		.tabViewStyle(.verticalPage)
 	}
 }
 

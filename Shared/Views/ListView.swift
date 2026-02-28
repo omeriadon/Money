@@ -85,6 +85,7 @@ struct ListView: View {
 					}
 				}
 				.searchable(text: $searchText, prompt: isiPhone() ? "Search transactions" : "Search")
+				.tint(.secondary)
 				.refreshable {
 					Task {
 						await refresh()

@@ -1,6 +1,3 @@
-#if canImport(Glur)
-	import Glur
-#endif
 import SwiftUI
 
 struct GoalListView: View {
@@ -95,6 +92,7 @@ struct GoalListView: View {
 						}
 					}
 					.searchable(text: $searchText, placement: .toolbar, prompt: isiPhone() ? "Search goals" : "Search")
+					.tint(.secondary)
 //					.refreshable {
 //						Task {
 //							await refresh()
