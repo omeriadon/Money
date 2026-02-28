@@ -127,7 +127,7 @@ final class NetworkManager: ObservableObject {
 			path: "/transactions",
 			method: "POST",
 			requiresAuth: true,
-			body: try encode(body)
+			body: encode(body)
 		)
 
 		_ = try await perform(request)
@@ -152,7 +152,7 @@ final class NetworkManager: ObservableObject {
 			path: "/transactions/\(id.uuidString)",
 			method: "PATCH",
 			requiresAuth: true,
-			body: try encode(body)
+			body: encode(body)
 		)
 
 		let data = try await perform(request)
@@ -175,7 +175,7 @@ final class NetworkManager: ObservableObject {
 			path: "/goals",
 			method: "POST",
 			requiresAuth: true,
-			body: try encode(body)
+			body: encode(body)
 		)
 
 		_ = try await perform(request)
@@ -198,7 +198,7 @@ final class NetworkManager: ObservableObject {
 			path: "/goals/\(id.uuidString)",
 			method: "PATCH",
 			requiresAuth: true,
-			body: try encode(body)
+			body: encode(body)
 		)
 
 		let data = try await perform(request)
@@ -211,7 +211,7 @@ final class NetworkManager: ObservableObject {
 			path: "/transactions/deleteMultiple",
 			method: "POST",
 			requiresAuth: true,
-			body: try encode(body)
+			body: encode(body)
 		)
 
 		_ = try await perform(request)
@@ -225,7 +225,7 @@ final class NetworkManager: ObservableObject {
 			path: "/goals/deleteMultiple",
 			method: "POST",
 			requiresAuth: true,
-			body: try encode(body)
+			body: encode(body)
 		)
 
 		_ = try await perform(request)
@@ -261,7 +261,7 @@ final class NetworkManager: ObservableObject {
 				path: "/users/me",
 				method: "PATCH",
 				requiresAuth: true,
-				body: try encode(body)
+				body: encode(body)
 			)
 
 			let data = try await perform(request)
@@ -328,13 +328,15 @@ final class NetworkManager: ObservableObject {
 	private func parseErrorMessage(from data: Data) -> String? {
 		if let decoded = try? decoder.decode(APIErrorPayload.self, from: data),
 		   let message = decoded.error,
-		   !message.isEmpty {
+		   !message.isEmpty
+		{
 			return message
 		}
 
 		if let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
 		   let message = object["error"] as? String,
-		   !message.isEmpty {
+		   !message.isEmpty
+		{
 			return message
 		}
 

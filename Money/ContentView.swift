@@ -19,10 +19,10 @@ struct ContentView: View {
 
 	var body: some View {
 		tabView
-		.onChange(of: currentTab) {
-			generator.impactOccurred(intensity: 1)
-			generator.prepare()
-		}
+			.onChange(of: currentTab) {
+				generator.impactOccurred(intensity: 1)
+				generator.prepare()
+			}
 			.onAppear {
 				generator.prepare()
 				presentWhatsNewIfNeeded()
@@ -40,7 +40,7 @@ struct ContentView: View {
 				whatsNewSheet
 			}
 	}
-	
+
 	var tabView: some View {
 		TabView(selection: $currentTab) {
 			Tab(value: "Home") {

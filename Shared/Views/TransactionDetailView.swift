@@ -255,20 +255,20 @@ struct TransactionDetailView: View {
 					description: description,
 					importance: importance
 				)
-				} else if let t = transaction {
-					let oldChange = t.change
-					let newChange = finalChange
+			} else if let t = transaction {
+				let oldChange = t.change
+				let newChange = finalChange
 				try await transactionRepo.updateTransaction(
 					id: t.id,
 					change: (newChange != oldChange) ? newChange : nil,
 					title: title != t.title ? title : nil,
 					description: description != t.desc ? description : nil,
-						importance: importance != t.importance ? importance : nil
-					)
-				}
+					importance: importance != t.importance ? importance : nil
+				)
+			}
 
-				isLoading = false
-				dismiss()
+			isLoading = false
+			dismiss()
 		} catch {
 			isLoading = false
 			errorMessage = error.localizedDescription

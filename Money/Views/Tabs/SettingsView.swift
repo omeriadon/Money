@@ -58,7 +58,7 @@ struct SettingsView: View {
 					}
 				}
 
-					Section("Tabs") {
+				Section("Tabs") {
 					Toggle(isOn: $showAnalyseTab) {
 						Text("Show Analyse Tab")
 						Text("Detailed statistics and charts")
@@ -68,17 +68,17 @@ struct SettingsView: View {
 						Text("Show Goals Tab")
 						Text("Track savings and target milestones")
 					}
-					}
+				}
 
-					Section("App Updates") {
-						Button {
-							whatsNewSeenState = WhatsNewReleaseCatalog.rollbackSeenState(from: whatsNewSeenState)
-						} label: {
-							Text("Show What's New Again")
-						}
+				Section("App Updates") {
+					Button {
+						whatsNewSeenState = WhatsNewReleaseCatalog.rollbackSeenState(from: whatsNewSeenState)
+					} label: {
+						Text("Show What's New Again")
 					}
+				}
 
-					Section {
+				Section {
 					TextField("First Name", text: $firstName)
 						.autocapitalization(.words)
 					TextField("Email", text: $email)

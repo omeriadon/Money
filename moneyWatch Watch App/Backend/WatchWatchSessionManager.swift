@@ -68,18 +68,18 @@ final class WatchWatchSessionManager: NSObject, WCSessionDelegate, ObservableObj
 		guard let networkManager else { return }
 
 		Task { @MainActor in
-				switch payload["authState"] as? String {
-					case "loggedIn":
-						if let token = payload["authToken"] as? String {
-							AuthTokenStore.saveToken(token)
-							networkManager.token = token
-						}
+			switch payload["authState"] as? String {
+				case "loggedIn":
+					if let token = payload["authToken"] as? String {
+						AuthTokenStore.saveToken(token)
+						networkManager.token = token
+					}
 
-					case "loggedOut":
-						AuthTokenStore.clearToken()
-						networkManager.token = nil
-						Defaults[.transactions] = []
-						Defaults[.goals] = []
+				case "loggedOut":
+					AuthTokenStore.clearToken()
+					networkManager.token = nil
+					Defaults[.transactions] = []
+					Defaults[.goals] = []
 
 				default:
 					break
@@ -131,7 +131,8 @@ private enum AppearanceSync {
 		}
 
 		if let fontDesignStyle = payload["fontDesignStyle"] as? String,
-			AppFontDesign(rawValue: fontDesignStyle) != nil {
+		   AppFontDesign(rawValue: fontDesignStyle) != nil
+		{
 			Defaults[.fontDesignStyle] = fontDesignStyle
 		}
 

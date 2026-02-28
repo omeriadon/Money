@@ -5,7 +5,9 @@ struct WhatsNewItem: Identifiable, Hashable {
 	let description: String
 	let symbolName: String
 
-	var id: String { "\(title)|\(symbolName)" }
+	var id: String {
+		"\(title)|\(symbolName)"
+	}
 }
 
 enum WhatsNewReleaseCatalog {

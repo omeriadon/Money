@@ -89,32 +89,29 @@ struct HomeView: View {
 						}
 					#else
 						if total < 0 {
-							
-								IrregularGradient(colors: [.red, .orange, .red, .red, .pink, .red], background: Color.clear, speed: 1, animate: true)
+							IrregularGradient(colors: [.red, .orange, .red, .red, .pink, .red], background: Color.clear, speed: 1, animate: true)
 						} else {
-							
-								IrregularGradient(colors: [
-									Color(red: 65 / 255, green: 71 / 255, blue: 42 / 255),
-									Color(red: 232 / 255, green: 222 / 255, blue: 106 / 255),
-									Color(red: 105 / 255, green: 129 / 255, blue: 70 / 255),
-									Color(red: 79 / 255, green: 100 / 255, blue: 52 / 255),
-									Color(red: 65 / 255, green: 71 / 255, blue: 42 / 255),
-									Color(red: 232 / 255, green: 222 / 255, blue: 106 / 255),
-									Color(red: 105 / 255, green: 129 / 255, blue: 70 / 255),
-									Color(red: 79 / 255, green: 100 / 255, blue: 52 / 255),
-									Color(red: 65 / 255, green: 71 / 255, blue: 42 / 255),
-									Color(red: 232 / 255, green: 222 / 255, blue: 106 / 255),
-									Color(red: 105 / 255, green: 129 / 255, blue: 70 / 255),
-									Color(red: 79 / 255, green: 100 / 255, blue: 52 / 255),
-									Color(red: 65 / 255, green: 71 / 255, blue: 42 / 255),
-									Color(red: 232 / 255, green: 222 / 255, blue: 106 / 255),
-									Color(red: 105 / 255, green: 129 / 255, blue: 70 / 255),
-									Color(red: 79 / 255, green: 100 / 255, blue: 52 / 255),
-								],
-								background: Color.clear,
-								speed: 1,
-								animate: true,
-								)
+							IrregularGradient(colors: [
+								Color(red: 65 / 255, green: 71 / 255, blue: 42 / 255),
+								Color(red: 232 / 255, green: 222 / 255, blue: 106 / 255),
+								Color(red: 105 / 255, green: 129 / 255, blue: 70 / 255),
+								Color(red: 79 / 255, green: 100 / 255, blue: 52 / 255),
+								Color(red: 65 / 255, green: 71 / 255, blue: 42 / 255),
+								Color(red: 232 / 255, green: 222 / 255, blue: 106 / 255),
+								Color(red: 105 / 255, green: 129 / 255, blue: 70 / 255),
+								Color(red: 79 / 255, green: 100 / 255, blue: 52 / 255),
+								Color(red: 65 / 255, green: 71 / 255, blue: 42 / 255),
+								Color(red: 232 / 255, green: 222 / 255, blue: 106 / 255),
+								Color(red: 105 / 255, green: 129 / 255, blue: 70 / 255),
+								Color(red: 79 / 255, green: 100 / 255, blue: 52 / 255),
+								Color(red: 65 / 255, green: 71 / 255, blue: 42 / 255),
+								Color(red: 232 / 255, green: 222 / 255, blue: 106 / 255),
+								Color(red: 105 / 255, green: 129 / 255, blue: 70 / 255),
+								Color(red: 79 / 255, green: 100 / 255, blue: 52 / 255),
+							],
+							background: Color.clear,
+							speed: 1,
+							animate: true)
 						}
 					#endif
 

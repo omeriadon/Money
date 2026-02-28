@@ -143,17 +143,17 @@ struct GoalDetailView: View {
 					description: description,
 					goalAmount: cleanedAmount
 				)
-				} else if let goal {
-					try await goalRepo.updateGoal(
+			} else if let goal {
+				try await goalRepo.updateGoal(
 					id: goal.id,
 					name: name != goal.name ? name : nil,
 					description: description != goal.desc ? description : nil,
-						goalAmount: cleanedAmount != abs(goal.goalAmount) ? cleanedAmount : nil
-					)
-				}
+					goalAmount: cleanedAmount != abs(goal.goalAmount) ? cleanedAmount : nil
+				)
+			}
 
-				isLoading = false
-				dismiss()
+			isLoading = false
+			dismiss()
 		} catch {
 			isLoading = false
 			errorMessage = error.localizedDescription

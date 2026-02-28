@@ -3,7 +3,9 @@ import Security
 
 enum AuthTokenStore {
 	private static let account = "userToken"
-	private static var service: String { "money.auth.\(AppConfig.appGroupSuiteName)" }
+	private static var service: String {
+		"money.auth.\(AppConfig.appGroupSuiteName)"
+	}
 
 	static func readToken() -> String? {
 		let query: [String: Any] = [
