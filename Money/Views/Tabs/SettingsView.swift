@@ -32,6 +32,7 @@ struct SettingsView: View {
 	@Default(.showGoalsTab) var showGoalsTab
 	@Default(.hasSeenIntroSplash) var hasSeenIntroSplash
 	@Default(.fontDesignStyle) var fontDesignStyle
+	@Default(.whatsNewSeenState) var whatsNewSeenState
 
 	var body: some View {
 		NavigationStack {
@@ -57,7 +58,7 @@ struct SettingsView: View {
 					}
 				}
 
-				Section("Tabs") {
+					Section("Tabs") {
 					Toggle(isOn: $showAnalyseTab) {
 						Text("Show Analyse Tab")
 						Text("Detailed statistics and charts")
@@ -67,9 +68,17 @@ struct SettingsView: View {
 						Text("Show Goals Tab")
 						Text("Track savings and target milestones")
 					}
-				}
+					}
 
-				Section {
+					Section("App Updates") {
+						Button {
+							whatsNewSeenState = WhatsNewReleaseCatalog.rollbackSeenState(from: whatsNewSeenState)
+						} label: {
+							Text("Show What's New Again")
+						}
+					}
+
+					Section {
 					TextField("First Name", text: $firstName)
 						.autocapitalization(.words)
 					TextField("Email", text: $email)
