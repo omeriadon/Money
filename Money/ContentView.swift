@@ -27,9 +27,17 @@ struct ContentView: View {
 				generator.prepare()
 				presentWhatsNewIfNeeded()
 			}
-			.onChange(of: whatsNewSeenState) {
-				if !showWhatsNewSheet {
-					presentWhatsNewIfNeeded()
+			.onChange(of: whatsNewSeenState) { newValue in
+				switch newValue {
+					case .resetRequested:
+						presentWhatsNewIfNeeded()
+					case let .release(shownRelease):
+						if let currentRelease = WhatsNewReleaseCatalog.currentRelease,
+							shownRelease < currentRelease {
+							presentWhatsNewIfNeeded()
+						}
+					default:
+						break
 				}
 			}
 			.task {
@@ -107,23 +115,31 @@ struct ContentView: View {
 		guard let items = WhatsNewReleaseCatalog.items(for: currentRelease), !items.isEmpty else { return }
 		print(items)
 
+		var shouldPresent = false
 		switch whatsNewSeenState {
 			case let .release(shownRelease) where shownRelease == currentRelease:
-			print("same")
-				return
-			case .unseen, .resetRequested, .release:
-			print("unseen")
-				pendingWhatsNewRelease = currentRelease
-				pendingWhatsNewItems = items
-				showWhatsNewSheet = true
+				print("same")
+				shouldPresent = false
+			case let .release(shownRelease) where shownRelease < currentRelease:
+				print("unseen")
+				shouldPresent = true
+			case .unseen, .resetRequested:
+				print("unseen")
+				shouldPresent = true
+			default:
+				shouldPresent = false
+		}
+
+		if shouldPresent {
+			pendingWhatsNewRelease = currentRelease
+			pendingWhatsNewItems = items
+			showWhatsNewSheet = true
 		}
 	}
 
 	private func dismissWhatsNew() {
 		print("dismissWhatsNew")
-		markPendingReleaseAsSeen()
 		showWhatsNewSheet = false
-		clearPendingRelease()
 	}
 
 	private func handleWhatsNewSheetDismiss() {
