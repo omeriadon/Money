@@ -13,6 +13,21 @@ struct ContentView: View {
 	@Default(.showGoalsTab) var showGoalsTab
 
 	var body: some View {
+		tabView
+		.onChange(of: currentTab) {
+			generator.impactOccurred(intensity: 1)
+			generator.prepare()
+		}
+		.onAppear {
+			generator.prepare()
+		}
+		.task {
+			await transactionRepo.network.refreshCurrentUser()
+			try? await goalRepo.syncGoals()
+		}
+	}
+	
+	var tabView: some View {
 		TabView(selection: $currentTab) {
 			Tab(value: "Home") {
 				HomeView()
@@ -47,17 +62,6 @@ struct ContentView: View {
 			} label: {
 				Label("Transactions", systemImage: "mail.stack")
 			}
-		}
-		.onChange(of: currentTab) {
-			generator.impactOccurred(intensity: 1)
-			generator.prepare()
-		}
-		.onAppear {
-			generator.prepare()
-		}
-		.task {
-			await transactionRepo.network.refreshCurrentUser()
-			try? await goalRepo.syncGoals()
 		}
 	}
 }
