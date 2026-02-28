@@ -1,16 +1,83 @@
 import Defaults
 import SwiftUI
+import UIKit
+
+struct WhatsNewItem: Identifiable, Hashable {
+	let title: String
+	let description: String
+	let symbolName: String
+
+	var id: String { "\(title)|\(symbolName)" }
+}
+
+enum WhatsNewReleaseCatalog {
+	static let releases: [WhatsNewRelease: [WhatsNewItem]] = [
+		WhatsNewRelease(version: "1.0", build: 1): [
+			WhatsNewItem(
+				title: "App Launch",
+				description: "Welcome to the first beta release of Money.",
+				symbolName: "sparkles"
+			),
+			WhatsNewItem(
+				title: "Goals + Analytics",
+				description: "Track goals and view your spending trends.",
+				symbolName: "target"
+			),
+		],
+	]
+
+	static var sortedReleases: [WhatsNewRelease] {
+		releases.keys.sorted()
+	}
+
+	static var currentRelease: WhatsNewRelease? {
+		guard let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String,
+		      let buildString = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String,
+		      let build = Int(buildString)
+		else {
+			return nil
+		}
+
+		return WhatsNewRelease(version: version, build: build)
+	}
+
+	static func items(for release: WhatsNewRelease) -> [WhatsNewItem]? {
+		releases[release]
+	}
+
+	static func previousRelease(before release: WhatsNewRelease) -> WhatsNewRelease? {
+		sortedReleases.last(where: { $0 < release })
+	}
+
+	static func rollbackSeenState(from currentState: WhatsNewSeenState) -> WhatsNewSeenState {
+		guard let currentRelease else { return .resetRequested }
+
+		if let previous = previousRelease(before: currentRelease) {
+			return .release(previous)
+		}
+
+		if case let .release(shownRelease) = currentState, shownRelease < currentRelease {
+			return .release(shownRelease)
+		}
+
+		return .resetRequested
+	}
+}
 
 struct ContentView: View {
 	@EnvironmentObject var transactionRepo: TransactionRepository
 	@EnvironmentObject var goalRepo: GoalRepository
 
 	@State var currentTab = "Home"
+	@State private var showWhatsNewSheet = false
+	@State private var pendingWhatsNewRelease: WhatsNewRelease?
+	@State private var pendingWhatsNewItems: [WhatsNewItem] = []
 
 	let generator = UIImpactFeedbackGenerator(style: .medium)
 
 	@Default(.showAnalyseTab) var showAnalyseTab
 	@Default(.showGoalsTab) var showGoalsTab
+	@Default(.whatsNewSeenState) var whatsNewSeenState
 
 	var body: some View {
 		tabView
@@ -18,13 +85,22 @@ struct ContentView: View {
 			generator.impactOccurred(intensity: 1)
 			generator.prepare()
 		}
-		.onAppear {
-			generator.prepare()
-		}
-		.task {
-			await transactionRepo.network.refreshCurrentUser()
-			try? await goalRepo.syncGoals()
-		}
+			.onAppear {
+				generator.prepare()
+				presentWhatsNewIfNeeded()
+			}
+			.onChange(of: whatsNewSeenState) {
+				if !showWhatsNewSheet {
+					presentWhatsNewIfNeeded()
+				}
+			}
+			.task {
+				await transactionRepo.network.refreshCurrentUser()
+				try? await goalRepo.syncGoals()
+			}
+			.sheet(isPresented: $showWhatsNewSheet, onDismiss: markPendingReleaseAsSeen) {
+				whatsNewSheet
+			}
 	}
 	
 	var tabView: some View {
@@ -63,5 +139,91 @@ struct ContentView: View {
 				Label("Transactions", systemImage: "mail.stack")
 			}
 		}
+	}
+
+	@ViewBuilder
+	private var whatsNewSheet: some View {
+		if let release = pendingWhatsNewRelease {
+			WhatsNewSheetView(
+				release: release,
+				items: pendingWhatsNewItems,
+				onDismiss: dismissWhatsNew
+			)
+			.presentationDetents([.medium, .large])
+		} else {
+			EmptyView()
+		}
+	}
+
+	private func presentWhatsNewIfNeeded() {
+		guard UIDevice.current.userInterfaceIdiom == .phone else { return }
+
+		#if DEBUG
+			if ProcessInfo.processInfo.arguments.contains("-reset-whats-new") {
+				whatsNewSeenState = .resetRequested
+			}
+		#endif
+
+		guard let currentRelease = WhatsNewReleaseCatalog.currentRelease else { return }
+		guard let items = WhatsNewReleaseCatalog.items(for: currentRelease), !items.isEmpty else { return }
+
+		switch whatsNewSeenState {
+			case let .release(shownRelease) where shownRelease == currentRelease:
+				return
+			case .unseen, .resetRequested, .release:
+				pendingWhatsNewRelease = currentRelease
+				pendingWhatsNewItems = items
+				showWhatsNewSheet = true
+		}
+	}
+
+	private func dismissWhatsNew() {
+		markPendingReleaseAsSeen()
+		showWhatsNewSheet = false
+	}
+
+	private func markPendingReleaseAsSeen() {
+		if let release = pendingWhatsNewRelease {
+			whatsNewSeenState = .release(release)
+		}
+	}
+}
+
+private struct WhatsNewSheetView: View {
+	let release: WhatsNewRelease
+	let items: [WhatsNewItem]
+	let onDismiss: () -> Void
+
+	var body: some View {
+		VStack(alignment: .leading, spacing: 16) {
+			Text("What's New")
+				.font(.title2.bold())
+
+			Text("Version \(release.version) (\(release.build))")
+				.font(.subheadline)
+				.foregroundStyle(.secondary)
+
+			ScrollView {
+				VStack(alignment: .leading, spacing: 14) {
+					ForEach(items) { item in
+						HStack(alignment: .top, spacing: 12) {
+							Image(systemName: item.symbolName)
+								.frame(width: 24)
+							VStack(alignment: .leading, spacing: 4) {
+								Text(item.title).font(.headline)
+								Text(item.description).font(.subheadline)
+							}
+						}
+					}
+				}
+			}
+
+			Button("OK") {
+				onDismiss()
+			}
+			.frame(maxWidth: .infinity)
+			.padding(.top, 4)
+		}
+		.padding()
 	}
 }
