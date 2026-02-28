@@ -12,7 +12,7 @@ struct WhatsNewItem: Identifiable, Hashable {
 
 enum WhatsNewReleaseCatalog {
 	static let releases: [WhatsNewRelease: [WhatsNewItem]] = [
-		WhatsNewRelease(version: "1.0", build: 1): [
+		WhatsNewRelease(version: "1.0", build: 8): [
 			WhatsNewItem(
 				title: "App Launch",
 				description: "Welcome to the first beta release of Money.",

@@ -50,11 +50,20 @@ struct SettingsView: View {
 						Text("Use animated background")
 						Text("Uses a shader instead of colour gradient on home screen.")
 					}
+				}
 
+				Section("Info") {
 					Button {
 						hasSeenIntroSplash = false
 					} label: {
 						Text("Show onboarding")
+					}
+
+					Button {
+						whatsNewSeenState = WhatsNewReleaseCatalog.rollbackSeenState(from: whatsNewSeenState)
+						print(whatsNewSeenState)
+					} label: {
+						Text("Show What's New Again")
 					}
 				}
 
@@ -67,14 +76,6 @@ struct SettingsView: View {
 					Toggle(isOn: $showGoalsTab) {
 						Text("Show Goals Tab")
 						Text("Track savings and target milestones")
-					}
-				}
-
-				Section("App Updates") {
-					Button {
-						whatsNewSeenState = WhatsNewReleaseCatalog.rollbackSeenState(from: whatsNewSeenState)
-					} label: {
-						Text("Show What's New Again")
 					}
 				}
 

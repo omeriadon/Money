@@ -195,7 +195,6 @@ struct Money_WidgetsGoalGaugeEntryView: View {
 						}
 						.labelsHidden()
 						.gaugeStyle(.accessoryLinear)
-						.foregroundStyle(.yellow)
 						Spacer()
 						if family == .systemMedium {
 							HStack {
@@ -209,6 +208,8 @@ struct Money_WidgetsGoalGaugeEntryView: View {
 							Text("\(entry.progress * 100, format: .number.precision(.fractionLength(0)))%")
 						}
 					}
+					.foregroundStyle(.yellow)
+					.tint(.yellow)
 			}
 		}
 	}

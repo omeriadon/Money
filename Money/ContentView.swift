@@ -94,7 +94,6 @@ struct ContentView: View {
 	}
 
 	private func presentWhatsNewIfNeeded() {
-		
 		print("starting")
 
 		#if DEBUG
