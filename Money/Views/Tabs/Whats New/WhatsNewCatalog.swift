@@ -14,14 +14,34 @@ enum WhatsNewReleaseCatalog {
 	static let releases: [WhatsNewRelease: [WhatsNewItem]] = [
 		WhatsNewRelease(version: "1.0", build: 8): [
 			WhatsNewItem(
-				title: "App Launch",
-				description: "Welcome to the first beta release of Money.",
+				title: "What's New ",
+				description: "Every new release has a what's new page.",
 				symbolName: "sparkles"
 			),
 			WhatsNewItem(
-				title: "Goals + Analytics",
-				description: "Track goals and view your spending trends.",
+				title: "Goals",
+				description: "Create and track goals, set with widgets.",
 				symbolName: "target"
+			),
+			WhatsNewItem(
+				title: "Onboarding Page",
+				description: "An onboarding page shows on first launch.",
+				symbolName: "hand.wave"
+			),
+			WhatsNewItem(
+				title: "Upgraded Infrastructure",
+				description: "Including more secure account management, will require a re-sign in.",
+				symbolName: "person.crop.circle"
+			),
+			WhatsNewItem(
+				title: "Watch Background",
+				description: "Watch app now has an animated background, matching iPhone.",
+				symbolName: "photo"
+			),
+			WhatsNewItem(
+				title: "Font style",
+				description: "You can now set the font style for iPhone and Apple Watch.",
+				symbolName: "fleuron"
 			),
 		],
 	]
