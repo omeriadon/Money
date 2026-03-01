@@ -34,6 +34,11 @@ enum WhatsNewReleaseCatalog {
 				symbolName: "hand.wave"
 			),
 			WhatsNewItem(
+				title: "Tab Memory",
+				description: "Your last opened tab is now remembered across app launches.",
+				symbolName: "platter.filled.bottom.iphone"
+			),
+			WhatsNewItem(
 				title: "Upgraded Infrastructure",
 				description: "Including more secure account management, will require a re-sign in.",
 				symbolName: "person.crop.circle"
