@@ -1,7 +1,7 @@
 import SwiftUI
 
 enum AppFontDesign: String, CaseIterable, Identifiable {
-	case normal
+	case `default`
 	case rounded
 	case monospaced
 
@@ -11,7 +11,7 @@ enum AppFontDesign: String, CaseIterable, Identifiable {
 
 	var title: String {
 		switch self {
-			case .normal: "Normal"
+			case .default: "Default"
 			case .rounded: "Rounded"
 			case .monospaced: "Monospaced"
 		}
@@ -19,7 +19,7 @@ enum AppFontDesign: String, CaseIterable, Identifiable {
 
 	var fontDesign: Font.Design {
 		switch self {
-			case .normal: .default
+			case .default: .default
 			case .rounded: .rounded
 			case .monospaced: .monospaced
 		}
