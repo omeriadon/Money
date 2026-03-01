@@ -100,31 +100,11 @@ struct SettingsView: View {
 						if passwordChanged, password.count < 8 {
 							Text("Password must be at least 8 characters")
 						}
-						if passwordChanged, password != passwordConfirm {
+						if passwordChanged, password != passwordConfirm, !password.isEmpty {
 							Text("Passwords do not match")
 						}
 					}
 					.foregroundStyle(.red)
-				}
-				.sectionActions {
-					Button {
-						Task { await updateAccount() }
-					} label: {
-						ZStack {
-							if !isSaving {
-								Text("Save Changes")
-									.transition(.blurReplace)
-							} else {
-								HStack {
-									ProgressView()
-									Text("Saving Changes")
-								}
-								.transition(.blurReplace)
-							}
-						}
-						.animation(.easeInOut, value: isSaving)
-					}
-					.disabled(!canSave)
 				}
 				.task {
 					await transactionRepo.network.refreshCurrentUser()
@@ -156,6 +136,38 @@ struct SettingsView: View {
 						Button(role: .cancel) {} label: { Text("No") }
 					} message: { Text("This will permanently delete all your transactions and goals.") }
 				}
+			}
+			.safeAreaBar(edge: .bottom, alignment: .center, spacing: 10) {
+				VStack {
+					if firstNameChanged || emailChanged || passwordChanged {
+						Button {
+							Task { await updateAccount() }
+						} label: {
+							ZStack {
+								if !isSaving {
+									Text("Save Changes")
+										.transition(.blurReplace)
+								} else {
+									HStack {
+										ProgressView()
+											.tint(.black)
+										Text("Saving Changes")
+									}
+									.transition(.blurReplace)
+								}
+							}
+							.animation(.easeInOut, value: isSaving)
+						}
+						.disabled(!canSave)
+						.padding(10)
+						.glassEffect(.clear.tint(.yellow).interactive())
+						.padding()
+						.foregroundStyle(.black)
+						.transition(.blurReplace)
+					}
+				}
+				.animation(.easeInOut, value: "\(canSave)\(isSaving)")
+
 			}
 			.toolbar {
 				ToolbarItem(placement: .principal) {

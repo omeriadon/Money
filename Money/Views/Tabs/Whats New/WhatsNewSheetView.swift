@@ -42,7 +42,7 @@ struct WhatsNewSheetView: View {
 				VStack(alignment: .center, spacing: 16) {
 					ScrollView {
 						Spacer()
-							.frame(height: 40)
+							.frame(height: 50)
 						VStack(alignment: .leading, spacing: 14) {
 							ForEach(items) { item in
 								HStack(alignment: .center, spacing: 12) {
@@ -62,6 +62,7 @@ struct WhatsNewSheetView: View {
 						}
 						.padding()
 					}
+					.scrollIndicatorsFlash(onAppear: true)
 					.scrollBounceBehavior(.basedOnSize)
 					.safeAreaBar(edge: .bottom, alignment: .center, spacing: 10) {
 						Button {

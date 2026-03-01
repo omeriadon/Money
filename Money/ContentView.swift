@@ -110,7 +110,6 @@ struct ContentView: View {
 	}
 
 	private func presentWhatsNewIfNeeded() {
-
 		#if DEBUG
 			if ProcessInfo.processInfo.arguments.contains("-reset-whats-new") {
 				whatsNewSeenState = .resetRequested
