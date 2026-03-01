@@ -192,9 +192,9 @@
 			path = Shared;
 			sourceTree = "<group>";
 		};
-		A75824AC2F20B4AC00ADCD20 /* moneyWatch Watch App */ = {
+		A75824AC2F20B4AC00ADCD20 /* moneyWatch Watch */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "moneyWatch Watch App";
+			path = "moneyWatch Watch";
 			sourceTree = "<group>";
 		};
 		A7B9C9B92F1B905400529CE2 /* Money */ = {
@@ -269,7 +269,7 @@
 				A737692B2F3E0889003FC757 /* Release.entitlements */,
 				A756303F2F20F8C500AA3CA5 /* Shared */,
 				A7B9C9B92F1B905400529CE2 /* Money */,
-				A75824AC2F20B4AC00ADCD20 /* moneyWatch Watch App */,
+				A75824AC2F20B4AC00ADCD20 /* moneyWatch Watch */,
 				A70133C92F3E01A50027A60C /* Money Widgets */,
 				A73769332F3E0A3C003FC757 /* Money Watch Widgets */,
 				A75630602F20FEA900AA3CA5 /* Frameworks */,
@@ -353,7 +353,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				A756303F2F20F8C500AA3CA5 /* Shared */,
-				A75824AC2F20B4AC00ADCD20 /* moneyWatch Watch App */,
+				A75824AC2F20B4AC00ADCD20 /* moneyWatch Watch */,
 			);
 			name = "moneyWatch Watch App";
 			packageProductDependencies = (

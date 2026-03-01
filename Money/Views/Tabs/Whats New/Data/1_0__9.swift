@@ -22,5 +22,10 @@ extension WhatsNewReleaseCatalog {
 			description: "Pressing a widget now navigates to its corresponding view in app.",
 			symbolName: "widget.medium"
 		),
+		WhatsNewItem(
+			title: "Navigation Model",
+			description: "",
+			symbolName: "widget.medium"
+		),
 	]
 }
