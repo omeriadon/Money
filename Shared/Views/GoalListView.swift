@@ -1,10 +1,6 @@
 import SwiftUI
 
 struct GoalListView: View {
-	private enum GoalRoute: Hashable {
-		case detail(UUID)
-	}
-
 	@Environment(GoalRepository.self) var goalRepo
 	@Environment(AppRouter.self) var appRouter
 
@@ -13,7 +9,6 @@ struct GoalListView: View {
 	@State private var errorMessage: String?
 	@State private var searchText = ""
 	@State private var showAddGoal = false
-	@State private var navigationPath = NavigationPath()
 
 	@Namespace private var namespace
 
@@ -26,25 +21,20 @@ struct GoalListView: View {
 	}
 
 	private var filteredGoals: [Goal] {
-		if searchText.isEmpty {
-			return goalRepo.goals
-		}
-		return goalRepo.goals.filter { goal in
-			goal.name.localizedCaseInsensitiveContains(searchText)
-				|| goal.desc.localizedCaseInsensitiveContains(searchText)
+		if searchText.isEmpty { return goalRepo.goals }
+		return goalRepo.goals.filter {
+			$0.name.localizedCaseInsensitiveContains(searchText)
+				|| $0.desc.localizedCaseInsensitiveContains(searchText)
 		}
 	}
 
 	var body: some View {
-		NavigationStack(path: $navigationPath) {
+		NavigationStack(path: Bindable(appRouter).goalPath) {
 			ZStack {
 				if hasNoItems {
 					VStack {
 						Spacer()
-						ContentUnavailableView(
-							"No Goals",
-							systemImage: "target"
-						)
+						ContentUnavailableView("No Goals", systemImage: "target")
 						Spacer()
 					}
 					.transition(.blurReplace)
@@ -53,10 +43,7 @@ struct GoalListView: View {
 						if hasNoSearchResults {
 							HStack {
 								Spacer()
-								ContentUnavailableView(
-									"No Results",
-									systemImage: "magnifyingglass"
-								)
+								ContentUnavailableView("No Results", systemImage: "magnifyingglass")
 								Spacer()
 							}
 							.listRowBackground(Color.clear)
@@ -66,49 +53,36 @@ struct GoalListView: View {
 									HStack {
 										Image(systemName: "target")
 										Text(goal.name)
-
 										Spacer()
-
-										Text(
-											abs(goal.goalAmount),
-											format: .currency(code: "AUD")
-										)
-										.foregroundStyle(.green)
-										.font(.title3)
-										.lineLimit(1)
-										.minimumScaleFactor(0.01)
+										Text(abs(goal.goalAmount), format: .currency(code: "AUD"))
+											.foregroundStyle(.green)
+											.font(.title3)
+											.lineLimit(1)
+											.minimumScaleFactor(0.01)
 									}
 								}
 								.transition(.blurReplace)
 							}
 							.onDelete { indexSet in
 								let ids = indexSet.map { filteredGoals[$0].id }
-
 								Task {
-									do {
-										try await goalRepo.delete(ids: ids)
-									} catch {
-										errorMessage = error.localizedDescription
-									}
+									do { try await goalRepo.delete(ids: ids) }
+									catch { errorMessage = error.localizedDescription }
 								}
 							}
 						}
 					}
 					.searchable(text: $searchText, prompt: isiPhone() ? "Search goals" : "Search")
 					.tint(.secondary)
-//					.refreshable {
-//						Task {
-//							await refresh()
-//						}
-//					}
+//					.refreshable { Task { await refresh() } }
 					.animation(.easeInOut, value: filteredGoals.count)
 					.transition(.blurReplace)
 				}
 			}
 			.navigationDestination(for: GoalRoute.self) { route in
 				switch route {
-					case let .detail(goalID):
-						if let goal = goalRepo.goals.first(where: { $0.id == goalID }) {
+					case let .detail(id):
+						if let goal = goalRepo.goals.first(where: { $0.id == id }) {
 							GoalDetailView(isNew: false, goal: goal)
 						} else {
 							ContentUnavailableView("Goal Not Found", systemImage: "target")
@@ -120,30 +94,22 @@ struct GoalListView: View {
 			.toolbar {
 				#if os(iOS)
 					if !goalRepo.goals.isEmpty {
-						ToolbarItem(placement: .topBarTrailing) {
-							EditButton()
-						}
-
+						ToolbarItem(placement: .topBarTrailing) { EditButton() }
 						ToolbarSpacer(placement: .topBarTrailing)
 					}
 
 					ToolbarItem(placement: .topBarTrailing) {
-						Button {
-							showAddGoal = true
-						} label: {
+						Button { showAddGoal = true } label: {
 							Label("Add Goal", systemImage: "plus")
 						}
 						.buttonStyle(.glassProminent)
 						.foregroundStyle(.black)
 					}
 					.matchedTransitionSource(id: "unique_transition_id", in: namespace)
-				#endif // os(iOS)
+				#endif
 
 				ToolbarItem(placement: .topBarTrailing) {
-					RefreshButton(
-						isLoading: $isLoading,
-						showSuccess: $showSuccess
-					) {
+					RefreshButton(isLoading: $isLoading, showSuccess: $showSuccess) {
 						await refresh()
 					}
 				}
@@ -152,39 +118,11 @@ struct GoalListView: View {
 				GoalDetailView(isNew: true)
 					.presentationDragIndicator(.hidden)
 				#if os(iOS)
-					.navigationTransition(
-						.zoom(sourceID: "unique_transition_id", in: namespace)
-					)
+					.navigationTransition(.zoom(sourceID: "unique_transition_id", in: namespace))
 				#endif
 			}
-			.task {
-				await refresh()
-				await handlePendingGoalRoute()
-			}
-			.onChange(of: appRouter.pendingGoalNonce) { _, _ in
-				Task {
-					await handlePendingGoalRoute()
-				}
-			}
+			.task { await refresh() }
 		}
-	}
-
-	private func handlePendingGoalRoute() async {
-		guard let goalID = appRouter.pendingGoalID else { return }
-
-		await openGoal(goalID)
-
-		if !goalRepo.goals.contains(where: { $0.id == goalID }) {
-			try? await goalRepo.syncGoals()
-		}
-
-		appRouter.pendingGoalID = nil
-	}
-
-	private func openGoal(_ goalID: UUID) async {
-		navigationPath = NavigationPath()
-		await Task.yield()
-		navigationPath.append(GoalRoute.detail(goalID))
 	}
 
 	private func refresh() async {

@@ -31,7 +31,7 @@ struct ContentView: View {
 			}
 
 			Tab(value: "Search") {
-				ListView()
+				TransactionListView()
 
 			} label: {
 				Label("Transactions", systemImage: "mail.stack")

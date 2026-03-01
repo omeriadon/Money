@@ -95,7 +95,7 @@ struct ContentView: View {
 			}
 
 			Tab(value: "Search", role: .search) {
-				ListView()
+				TransactionListView()
 			} label: {
 				Label("Transactions", systemImage: "mail.stack")
 			}

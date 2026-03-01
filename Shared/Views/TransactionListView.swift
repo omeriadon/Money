@@ -9,11 +9,7 @@
 #endif
 import SwiftUI
 
-struct ListView: View {
-	private enum TransactionRoute: Hashable {
-		case detail(UUID)
-	}
-
+struct TransactionListView: View {
 	@Environment(TransactionRepository.self) var transactionRepo
 	@Environment(AppRouter.self) var appRouter
 
@@ -21,25 +17,20 @@ struct ListView: View {
 	@State private var showSuccess = false
 	@State private var errorMessage: String?
 	@State private var searchText = ""
-
 	@State private var showAddTransaction = false
-	@State private var navigationPath = NavigationPath()
 
 	@Namespace private var namespace
-
 	@State private var keyboardVisible = false
 
 	private var filteredTransactions: [Transaction] {
-		if searchText.isEmpty {
-			return transactionRepo.transactions
-		}
-		return transactionRepo.transactions.filter { transaction in
-			transaction.title.localizedCaseInsensitiveContains(searchText)
+		if searchText.isEmpty { return transactionRepo.transactions }
+		return transactionRepo.transactions.filter {
+			$0.title.localizedCaseInsensitiveContains(searchText)
 		}
 	}
 
 	var body: some View {
-		NavigationStack(path: $navigationPath) {
+		NavigationStack(path: Bindable(appRouter).transactionPath) {
 			ZStack {
 				List {
 					if filteredTransactions.isEmpty {
@@ -59,50 +50,35 @@ struct ListView: View {
 								HStack {
 									Text(transaction.title)
 									Image(systemName: transaction.importance.symbol)
-
 									Spacer()
-
-									Text(
-										transaction.change,
-										format: .currency(code: "AUD")
-									)
-									.foregroundStyle(
-										transaction.change > 0 ? .green : .red
-									)
-									.font(.title3)
-									.lineLimit(1)
-									.minimumScaleFactor(0.01)
+									Text(transaction.change, format: .currency(code: "AUD"))
+										.foregroundStyle(transaction.change > 0 ? .green : .red)
+										.font(.title3)
+										.lineLimit(1)
+										.minimumScaleFactor(0.01)
 								}
 							}
 							.transition(.blurReplace)
 						}
 						.onDelete { indexSet in
 							let ids = indexSet.map { filteredTransactions[$0].id }
-
 							Task {
-								do {
-									try await transactionRepo.delete(ids: ids)
-								} catch {
-									errorMessage = error.localizedDescription
-								}
+								do { try await transactionRepo.delete(ids: ids) }
+								catch { errorMessage = error.localizedDescription }
 							}
 						}
 					}
 				}
 				.searchable(text: $searchText, prompt: isiPhone() ? "Search transactions" : "Search")
 				.tint(.secondary)
-				.refreshable {
-					Task {
-						await refresh()
-					}
-				}
+				.refreshable { Task { await refresh() } }
 				.animation(.easeInOut, value: filteredTransactions.count)
 				.transition(.blurReplace)
 			}
 			.navigationDestination(for: TransactionRoute.self) { route in
 				switch route {
-					case let .detail(transactionID):
-						if let transaction = transactionRepo.transactions.first(where: { $0.id == transactionID }) {
+					case let .detail(id):
+						if let transaction = transactionRepo.transactions.first(where: { $0.id == id }) {
 							TransactionDetailView(isNew: false, transaction: transaction)
 						} else {
 							ContentUnavailableView("Transaction Not Found", systemImage: "magnifyingglass")
@@ -113,9 +89,7 @@ struct ListView: View {
 				TransactionDetailView(isNew: true)
 					.presentationDragIndicator(.hidden)
 				#if os(iOS)
-					.navigationTransition(
-						.zoom(sourceID: "unique_transition_id", in: namespace)
-					)
+					.navigationTransition(.zoom(sourceID: "unique_transition_id", in: namespace))
 				#endif
 			}
 			.animation(.easeInOut, value: filteredTransactions.isEmpty)
@@ -123,9 +97,7 @@ struct ListView: View {
 			.toolbar {
 				#if os(iOS)
 					ToolbarItem(placement: .topBarTrailing) {
-						Button {
-							showAddTransaction = true
-						} label: {
+						Button { showAddTransaction = true } label: {
 							Label("Add Transaction", systemImage: "plus")
 						}
 						.buttonStyle(.glassProminent)
@@ -134,32 +106,18 @@ struct ListView: View {
 					.matchedTransitionSource(id: "unique_transition_id", in: namespace)
 
 					if !transactionRepo.transactions.isEmpty {
-						ToolbarItem(placement: .topBarTrailing) {
-							EditButton()
-						}
-
+						ToolbarItem(placement: .topBarTrailing) { EditButton() }
 						ToolbarSpacer(placement: .topBarTrailing)
 					}
-				#endif // os(iOS)
+				#endif
 
 				ToolbarItem(placement: .topBarTrailing) {
-					RefreshButton(
-						isLoading: $isLoading,
-						showSuccess: $showSuccess
-					) {
+					RefreshButton(isLoading: $isLoading, showSuccess: $showSuccess) {
 						await refresh()
 					}
 				}
 			}
 			.animation(.easeInOut, value: keyboardVisible)
-			.task {
-				await handlePendingTransactionRoute()
-			}
-			.onChange(of: appRouter.pendingTransactionNonce) { _, _ in
-				Task {
-					await handlePendingTransactionRoute()
-				}
-			}
 		}
 		#if os(iOS)
 		.overlay(alignment: .top) {
@@ -182,7 +140,7 @@ struct ListView: View {
 		.onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
 			keyboardVisible = false
 		}
-		#endif // os(iOS)
+		#endif
 		#if os(iOS)
 		.enableInjection()
 		#endif
@@ -191,24 +149,6 @@ struct ListView: View {
 	#if DEBUG && os(iOS)
 		@ObserveInjection var forceRedraw
 	#endif
-
-	private func handlePendingTransactionRoute() async {
-		guard let transactionID = appRouter.pendingTransactionID else { return }
-
-		await openTransaction(transactionID)
-
-		if !transactionRepo.transactions.contains(where: { $0.id == transactionID }) {
-			try? await transactionRepo.syncTransactions()
-		}
-
-		appRouter.pendingTransactionID = nil
-	}
-
-	private func openTransaction(_ transactionID: UUID) async {
-		navigationPath = NavigationPath()
-		await Task.yield()
-		navigationPath.append(TransactionRoute.detail(transactionID))
-	}
 
 	private func refresh() async {
 		do {
