@@ -45,6 +45,7 @@ extension Defaults.Keys {
 	static let goals = Key<[Goal]>("goals", default: [], suite: appGroupSuite)
 
 	static let tab = Key<String>("tab", default: "Home")
+	static let rememberTab = Key<Bool>("rememberTab", default: true)
 
 	static let useNewGradient = Key<Bool>("useNewGradient", default: true)
 	static let showAnalyseTab = Key<Bool>("showAnalyseTab", default: true)

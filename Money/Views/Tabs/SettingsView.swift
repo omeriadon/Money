@@ -33,6 +33,7 @@ struct SettingsView: View {
 	@Default(.hasSeenIntroSplash) var hasSeenIntroSplash
 	@Default(.fontDesignStyle) var fontDesignStyle
 	@Default(.whatsNewSeenState) var whatsNewSeenState
+	@Default(.rememberTab) var rememberTab
 
 	var body: some View {
 		NavigationStack {
@@ -50,6 +51,23 @@ struct SettingsView: View {
 						Text("Use animated background")
 						Text("Uses a shader instead of colour gradient on home screen.")
 					}
+
+					Toggle(isOn: $rememberTab) {
+						Text("Remember Tab")
+						Text("When disabled, home tab is always shown on launch.")
+					}
+				}
+
+				Section("Tabs") {
+					Toggle(isOn: $showAnalyseTab) {
+						Text("Show Analyse Tab")
+						Text("Detailed statistics and charts")
+					}
+
+					Toggle(isOn: $showGoalsTab) {
+						Text("Show Goals Tab")
+						Text("Track savings and target milestones")
+					}
 				}
 
 				Section("Info") {
@@ -64,18 +82,6 @@ struct SettingsView: View {
 						print(whatsNewSeenState)
 					} label: {
 						Text("Show What's New Again")
-					}
-				}
-
-				Section("Tabs") {
-					Toggle(isOn: $showAnalyseTab) {
-						Text("Show Analyse Tab")
-						Text("Detailed statistics and charts")
-					}
-
-					Toggle(isOn: $showGoalsTab) {
-						Text("Show Goals Tab")
-						Text("Track savings and target milestones")
 					}
 				}
 
