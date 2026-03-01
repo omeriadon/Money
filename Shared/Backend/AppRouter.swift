@@ -48,34 +48,45 @@ final class AppRouter {
 	}
 
 	func navigateToTransaction(_ id: UUID?) {
-		goalPath = []
-		let target = id.map { TransactionRoute.detail($0) }
-		let desired: [TransactionRoute] = target.map { [$0] } ?? []
+		let desired: [TransactionRoute] = id.map { [.detail($0)] } ?? []
 		guard transactionPath != desired else { return }
-		#if os(watchOS)
-			// Tab switch needs time to settle before path mutation on watchOS
-			Task {
-				try? await Task.sleep(for: .milliseconds(150))
-				transactionPath = desired
+
+		let crossType = !goalPath.isEmpty
+		goalPath = []
+
+		Task {
+			// Cross-type: tab switch needs to settle first
+			// Same-type with existing detail: pop animation needs to finish before pushing
+			if crossType {
+				#if os(watchOS)
+					try? await Task.sleep(for: .milliseconds(150))
+				#endif
+			} else if !transactionPath.isEmpty {
+				transactionPath = []
+				try? await Task.sleep(for: .milliseconds(200))
 			}
-		#else
 			transactionPath = desired
-		#endif
+		}
 	}
 
 	func navigateToGoal(_ id: UUID?) {
-		transactionPath = []
-		let target = id.map { GoalRoute.detail($0) }
-		let desired: [GoalRoute] = target.map { [$0] } ?? []
+		let desired: [GoalRoute] = id.map { [.detail($0)] } ?? []
 		guard goalPath != desired else { return }
-		#if os(watchOS)
-			Task {
-				try? await Task.sleep(for: .milliseconds(150))
-				goalPath = desired
+
+		let crossType = !transactionPath.isEmpty
+		transactionPath = []
+
+		Task {
+			if crossType {
+				#if os(watchOS)
+					try? await Task.sleep(for: .milliseconds(150))
+				#endif
+			} else if !goalPath.isEmpty {
+				goalPath = []
+				try? await Task.sleep(for: .milliseconds(200))
 			}
-		#else
 			goalPath = desired
-		#endif
+		}
 	}
 }
 
