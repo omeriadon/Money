@@ -7,8 +7,6 @@ struct ContentView: View {
 	@EnvironmentObject var goalRepo: GoalRepository
 
 	@State private var showWhatsNewSheet = false
-	@State private var pendingWhatsNewRelease: WhatsNewRelease?
-	@State private var pendingWhatsNewItems: [WhatsNewItem] = []
 
 	let generator = UIImpactFeedbackGenerator(style: .medium)
 
@@ -46,7 +44,16 @@ struct ContentView: View {
 				try? await goalRepo.syncGoals()
 			}
 			.sheet(isPresented: $showWhatsNewSheet, onDismiss: handleWhatsNewSheetDismiss) {
-				whatsNewSheet
+				if let release = WhatsNewReleaseCatalog.currentRelease,
+				   let items = WhatsNewReleaseCatalog.items(for: release)
+				{
+					WhatsNewSheetView(
+						release: release,
+						items: items,
+						onDismiss: { showWhatsNewSheet = false }
+					)
+					.presentationDetents([.large])
+				}
 			}
 		#if os(iOS)
 			.enableInjection()
@@ -95,65 +102,22 @@ struct ContentView: View {
 		}
 	}
 
-	@ViewBuilder
-	private var whatsNewSheet: some View {
-		if let release = pendingWhatsNewRelease {
-			WhatsNewSheetView(
-				release: release,
-				items: pendingWhatsNewItems,
-				onDismiss: dismissWhatsNew
-			)
-			.presentationDetents([.large])
-		} else {
-			EmptyView()
-		}
-	}
-
 	private func presentWhatsNewIfNeeded() {
-		#if DEBUG
-			if ProcessInfo.processInfo.arguments.contains("-reset-whats-new") {
-				whatsNewSeenState = .resetRequested
-			}
-		#endif
-
 		guard let currentRelease = WhatsNewReleaseCatalog.currentRelease else { return }
-		guard let items = WhatsNewReleaseCatalog.items(for: currentRelease), !items.isEmpty else { return }
 
-		var shouldPresent = false
 		switch whatsNewSeenState {
-			case let .release(shownRelease) where shownRelease == currentRelease:
-				shouldPresent = false
-			case let .release(shownRelease) where shownRelease < currentRelease:
-				shouldPresent = true
-			case .unseen, .resetRequested:
-				shouldPresent = true
+			case let .release(shownRelease) where shownRelease >= currentRelease:
+				return
 			default:
-				shouldPresent = false
+				break
 		}
 
-		if shouldPresent {
-			pendingWhatsNewRelease = currentRelease
-			pendingWhatsNewItems = items
-			showWhatsNewSheet = true
-		}
-	}
-
-	private func dismissWhatsNew() {
-		showWhatsNewSheet = false
+		guard WhatsNewReleaseCatalog.items(for: currentRelease)?.isEmpty == false else { return }
+		showWhatsNewSheet = true
 	}
 
 	private func handleWhatsNewSheetDismiss() {
-		markPendingReleaseAsSeen()
-		clearPendingRelease()
-	}
-
-	private func clearPendingRelease() {
-		pendingWhatsNewRelease = nil
-		pendingWhatsNewItems = []
-	}
-
-	private func markPendingReleaseAsSeen() {
-		if let release = pendingWhatsNewRelease {
+		if let release = WhatsNewReleaseCatalog.currentRelease {
 			whatsNewSeenState = .release(release)
 		}
 	}
