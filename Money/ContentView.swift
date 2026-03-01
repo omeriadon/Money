@@ -6,7 +6,6 @@ struct ContentView: View {
 	@EnvironmentObject var transactionRepo: TransactionRepository
 	@EnvironmentObject var goalRepo: GoalRepository
 
-	@State var currentTab = "Home"
 	@State private var showWhatsNewSheet = false
 	@State private var pendingWhatsNewRelease: WhatsNewRelease?
 	@State private var pendingWhatsNewItems: [WhatsNewItem] = []
@@ -16,10 +15,11 @@ struct ContentView: View {
 	@Default(.showAnalyseTab) var showAnalyseTab
 	@Default(.showGoalsTab) var showGoalsTab
 	@Default(.whatsNewSeenState) var whatsNewSeenState
+	@Default(.tab) var tab
 
 	var body: some View {
 		tabView
-			.onChange(of: currentTab) {
+			.onChange(of: tab) {
 				generator.impactOccurred(intensity: 1)
 				generator.prepare()
 			}
@@ -58,7 +58,7 @@ struct ContentView: View {
 	#endif
 
 	var tabView: some View {
-		TabView(selection: $currentTab) {
+		TabView(selection: $tab) {
 			Tab(value: "Home") {
 				HomeView()
 			} label: {
