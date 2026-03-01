@@ -42,66 +42,76 @@ struct TransactionDetailView: View {
 	}
 
 	var body: some View {
-		NavigationStack {
-			VStack {
-				form
-			}
-			.onAppear {
-				if let t = transaction {
-					title = t.title
-					description = t.desc
-					change = Double(t.change)
-					isPositive = t.change >= 0
-					amount = abs(Double(t.change))
-					importance = t.importance
+		Group {
+			if isNew {
+				NavigationStack {
+					formContent
 				}
-				if let change = transaction?.change {
-					isPositive = change > 0.0
-				}
-			}
-			.toolbar {
-				if isNew {
-					ToolbarItem(placement: .topBarLeading) {
-						Button(role: .cancel) { dismiss() }
-					}
-				}
-
-				ToolbarItem(placement: .topBarTrailing) {
-					Button {
-						Task { await submitTransaction() }
-					} label: {
-						if isLoading {
-							ProgressView()
-						} else {
-							Label(isNew ? "Add" : "Update", systemImage: isNew ? "plus" : "pencil")
-								.labelStyle(.iconOnly)
-						}
-					}
-					.disabled(
-						isLoading ||
-							title.isEmpty ||
-							(transaction != nil &&
-								title == transaction!.title &&
-								description == transaction!.desc &&
-								change == transaction!.change &&
-								importance == transaction!.importance) ||
-							change == 0.0
-					)
-					.buttonStyle(.glassProminent)
-					.buttonBorderShape(.circle)
-				}
-			}
-			.alert(isPresented: $showError) {
-				Alert(
-					title: Text(isNew ? "Error Adding Transaction" : "Error Updating Transaction"),
-					message: Text(errorMessage),
-					dismissButton: .default(Text("OK"))
-				)
+			} else {
+				formContent
 			}
 		}
 		#if os(iOS)
 		.enableInjection()
 		#endif
+	}
+
+	private var formContent: some View {
+		VStack {
+			form
+		}
+		.onAppear {
+			if let t = transaction {
+				title = t.title
+				description = t.desc
+				change = Double(t.change)
+				isPositive = t.change >= 0
+				amount = abs(Double(t.change))
+				importance = t.importance
+			}
+			if let change = transaction?.change {
+				isPositive = change > 0.0
+			}
+		}
+		.toolbar {
+			if isNew {
+				ToolbarItem(placement: .topBarLeading) {
+					Button(role: .cancel) { dismiss() }
+				}
+			}
+
+			ToolbarItem(placement: .topBarTrailing) {
+				Button {
+					Task { await submitTransaction() }
+				} label: {
+					if isLoading {
+						ProgressView()
+					} else {
+						Label(isNew ? "Add" : "Update", systemImage: isNew ? "plus" : "pencil")
+							.labelStyle(.iconOnly)
+					}
+				}
+				.disabled(
+					isLoading ||
+						title.isEmpty ||
+						(transaction != nil &&
+							title == transaction!.title &&
+							description == transaction!.desc &&
+							change == transaction!.change &&
+							importance == transaction!.importance) ||
+						change == 0.0
+				)
+				.buttonStyle(.glassProminent)
+				.buttonBorderShape(.circle)
+			}
+		}
+		.alert(isPresented: $showError) {
+			Alert(
+				title: Text(isNew ? "Error Adding Transaction" : "Error Updating Transaction"),
+				message: Text(errorMessage),
+				dismissButton: .default(Text("OK"))
+			)
+		}
 	}
 
 	#if DEBUG && os(iOS)

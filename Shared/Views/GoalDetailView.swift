@@ -27,59 +27,69 @@ struct GoalDetailView: View {
 	}
 
 	var body: some View {
-		NavigationStack {
-			VStack {
-				form
-			}
-			.onAppear {
-				if let goal {
-					name = goal.name
-					description = goal.desc
-					goalAmount = abs(goal.goalAmount)
+		Group {
+			if isNew {
+				NavigationStack {
+					formContent
 				}
-			}
-			.toolbar {
-				if isNew {
-					ToolbarItem(placement: .topBarLeading) {
-						Button(role: .cancel) { dismiss() }
-					}
-				}
-
-				ToolbarItem(placement: .topBarTrailing) {
-					Button {
-						Task { await submitGoal() }
-					} label: {
-						if isLoading {
-							ProgressView()
-						} else {
-							Label(isNew ? "Add" : "Update", systemImage: isNew ? "plus" : "pencil")
-								.labelStyle(.iconOnly)
-						}
-					}
-					.disabled(
-						isLoading ||
-							name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
-							goalAmount == 0 ||
-							(goal != nil &&
-								name == goal!.name &&
-								description == goal!.desc &&
-								abs(goalAmount) == abs(goal!.goalAmount))
-					)
-					.buttonStyle(.glassProminent)
-					.buttonBorderShape(.circle)
-				}
-			}
-			.alert(isPresented: $showError) {
-				Alert(
-					title: Text(isNew ? "Error Adding Goal" : "Error Updating Goal"),
-					message: Text(errorMessage),
-					dismissButton: .default(Text("OK"))
-				)
+			} else {
+				formContent
 			}
 		}
 		#if os(iOS)
 		.enableInjection()
 		#endif
+	}
+
+	private var formContent: some View {
+		VStack {
+			form
+		}
+		.onAppear {
+			if let goal {
+				name = goal.name
+				description = goal.desc
+				goalAmount = abs(goal.goalAmount)
+			}
+		}
+		.toolbar {
+			if isNew {
+				ToolbarItem(placement: .topBarLeading) {
+					Button(role: .cancel) { dismiss() }
+				}
+			}
+
+			ToolbarItem(placement: .topBarTrailing) {
+				Button {
+					Task { await submitGoal() }
+				} label: {
+					if isLoading {
+						ProgressView()
+					} else {
+						Label(isNew ? "Add" : "Update", systemImage: isNew ? "plus" : "pencil")
+							.labelStyle(.iconOnly)
+					}
+				}
+				.disabled(
+					isLoading ||
+						name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+						goalAmount == 0 ||
+						(goal != nil &&
+							name == goal!.name &&
+							description == goal!.desc &&
+							abs(goalAmount) == abs(goal!.goalAmount))
+				)
+				.buttonStyle(.glassProminent)
+				.buttonBorderShape(.circle)
+			}
+		}
+		.alert(isPresented: $showError) {
+			Alert(
+				title: Text(isNew ? "Error Adding Goal" : "Error Updating Goal"),
+				message: Text(errorMessage),
+				dismissButton: .default(Text("OK"))
+			)
+		}
 	}
 
 	#if DEBUG && os(iOS)

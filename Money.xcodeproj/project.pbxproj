@@ -123,6 +123,7 @@
 		A73769242F3E04F5003FC757 /* Exceptions for "Shared" folder in "Money WidgetsExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Backend/AppDeepLink.swift,
 				Backend/Defaults.swift,
 				Backend/DTOs.swift,
 				Backend/Infrastructure/AppConfig.swift,
@@ -140,6 +141,7 @@
 		A73769482F3E0AC4003FC757 /* Exceptions for "Shared" folder in "Money Watch WidgetsExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Backend/AppDeepLink.swift,
 				Backend/Defaults.swift,
 				Backend/DTOs.swift,
 				Backend/Infrastructure/AppConfig.swift,
@@ -153,6 +155,13 @@
 				Other/VariableBlur.swift,
 			);
 			target = A75824AA2F20B4AC00ADCD20 /* moneyWatch Watch App */;
+		};
+		A78C01AC2F547BBE00B05EA4 /* Exceptions for "Money" folder in "Money" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A7B9C9B62F1B905400529CE2 /* Money */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -191,6 +200,7 @@
 		A7B9C9B92F1B905400529CE2 /* Money */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				A78C01AC2F547BBE00B05EA4 /* Exceptions for "Money" folder in "Money" target */,
 				A70133BF2F3DD7F50027A60C /* Exceptions for "Money" folder in "moneyWatch Watch App" target */,
 			);
 			path = Money;
@@ -692,7 +702,7 @@
 		A75824B72F20B4AE00ADCD20 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDebug;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "moneyWatch Watch App/moneyWatch Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
@@ -701,7 +711,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Money;
+				INFOPLIST_KEY_CFBundleDisplayName = "Money Debug";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.omeriadon.Money;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -887,7 +897,7 @@
 		A7B9C9C32F1B905500529CE2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDebug;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Money/Money.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -902,7 +912,8 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Money;
+				INFOPLIST_FILE = Money/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Money Debug";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -959,6 +970,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Money/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Money;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;

@@ -1,13 +1,19 @@
 import SwiftUI
 
 struct GoalListView: View {
+	private enum GoalRoute: Hashable {
+		case detail(UUID)
+	}
+
 	@Environment(GoalRepository.self) var goalRepo
+	@Environment(AppRouter.self) var appRouter
 
 	@State private var isLoading = false
 	@State private var showSuccess = false
 	@State private var errorMessage: String?
 	@State private var searchText = ""
 	@State private var showAddGoal = false
+	@State private var navigationPath = NavigationPath()
 
 	@Namespace private var namespace
 
@@ -30,7 +36,7 @@ struct GoalListView: View {
 	}
 
 	var body: some View {
-		NavigationStack {
+		NavigationStack(path: $navigationPath) {
 			ZStack {
 				if hasNoItems {
 					VStack {
@@ -56,12 +62,7 @@ struct GoalListView: View {
 							.listRowBackground(Color.clear)
 						} else {
 							ForEach(filteredGoals) { goal in
-								NavigationLink {
-									GoalDetailView(
-										isNew: false,
-										goal: goal
-									)
-								} label: {
+								NavigationLink(value: GoalRoute.detail(goal.id)) {
 									HStack {
 										Image(systemName: "target")
 										Text(goal.name)
@@ -102,6 +103,16 @@ struct GoalListView: View {
 //					}
 					.animation(.easeInOut, value: filteredGoals.count)
 					.transition(.blurReplace)
+				}
+			}
+			.navigationDestination(for: GoalRoute.self) { route in
+				switch route {
+					case let .detail(goalID):
+						if let goal = goalRepo.goals.first(where: { $0.id == goalID }) {
+							GoalDetailView(isNew: false, goal: goal)
+						} else {
+							ContentUnavailableView("Goal Not Found", systemImage: "target")
+						}
 				}
 			}
 			.animation(.easeInOut, value: filteredGoals.isEmpty)
@@ -148,8 +159,33 @@ struct GoalListView: View {
 			}
 			.task {
 				await refresh()
+				await handlePendingGoalRoute()
+			}
+			.onChange(of: appRouter.pendingGoalID) { oldValue, newValue in
+				guard oldValue != newValue else { return }
+				Task {
+					await handlePendingGoalRoute()
+				}
 			}
 		}
+	}
+
+	private func handlePendingGoalRoute() async {
+		guard let goalID = appRouter.pendingGoalID else { return }
+
+		await openGoal(goalID)
+
+		if !goalRepo.goals.contains(where: { $0.id == goalID }) {
+			try? await goalRepo.syncGoals()
+		}
+
+		appRouter.pendingGoalID = nil
+	}
+
+	private func openGoal(_ goalID: UUID) async {
+		navigationPath = NavigationPath()
+		await Task.yield()
+		navigationPath.append(GoalRoute.detail(goalID))
 	}
 
 	private func refresh() async {

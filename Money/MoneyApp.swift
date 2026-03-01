@@ -11,6 +11,7 @@ import SwiftUI
 @main
 struct MoneyApp: App {
 	@StateObject private var networkManager = NetworkManager.shared
+	@State private var appRouter = AppRouter()
 
 	@Default(.tab) var tab
 	@Default(.rememberTab) var rememberTab
@@ -25,6 +26,10 @@ struct MoneyApp: App {
 		WindowGroup {
 			RootView()
 				.environmentObject(networkManager)
+				.environment(appRouter)
+				.onOpenURL { url in
+					appRouter.handle(url: url)
+				}
 		}
 	}
 }
@@ -32,6 +37,7 @@ struct MoneyApp: App {
 #Preview {
 	RootView()
 		.environmentObject(NetworkManager.shared)
+		.environment(AppRouter())
 		.fontDesign(.monospaced)
 }
 

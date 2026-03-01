@@ -85,6 +85,7 @@ struct WatchGoalGaugeIntent: WidgetConfigurationIntent {
 struct WatchGoalGaugeEntry: TimelineEntry {
 	let date: Date
 	let hasGoal: Bool
+	let goalID: UUID?
 	let goalName: String
 	let goalAmount: Double
 	let currentAmount: Double
@@ -99,7 +100,7 @@ struct WatchGoalGaugeEntry: TimelineEntry {
 
 struct WatchGoalGaugeProvider: AppIntentTimelineProvider {
 	func placeholder(in _: Context) -> WatchGoalGaugeEntry {
-		WatchGoalGaugeEntry(date: .now, hasGoal: true, goalName: "Emergency Fund", goalAmount: 10000, currentAmount: 4200)
+		WatchGoalGaugeEntry(date: .now, hasGoal: true, goalID: UUID(), goalName: "Emergency Fund", goalAmount: 10000, currentAmount: 4200)
 	}
 
 	func snapshot(for configuration: WatchGoalGaugeIntent, in _: Context) async -> WatchGoalGaugeEntry {
@@ -133,6 +134,7 @@ struct WatchGoalGaugeProvider: AppIntentTimelineProvider {
 		return WatchGoalGaugeEntry(
 			date: .now,
 			hasGoal: selected != nil,
+			goalID: selected?.id,
 			goalName: selected?.name ?? "No Goal",
 			goalAmount: abs(selected?.goalAmount ?? 0),
 			currentAmount: total
@@ -219,6 +221,7 @@ struct Money_Watch_WidgetsGoalGauge: Widget {
 		) { entry in
 			Money_Watch_WidgetsGoalGaugeEntryView(entry: entry)
 				.containerBackground(.black, for: .widget)
+				.widgetURL(AppDeepLink.goal(entry.goalID))
 		}
 		.contentMarginsDisabled()
 		.configurationDisplayName("Goal Gauge")

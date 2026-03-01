@@ -181,6 +181,7 @@ struct Money_WidgetsChart: Widget {
 		StaticConfiguration(kind: kind, provider: ChartProvider()) { entry in
 			Money_WidgetsChartEntryView(entry: entry)
 				.widgetAccentable()
+				.widgetURL(AppDeepLink.analyse())
 		}
 		.configurationDisplayName("Balance Over Time")
 		.description("Your balance trend across all transactions")

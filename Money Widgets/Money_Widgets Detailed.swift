@@ -54,15 +54,18 @@ struct Money_WidgetsDetailedEntryView: View {
 					} else {
 						VStack(alignment: .trailing, spacing: 10) {
 							ForEach(entry.transactions.suffix(3)) { transaction in
-								VStack(alignment: .trailing) {
-									Text(transaction.title)
-										.foregroundStyle(.secondary)
-										.font(.callout)
-									Text(transaction.change, format: .currency(code: "AUD"))
-										.lineLimit(1)
-										.font(.title3)
-										.foregroundStyle(transaction.change > 0 ? .green : .red)
+								Link(destination: AppDeepLink.transactions(transaction.id)) {
+									VStack(alignment: .trailing) {
+										Text(transaction.title)
+											.foregroundStyle(.secondary)
+											.font(.callout)
+										Text(transaction.change, format: .currency(code: "AUD"))
+											.lineLimit(1)
+											.font(.title3)
+											.foregroundStyle(transaction.change > 0 ? .green : .red)
+									}
 								}
+								.buttonStyle(.plain)
 							}
 						}
 						.monospaced()
@@ -78,20 +81,23 @@ struct Money_WidgetsDetailedEntryView: View {
 					} else {
 						VStack(alignment: .trailing, spacing: 10) {
 							ForEach(entry.transactions.suffix(4)) { transaction in
-								HStack {
-									Label {
-										Text(transaction.title)
+								Link(destination: AppDeepLink.transactions(transaction.id)) {
+									HStack {
+										Label {
+											Text(transaction.title)
 
-									} icon: {
-										Image(systemName: transaction.importance.symbol)
+										} icon: {
+											Image(systemName: transaction.importance.symbol)
+										}
+										.foregroundStyle(.secondary)
+										Spacer(minLength: 0)
+										Text(transaction.change, format: .currency(code: "AUD"))
+											.lineLimit(1)
+											.font(.title3)
+											.foregroundStyle(transaction.change > 0 ? .green : .red)
 									}
-									.foregroundStyle(.secondary)
-									Spacer(minLength: 0)
-									Text(transaction.change, format: .currency(code: "AUD"))
-										.lineLimit(1)
-										.font(.title3)
-										.foregroundStyle(transaction.change > 0 ? .green : .red)
 								}
+								.buttonStyle(.plain)
 							}
 						}
 						.monospaced()
@@ -108,19 +114,22 @@ struct Money_WidgetsDetailedEntryView: View {
 					} else {
 						VStack(alignment: .trailing, spacing: 9) {
 							ForEach(entry.transactions.suffix(10)) { transaction in
-								HStack {
-									Label {
-										Text(transaction.title)
-									} icon: {
-										Image(systemName: transaction.importance.symbol)
+								Link(destination: AppDeepLink.transactions(transaction.id)) {
+									HStack {
+										Label {
+											Text(transaction.title)
+										} icon: {
+											Image(systemName: transaction.importance.symbol)
+										}
+										.foregroundStyle(.secondary)
+										Spacer(minLength: 0)
+										Text(transaction.change, format: .currency(code: "AUD"))
+											.lineLimit(1)
+											.font(.title3)
+											.foregroundStyle(transaction.change > 0 ? .green : .red)
 									}
-									.foregroundStyle(.secondary)
-									Spacer(minLength: 0)
-									Text(transaction.change, format: .currency(code: "AUD"))
-										.lineLimit(1)
-										.font(.title3)
-										.foregroundStyle(transaction.change > 0 ? .green : .red)
 								}
+								.buttonStyle(.plain)
 							}
 						}
 						.monospaced()

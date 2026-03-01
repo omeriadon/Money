@@ -52,19 +52,22 @@ struct Money_Watch_WidgetsDetailedEntryView: View {
 			} else {
 				Group {
 					ForEach(entry.transactions.suffix(2)) { transaction in
-						HStack {
-							Label {
-								Text(transaction.title)
-							} icon: {
-								Image(systemName: transaction.importance.symbol)
+						Link(destination: AppDeepLink.transactions(transaction.id)) {
+							HStack {
+								Label {
+									Text(transaction.title)
+								} icon: {
+									Image(systemName: transaction.importance.symbol)
+								}
+								.foregroundStyle(.secondary)
+								Spacer(minLength: 0)
+								Text(transaction.change, format: .currency(code: "AUD").precision(.fractionLength(0)))
+									.lineLimit(1)
+									.font(.headline)
+									.foregroundStyle(transaction.change > 0 ? .green : .red)
 							}
-							.foregroundStyle(.secondary)
-							Spacer(minLength: 0)
-							Text(transaction.change, format: .currency(code: "AUD").precision(.fractionLength(0)))
-								.lineLimit(1)
-								.font(.headline)
-								.foregroundStyle(transaction.change > 0 ? .green : .red)
 						}
+						.buttonStyle(.plain)
 						if transaction == entry.transactions.suffix(2).first {
 							Spacer()
 						}

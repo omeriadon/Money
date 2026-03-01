@@ -10,7 +10,12 @@
 import SwiftUI
 
 struct ListView: View {
+	private enum TransactionRoute: Hashable {
+		case detail(UUID)
+	}
+
 	@Environment(TransactionRepository.self) var transactionRepo
+	@Environment(AppRouter.self) var appRouter
 
 	@State private var isLoading = false
 	@State private var showSuccess = false
@@ -18,6 +23,7 @@ struct ListView: View {
 	@State private var searchText = ""
 
 	@State private var showAddTransaction = false
+	@State private var navigationPath = NavigationPath()
 
 	@Namespace private var namespace
 
@@ -33,7 +39,7 @@ struct ListView: View {
 	}
 
 	var body: some View {
-		NavigationStack {
+		NavigationStack(path: $navigationPath) {
 			ZStack {
 				List {
 					if filteredTransactions.isEmpty {
@@ -49,12 +55,7 @@ struct ListView: View {
 						.transition(.blurReplace)
 					} else {
 						ForEach(filteredTransactions) { transaction in
-							NavigationLink {
-								TransactionDetailView(
-									isNew: false,
-									transaction: transaction
-								)
-							} label: {
+							NavigationLink(value: TransactionRoute.detail(transaction.id)) {
 								HStack {
 									Text(transaction.title)
 									Image(systemName: transaction.importance.symbol)
@@ -97,6 +98,16 @@ struct ListView: View {
 				}
 				.animation(.easeInOut, value: filteredTransactions.count)
 				.transition(.blurReplace)
+			}
+			.navigationDestination(for: TransactionRoute.self) { route in
+				switch route {
+					case let .detail(transactionID):
+						if let transaction = transactionRepo.transactions.first(where: { $0.id == transactionID }) {
+							TransactionDetailView(isNew: false, transaction: transaction)
+						} else {
+							ContentUnavailableView("Transaction Not Found", systemImage: "magnifyingglass")
+						}
+				}
 			}
 			.sheet(isPresented: $showAddTransaction) {
 				TransactionDetailView(isNew: true)
@@ -141,6 +152,15 @@ struct ListView: View {
 				}
 			}
 			.animation(.easeInOut, value: keyboardVisible)
+			.task {
+				await handlePendingTransactionRoute()
+			}
+			.onChange(of: appRouter.pendingTransactionID) { oldValue, newValue in
+				guard oldValue != newValue else { return }
+				Task {
+					await handlePendingTransactionRoute()
+				}
+			}
 		}
 		#if os(iOS)
 		.overlay(alignment: .top) {
@@ -172,6 +192,24 @@ struct ListView: View {
 	#if DEBUG && os(iOS)
 		@ObserveInjection var forceRedraw
 	#endif
+
+	private func handlePendingTransactionRoute() async {
+		guard let transactionID = appRouter.pendingTransactionID else { return }
+
+		await openTransaction(transactionID)
+
+		if !transactionRepo.transactions.contains(where: { $0.id == transactionID }) {
+			try? await transactionRepo.syncTransactions()
+		}
+
+		appRouter.pendingTransactionID = nil
+	}
+
+	private func openTransaction(_ transactionID: UUID) async {
+		navigationPath = NavigationPath()
+		await Task.yield()
+		navigationPath.append(TransactionRoute.detail(transactionID))
+	}
 
 	private func refresh() async {
 		do {

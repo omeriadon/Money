@@ -82,6 +82,7 @@ struct Money_WidgetsSimple: Widget {
 				.containerBackground(for: .widget) {
 					Color.primary.colorInvert()
 				}
+				.widgetURL(AppDeepLink.transactions())
 		}
 		.configurationDisplayName("Total")
 		.description("Sum of all transactions.")

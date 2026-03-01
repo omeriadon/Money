@@ -91,6 +91,7 @@ struct GoalGaugeIntent: WidgetConfigurationIntent {
 struct GoalGaugeEntry: TimelineEntry {
 	let date: Date
 	let hasGoal: Bool
+	let goalID: UUID?
 	let goalName: String
 	let goalAmount: Double
 	let currentAmount: Double
@@ -108,6 +109,7 @@ struct GoalGaugeProvider: AppIntentTimelineProvider {
 		GoalGaugeEntry(
 			date: .now,
 			hasGoal: true,
+			goalID: UUID(),
 			goalName: "Emergency Fund",
 			goalAmount: 10000,
 			currentAmount: 4200
@@ -138,6 +140,7 @@ struct GoalGaugeProvider: AppIntentTimelineProvider {
 		return GoalGaugeEntry(
 			date: .now,
 			hasGoal: selectedGoal != nil,
+			goalID: selectedGoal?.id,
 			goalName: selectedGoal?.name ?? "No Goal",
 			goalAmount: selectedGoal?.goalAmount ?? 0,
 			currentAmount: totalSaved
@@ -230,6 +233,7 @@ struct Money_WidgetsGoalGauge: Widget {
 				.containerBackground(for: .widget) {
 					Color.primary.colorInvert()
 				}
+				.widgetURL(AppDeepLink.goal(entry.goalID))
 		}
 		.configurationDisplayName("Goal Gauge")
 		.description("Track progress toward a selected goal")

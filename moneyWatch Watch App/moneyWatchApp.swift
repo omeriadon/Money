@@ -8,6 +8,7 @@ struct moneyWatch_Watch_AppApp: App {
 	@StateObject private var session = WatchWatchSessionManager.shared
 	@StateObject private var networkManager = NetworkManager.shared
 	@StateObject private var repoHolder = RepoHolder()
+	@State private var appRouter = AppRouter()
 	@Default(.fontDesignStyle) private var fontDesignStyle
 
 	private var appFontDesign: Font.Design {
@@ -36,6 +37,7 @@ struct moneyWatch_Watch_AppApp: App {
 				}
 			}
 			.fontDesign(appFontDesign)
+			.environment(appRouter)
 			.animation(.easeInOut, value: networkManager.token)
 			.task {
 				session.configure(networkManager: networkManager)

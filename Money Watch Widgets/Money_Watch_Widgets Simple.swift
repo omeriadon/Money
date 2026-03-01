@@ -91,6 +91,7 @@ struct Money_Watch_Widgets: Widget {
 		StaticConfiguration(kind: kind, provider: Provider()) { entry in
 			Money_Watch_WidgetsEntryView(entry: entry)
 				.containerBackground(.black, for: .widget)
+				.widgetURL(AppDeepLink.transactions())
 		}
 		.contentMarginsDisabled()
 		.configurationDisplayName("Total")
