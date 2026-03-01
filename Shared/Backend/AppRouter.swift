@@ -7,6 +7,8 @@ import Observation
 final class AppRouter {
 	var pendingGoalID: UUID?
 	var pendingTransactionID: UUID?
+	var pendingGoalNonce = UUID()
+	var pendingTransactionNonce = UUID()
 
 	func handle(url: URL) {
 		guard let route = AppRoute(url: url) else { return }
@@ -17,13 +19,27 @@ final class AppRouter {
 			case let .goals(id):
 				Defaults[.tab] = "Goals"
 				pendingGoalID = id
+				pendingGoalNonce = UUID()
+				pendingTransactionID = nil
+				pendingTransactionNonce = UUID()
 			case .analyse:
-				Defaults[.tab] = "Analyse"
+				#if os(watchOS)
+					Defaults[.tab] = "Search"
+				#else
+					Defaults[.tab] = "Analyse"
+				#endif
 			case .settings:
-				Defaults[.tab] = "Settings"
+				#if os(watchOS)
+					Defaults[.tab] = "Home"
+				#else
+					Defaults[.tab] = "Settings"
+				#endif
 			case let .transactions(id):
 				Defaults[.tab] = "Search"
 				pendingTransactionID = id
+				pendingTransactionNonce = UUID()
+				pendingGoalID = nil
+				pendingGoalNonce = UUID()
 		}
 	}
 }

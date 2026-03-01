@@ -161,8 +161,7 @@ struct GoalListView: View {
 				await refresh()
 				await handlePendingGoalRoute()
 			}
-			.onChange(of: appRouter.pendingGoalID) { oldValue, newValue in
-				guard oldValue != newValue else { return }
+			.onChange(of: appRouter.pendingGoalNonce) { _, _ in
 				Task {
 					await handlePendingGoalRoute()
 				}

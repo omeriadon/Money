@@ -175,7 +175,7 @@ struct moneyWatch_WidgetsChart: Widget {
 		StaticConfiguration(kind: kind, provider: WatchChartProvider()) { entry in
 			moneyWatch_WidgetsChartEntryView(entry: entry)
 				.widgetAccentable()
-				.widgetURL(AppDeepLink.analyse())
+				.widgetURL(AppDeepLink.transactions())
 		}
 		.contentMarginsDisabled()
 		.configurationDisplayName("Balance Over Time")

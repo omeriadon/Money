@@ -38,6 +38,9 @@ struct moneyWatch_Watch_AppApp: App {
 			}
 			.fontDesign(appFontDesign)
 			.environment(appRouter)
+			.onOpenURL { url in
+				appRouter.handle(url: url)
+			}
 			.animation(.easeInOut, value: networkManager.token)
 			.task {
 				session.configure(networkManager: networkManager)

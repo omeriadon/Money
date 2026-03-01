@@ -155,8 +155,7 @@ struct ListView: View {
 			.task {
 				await handlePendingTransactionRoute()
 			}
-			.onChange(of: appRouter.pendingTransactionID) { oldValue, newValue in
-				guard oldValue != newValue else { return }
+			.onChange(of: appRouter.pendingTransactionNonce) { _, _ in
 				Task {
 					await handlePendingTransactionRoute()
 				}
