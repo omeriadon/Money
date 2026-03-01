@@ -131,7 +131,7 @@
 			);
 			target = A70133C32F3E01A50027A60C /* Money WidgetsExtension */;
 		};
-		A73769412F3E0A3D003FC757 /* Exceptions for "Money Watch Widgets" folder in "Money Watch WidgetsExtension" target */ = {
+		A73769412F3E0A3D003FC757 /* Exceptions for "MoneyWatch Widgets" folder in "Money Watch WidgetsExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -174,12 +174,12 @@
 			path = "Money Widgets";
 			sourceTree = "<group>";
 		};
-		A73769332F3E0A3C003FC757 /* Money Watch Widgets */ = {
+		A73769332F3E0A3C003FC757 /* MoneyWatch Widgets */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				A73769412F3E0A3D003FC757 /* Exceptions for "Money Watch Widgets" folder in "Money Watch WidgetsExtension" target */,
+				A73769412F3E0A3D003FC757 /* Exceptions for "MoneyWatch Widgets" folder in "Money Watch WidgetsExtension" target */,
 			);
-			path = "Money Watch Widgets";
+			path = "MoneyWatch Widgets";
 			sourceTree = "<group>";
 		};
 		A756303F2F20F8C500AA3CA5 /* Shared */ = {
@@ -192,9 +192,9 @@
 			path = Shared;
 			sourceTree = "<group>";
 		};
-		A75824AC2F20B4AC00ADCD20 /* moneyWatch Watch */ = {
+		A75824AC2F20B4AC00ADCD20 /* moneyWatch */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "moneyWatch Watch";
+			path = moneyWatch;
 			sourceTree = "<group>";
 		};
 		A7B9C9B92F1B905400529CE2 /* Money */ = {
@@ -269,9 +269,9 @@
 				A737692B2F3E0889003FC757 /* Release.entitlements */,
 				A756303F2F20F8C500AA3CA5 /* Shared */,
 				A7B9C9B92F1B905400529CE2 /* Money */,
-				A75824AC2F20B4AC00ADCD20 /* moneyWatch Watch */,
+				A75824AC2F20B4AC00ADCD20 /* moneyWatch */,
 				A70133C92F3E01A50027A60C /* Money Widgets */,
-				A73769332F3E0A3C003FC757 /* Money Watch Widgets */,
+				A73769332F3E0A3C003FC757 /* MoneyWatch Widgets */,
 				A75630602F20FEA900AA3CA5 /* Frameworks */,
 				A7B9C9B82F1B905400529CE2 /* Products */,
 			);
@@ -327,7 +327,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				A73769332F3E0A3C003FC757 /* Money Watch Widgets */,
+				A73769332F3E0A3C003FC757 /* MoneyWatch Widgets */,
 			);
 			name = "Money Watch WidgetsExtension";
 			packageProductDependencies = (
@@ -353,7 +353,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				A756303F2F20F8C500AA3CA5 /* Shared */,
-				A75824AC2F20B4AC00ADCD20 /* moneyWatch Watch */,
+				A75824AC2F20B4AC00ADCD20 /* moneyWatch */,
 			);
 			name = "moneyWatch Watch App";
 			packageProductDependencies = (
@@ -707,7 +707,7 @@
 				CODE_SIGN_ENTITLEMENTS = "moneyWatch Watch App/moneyWatch Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 9;
-				DEVELOPMENT_TEAM = C2HN547N49;
+				DEVELOPMENT_TEAM = P6PV2R9443;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
