@@ -18,7 +18,7 @@
 		A737694A2F3E0B53003FC757 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = A73769492F3E0B53003FC757 /* Defaults */; };
 		A756305F2F20FE0000AA3CA5 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = A756305E2F20FE0000AA3CA5 /* Defaults */; settings = {ATTRIBUTES = (Required, ); }; };
 		A75630622F20FEA900AA3CA5 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = A75630612F20FEA900AA3CA5 /* Defaults */; };
-		A75824B52F20B4AE00ADCD20 /* moneyWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = A75824AB2F20B4AC00ADCD20 /* moneyWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A75824B52F20B4AE00ADCD20 /* MoneyWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = A75824AB2F20B4AC00ADCD20 /* MoneyWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A78B90972F5326950074A35E /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = A78B90962F5326950074A35E /* Inject */; };
 		A78C01742F533D5F00B05EA4 /* InjectionNext in Frameworks */ = {isa = PBXBuildFile; productRef = A78C01732F533D5F00B05EA4 /* InjectionNext */; };
 		A7B54CC12F3374B400910001 /* ColorfulX in Frameworks */ = {isa = PBXBuildFile; productRef = A7B54CC02F3374B400910001 /* ColorfulX */; };
@@ -78,7 +78,7 @@
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
-				A75824B52F20B4AE00ADCD20 /* moneyWatch Watch App.app in Embed Watch Content */,
+				A75824B52F20B4AE00ADCD20 /* MoneyWatch.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -92,12 +92,19 @@
 		A737692B2F3E0889003FC757 /* Release.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Release.entitlements; sourceTree = "<group>"; };
 		A73769302F3E0A3C003FC757 /* Money Watch WidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Money Watch WidgetsExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A73769442F3E0A84003FC757 /* Debug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Debug.entitlements; sourceTree = "<group>"; };
-		A75824AB2F20B4AC00ADCD20 /* moneyWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "moneyWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A75824AB2F20B4AC00ADCD20 /* MoneyWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoneyWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7B9C9B72F1B905400529CE2 /* Money.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Money.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A70133BF2F3DD7F50027A60C /* Exceptions for "Money" folder in "moneyWatch Watch App" target */ = {
+	A78C01C82F54997E00B05EA4 /* Exceptions for "MoneyWatch Widgets" folder in "Money Watch WidgetsExtension" target */ = {
+		isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+		membershipExceptions = (
+			Info.plist,
+		);
+		target = A737692F2F3E0A3C003FC757 /* Money Watch WidgetsExtension */;
+	};
+		A70133BF2F3DD7F50027A60C /* Exceptions for "Money" folder in "MoneyWatch" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				"Backend/App Intents/Create/CreateGoalIntent.swift",
@@ -111,7 +118,7 @@
 				Views/Tabs/Analyse/StatisticsCardsView.swift,
 				Views/Tabs/Analyse/TotalOverTimeView.swift,
 			);
-			target = A75824AA2F20B4AC00ADCD20 /* moneyWatch Watch App */;
+			target = A75824AA2F20B4AC00ADCD20 /* MoneyWatch */;
 		};
 		A70133D42F3E01A70027A60C /* Exceptions for "Money Widgets" folder in "Money WidgetsExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -131,13 +138,6 @@
 			);
 			target = A70133C32F3E01A50027A60C /* Money WidgetsExtension */;
 		};
-		A73769412F3E0A3D003FC757 /* Exceptions for "MoneyWatch Widgets" folder in "Money Watch WidgetsExtension" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = A737692F2F3E0A3C003FC757 /* Money Watch WidgetsExtension */;
-		};
 		A73769482F3E0AC4003FC757 /* Exceptions for "Shared" folder in "Money Watch WidgetsExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -149,12 +149,12 @@
 			);
 			target = A737692F2F3E0A3C003FC757 /* Money Watch WidgetsExtension */;
 		};
-		A7578F052F3758B90066A6C4 /* Exceptions for "Shared" folder in "moneyWatch Watch App" target */ = {
+		A7578F052F3758B90066A6C4 /* Exceptions for "Shared" folder in "MoneyWatch" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Other/VariableBlur.swift,
 			);
-			target = A75824AA2F20B4AC00ADCD20 /* moneyWatch Watch App */;
+			target = A75824AA2F20B4AC00ADCD20 /* MoneyWatch */;
 		};
 		A78C01AC2F547BBE00B05EA4 /* Exceptions for "Money" folder in "Money" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -177,7 +177,7 @@
 		A73769332F3E0A3C003FC757 /* MoneyWatch Widgets */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				A73769412F3E0A3D003FC757 /* Exceptions for "MoneyWatch Widgets" folder in "Money Watch WidgetsExtension" target */,
+				A78C01C82F54997E00B05EA4 /* Exceptions for "MoneyWatch Widgets" folder in "Money Watch WidgetsExtension" target */,
 			);
 			path = "MoneyWatch Widgets";
 			sourceTree = "<group>";
@@ -185,7 +185,7 @@
 		A756303F2F20F8C500AA3CA5 /* Shared */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				A7578F052F3758B90066A6C4 /* Exceptions for "Shared" folder in "moneyWatch Watch App" target */,
+				A7578F052F3758B90066A6C4 /* Exceptions for "Shared" folder in "MoneyWatch" target */,
 				A73769242F3E04F5003FC757 /* Exceptions for "Shared" folder in "Money WidgetsExtension" target */,
 				A73769482F3E0AC4003FC757 /* Exceptions for "Shared" folder in "Money Watch WidgetsExtension" target */,
 			);
@@ -201,7 +201,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				A78C01AC2F547BBE00B05EA4 /* Exceptions for "Money" folder in "Money" target */,
-				A70133BF2F3DD7F50027A60C /* Exceptions for "Money" folder in "moneyWatch Watch App" target */,
+				A70133BF2F3DD7F50027A60C /* Exceptions for "Money" folder in "MoneyWatch" target */,
 			);
 			path = Money;
 			sourceTree = "<group>";
@@ -281,7 +281,7 @@
 			isa = PBXGroup;
 			children = (
 				A7B9C9B72F1B905400529CE2 /* Money.app */,
-				A75824AB2F20B4AC00ADCD20 /* moneyWatch Watch App.app */,
+				A75824AB2F20B4AC00ADCD20 /* MoneyWatch.app */,
 				A70133C42F3E01A50027A60C /* Money WidgetsExtension.appex */,
 				A73769302F3E0A3C003FC757 /* Money Watch WidgetsExtension.appex */,
 			);
@@ -337,9 +337,9 @@
 			productReference = A73769302F3E0A3C003FC757 /* Money Watch WidgetsExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		A75824AA2F20B4AC00ADCD20 /* moneyWatch Watch App */ = {
+		A75824AA2F20B4AC00ADCD20 /* MoneyWatch */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A75824B62F20B4AE00ADCD20 /* Build configuration list for PBXNativeTarget "moneyWatch Watch App" */;
+			buildConfigurationList = A75824B62F20B4AE00ADCD20 /* Build configuration list for PBXNativeTarget "MoneyWatch" */;
 			buildPhases = (
 				A75824A72F20B4AC00ADCD20 /* Sources */,
 				A75824A82F20B4AC00ADCD20 /* Frameworks */,
@@ -355,13 +355,13 @@
 				A756303F2F20F8C500AA3CA5 /* Shared */,
 				A75824AC2F20B4AC00ADCD20 /* moneyWatch */,
 			);
-			name = "moneyWatch Watch App";
+			name = MoneyWatch;
 			packageProductDependencies = (
 				A75630612F20FEA900AA3CA5 /* Defaults */,
 				A719E4CB2F52CC8300A49E9D /* IrregularGradient */,
 			);
 			productName = "moneyWatch Watch App";
-			productReference = A75824AB2F20B4AC00ADCD20 /* moneyWatch Watch App.app */;
+			productReference = A75824AB2F20B4AC00ADCD20 /* MoneyWatch.app */;
 			productType = "com.apple.product-type.application";
 		};
 		A7B9C9B62F1B905400529CE2 /* Money */ = {
@@ -405,7 +405,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2630;
-				LastUpgradeCheck = 2630;
+				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					A70133C32F3E01A50027A60C = {
 						CreatedOnToolsVersion = 26.3;
@@ -444,7 +444,7 @@
 			projectRoot = "";
 			targets = (
 				A7B9C9B62F1B905400529CE2 /* Money */,
-				A75824AA2F20B4AC00ADCD20 /* moneyWatch Watch App */,
+				A75824AA2F20B4AC00ADCD20 /* MoneyWatch */,
 				A70133C32F3E01A50027A60C /* Money WidgetsExtension */,
 				A737692F2F3E0A3C003FC757 /* Money Watch WidgetsExtension */,
 			);
@@ -547,7 +547,7 @@
 		};
 		A75824B42F20B4AE00ADCD20 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A75824AA2F20B4AC00ADCD20 /* moneyWatch Watch App */;
+			target = A75824AA2F20B4AC00ADCD20 /* MoneyWatch */;
 			targetProxy = A75824B32F20B4AE00ADCD20 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -562,7 +562,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = C2HN547N49;
-				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Money Widgets/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Money Widgets";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -600,7 +599,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = P6PV2R9443;
-				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Money Widgets/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Money Widgets";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -635,8 +633,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = C2HN547N49;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Money Watch Widgets/Info.plist";
+				INFOPLIST_FILE = "MoneyWatch Widgets/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Money Watch Widgets";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -673,8 +670,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = P6PV2R9443;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Money Watch Widgets/Info.plist";
+				INFOPLIST_FILE = "MoneyWatch Widgets/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Money Watch Widgets";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -704,10 +700,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDebug;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "moneyWatch Watch App/moneyWatch Watch App.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "moneyWatch/moneyWatch Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 9;
-				DEVELOPMENT_TEAM = P6PV2R9443;
+				DEVELOPMENT_TEAM = C2HN547N49;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -743,7 +739,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "moneyWatch Watch App/moneyWatch Watch App Release.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "moneyWatch/moneyWatch Watch App Release.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = P6PV2R9443;
@@ -911,7 +907,6 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
-				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Money/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Money Debug";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
@@ -969,7 +964,6 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
-				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Money/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Money;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
@@ -1028,7 +1022,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A75824B62F20B4AE00ADCD20 /* Build configuration list for PBXNativeTarget "moneyWatch Watch App" */ = {
+		A75824B62F20B4AE00ADCD20 /* Build configuration list for PBXNativeTarget "MoneyWatch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A75824B72F20B4AE00ADCD20 /* Debug */,
