@@ -16,8 +16,8 @@ struct MoneyApp: App {
 	@Default(.rememberTab) var rememberTab
 
 	init() {
-		if !rememberTab {
-			tab = "Home"
+		if !Defaults[.rememberTab] {
+			Defaults[.tab] = "Home"
 		}
 	}
 
