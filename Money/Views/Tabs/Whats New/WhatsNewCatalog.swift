@@ -24,6 +24,11 @@ enum WhatsNewReleaseCatalog {
 				symbolName: "target"
 			),
 			WhatsNewItem(
+				title: "Font style",
+				description: "You can now set the font style for iPhone and Apple Watch.",
+				symbolName: "fleuron"
+			),
+			WhatsNewItem(
 				title: "Onboarding Page",
 				description: "An onboarding page shows on first launch.",
 				symbolName: "hand.wave"
@@ -39,9 +44,9 @@ enum WhatsNewReleaseCatalog {
 				symbolName: "photo"
 			),
 			WhatsNewItem(
-				title: "Font style",
-				description: "You can now set the font style for iPhone and Apple Watch.",
-				symbolName: "fleuron"
+				title: "Widget Refinments",
+				description: "Adjusted widgets to work better in all contexts.",
+				symbolName: "widget.small"
 			),
 		],
 	]

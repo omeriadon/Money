@@ -41,6 +41,8 @@ struct WhatsNewSheetView: View {
 
 				VStack(alignment: .center, spacing: 16) {
 					ScrollView {
+						Spacer()
+							.frame(height: 40)
 						VStack(alignment: .leading, spacing: 14) {
 							ForEach(items) { item in
 								HStack(alignment: .center, spacing: 12) {
