@@ -9,7 +9,7 @@ import Charts
 import SwiftUI
 
 struct DifferentTypesView: View {
-	@EnvironmentObject var transactionRepo: TransactionRepository
+	@Environment(TransactionRepository.self) var transactionRepo
 
 	@State private var selectedPieChart: TypeOfPieChart = .count
 	@State private var selectedAngle: Double?

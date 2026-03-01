@@ -36,7 +36,7 @@ struct TabOptionsProvider: DynamicOptionsProvider {
 
 struct OpenTabIntent: AppIntent {
 	static var title: LocalizedStringResource = "Open Tab"
-	static var openAppWhenRun: Bool = true
+	static var supportedModes: IntentModes = .foreground(.immediate)
 
 	@Parameter(title: "Tab", optionsProvider: TabOptionsProvider())
 	var tab: OpenTabIntentEnum

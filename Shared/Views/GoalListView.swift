@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct GoalListView: View {
-	@EnvironmentObject var goalRepo: GoalRepository
+	@Environment(GoalRepository.self) var goalRepo
 
 	@State private var isLoading = false
 	@State private var showSuccess = false

@@ -100,6 +100,12 @@
 		A70133BF2F3DD7F50027A60C /* Exceptions for "Money" folder in "moneyWatch Watch App" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"Backend/App Intents/Create/CreateGoalIntent.swift",
+				"Backend/App Intents/Create/CreateTransactionIntent.swift",
+				"Backend/App Intents/Intents/GoalEntity.swift",
+				"Backend/App Intents/Intents/TransactionEntity.swift",
+				"Backend/App Intents/List/ListGoalsIntent.swift",
+				"Backend/App Intents/List/ListTransactionsIntent.swift",
 				Views/Tabs/Analyse/AnalyseView.swift,
 				Views/Tabs/Analyse/DifferentTypesView.swift,
 				Views/Tabs/Analyse/StatisticsCardsView.swift,

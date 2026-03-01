@@ -9,8 +9,8 @@ import Defaults
 import SwiftUI
 
 struct SettingsView: View {
-	@EnvironmentObject var transactionRepo: TransactionRepository
-	@EnvironmentObject var goalRepo: GoalRepository
+	@Environment(TransactionRepository.self) var transactionRepo
+	@Environment(GoalRepository.self) var goalRepo
 
 	@State private var showAlert = false
 	@State private var errorMessage = ""
@@ -60,12 +60,12 @@ struct SettingsView: View {
 
 				Section("Tabs") {
 					Toggle(isOn: $showAnalyseTab) {
-						Text("Show Analyse Tab")
+						Text("Show analyse tab")
 						Text("Detailed statistics and charts")
 					}
 
 					Toggle(isOn: $showGoalsTab) {
-						Text("Show Goals Tab")
+						Text("Show goals tab")
 						Text("Track savings and target milestones")
 					}
 				}
@@ -81,7 +81,7 @@ struct SettingsView: View {
 						whatsNewSeenState = WhatsNewReleaseCatalog.rollbackSeenState(from: whatsNewSeenState)
 						print(whatsNewSeenState)
 					} label: {
-						Text("Show What's New Again")
+						Text("Show what's new again")
 					}
 				}
 
@@ -94,7 +94,7 @@ struct SettingsView: View {
 					SecureField("New Password", text: $password)
 					SecureField("Confirm Password", text: $passwordConfirm)
 				} header: {
-					Text("Account Info")
+					Text("Account info")
 				} footer: {
 					VStack(alignment: .leading, spacing: 4) {
 						if firstNameChanged, firstName.trimmingCharacters(in: .whitespaces).isEmpty {
@@ -116,7 +116,7 @@ struct SettingsView: View {
 					await transactionRepo.network.refreshCurrentUser()
 				}
 
-				Section("Danger Zone") {
+				Section("Danger zone") {
 					Button {
 						showLogoutConfirmation = true
 					} label: {

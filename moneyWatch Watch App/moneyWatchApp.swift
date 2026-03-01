@@ -22,8 +22,8 @@ struct moneyWatch_Watch_AppApp: App {
 						ContentView()
 							.environmentObject(session)
 							.environmentObject(networkManager)
-							.environmentObject(repo)
-							.environmentObject(goalRepo)
+							.environment(repo)
+							.environment(goalRepo)
 							.transition(.opacity)
 					} else {
 						ContentUnavailableView(
@@ -40,14 +40,10 @@ struct moneyWatch_Watch_AppApp: App {
 			.task {
 				session.configure(networkManager: networkManager)
 				if repoHolder.repo == nil {
-					repoHolder.repo = TransactionRepository(
-						network: networkManager
-					)
+					repoHolder.repo = TransactionRepository.shared
 				}
 				if repoHolder.goalRepo == nil {
-					repoHolder.goalRepo = GoalRepository(
-						network: networkManager
-					)
+					repoHolder.goalRepo = GoalRepository.shared
 				}
 				session.refresh()
 			}

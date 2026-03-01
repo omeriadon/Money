@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct GoalDetailView: View {
-	@EnvironmentObject var goalRepo: GoalRepository
+	@Environment(GoalRepository.self) var goalRepo
 	@Environment(\.dismiss) private var dismiss
 
 	@State private var name = ""

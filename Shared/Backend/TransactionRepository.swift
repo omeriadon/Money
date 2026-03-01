@@ -1,26 +1,22 @@
-import Combine
 import Defaults
 import Foundation
+import Observation
 
 @MainActor
-final class TransactionRepository: ObservableObject {
-	@Published private var _transactions: [Transaction] = Defaults[.transactions]
+@Observable
+final class TransactionRepository {
+	static let shared = TransactionRepository(network: NetworkManager.shared)
+
+	private var _transactions: [Transaction] = Defaults[.transactions]
 
 	var transactions: [Transaction] {
 		_transactions.sorted { $0.dateCreated > $1.dateCreated }
 	}
 
 	let network: NetworkManager
-	private var cancellables = Set<AnyCancellable>()
 
 	init(network: NetworkManager) {
 		self.network = network
-
-		Defaults.publisher(.transactions)
-			.sink { [weak self] change in
-				self?._transactions = change.newValue
-			}
-			.store(in: &cancellables)
 	}
 
 	func syncTransactions() async throws {
@@ -54,11 +50,14 @@ final class TransactionRepository: ObservableObject {
 		)
 		let t = Transaction(from: remote)
 
-		if let index = _transactions.firstIndex(where: { $0.id == remote.id }) {
-			_transactions[index] = t
+		var updatedTransactions = _transactions
+		if let index = updatedTransactions.firstIndex(where: { $0.id == remote.id }) {
+			updatedTransactions[index] = t
 		} else {
-			_transactions.append(t)
+			updatedTransactions.append(t)
 		}
+
+		replaceTransactions(updatedTransactions)
 
 		persistTransactions()
 	}
@@ -71,7 +70,7 @@ final class TransactionRepository: ObservableObject {
 	#if os(iOS)
 		func logout() async throws {
 			try await network.logout()
-			_transactions.removeAll()
+			replaceTransactions([])
 			persistTransactions()
 			Defaults[.goals] = []
 			GoalGaugeWidgetStore.saveGoals([])
@@ -79,7 +78,7 @@ final class TransactionRepository: ObservableObject {
 
 		func deleteUser() async throws {
 			try await network.deleteCurrentUser()
-			_transactions.removeAll()
+			replaceTransactions([])
 			persistTransactions()
 			Defaults[.goals] = []
 			GoalGaugeWidgetStore.saveGoals([])
@@ -97,8 +96,12 @@ final class TransactionRepository: ObservableObject {
 	#endif // os(iOS)
 
 	private func applyRemoteTransactions(_ remote: [TransactionDTO]) {
-		_transactions = remote.map(Transaction.init(from:))
+		replaceTransactions(remote.map(Transaction.init(from:)))
 		persistTransactions()
+	}
+
+	private func replaceTransactions(_ newTransactions: [Transaction]) {
+		_transactions = newTransactions
 	}
 
 	private func persistTransactions() {

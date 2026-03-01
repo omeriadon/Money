@@ -15,7 +15,7 @@ import Defaults
 import SwiftUI
 
 struct HomeView: View {
-	@EnvironmentObject var transactionRepo: TransactionRepository
+	@Environment(TransactionRepository.self) var transactionRepo
 
 	var total: Double {
 		transactionRepo.transactions.reduce(0) { $0 + $1.change }

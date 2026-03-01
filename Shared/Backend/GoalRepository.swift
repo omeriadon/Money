@@ -1,26 +1,22 @@
-import Combine
 import Defaults
 import Foundation
+import Observation
 
 @MainActor
-final class GoalRepository: ObservableObject {
-	@Published private var _goals: [Goal] = Defaults[.goals]
+@Observable
+final class GoalRepository {
+	static let shared = GoalRepository(network: NetworkManager.shared)
+
+	private var _goals: [Goal] = Defaults[.goals]
 
 	var goals: [Goal] {
 		_goals.sorted { $0.dateCreated > $1.dateCreated }
 	}
 
 	let network: NetworkManager
-	private var cancellables = Set<AnyCancellable>()
 
 	init(network: NetworkManager) {
 		self.network = network
-
-		Defaults.publisher(.goals)
-			.sink { [weak self] change in
-				self?._goals = change.newValue
-			}
-			.store(in: &cancellables)
 	}
 
 	func syncGoals() async throws {
@@ -58,11 +54,13 @@ final class GoalRepository: ObservableObject {
 		let g = Goal(from: remote)
 		g.goalAmount = abs(g.goalAmount)
 
-		if let index = _goals.firstIndex(where: { $0.id == remote.id }) {
-			_goals[index] = g
+		var updatedGoals = _goals
+		if let index = updatedGoals.firstIndex(where: { $0.id == remote.id }) {
+			updatedGoals[index] = g
 		} else {
-			_goals.append(g)
+			updatedGoals.append(g)
 		}
+		replaceGoals(updatedGoals)
 
 		persistGoals()
 	}
@@ -73,12 +71,16 @@ final class GoalRepository: ObservableObject {
 	}
 
 	private func applyRemoteGoals(_ remote: [GoalDTO]) {
-		_goals = remote.map {
+		replaceGoals(remote.map {
 			let goal = Goal(from: $0)
 			goal.goalAmount = abs(goal.goalAmount)
 			return goal
-		}
+		})
 		persistGoals()
+	}
+
+	private func replaceGoals(_ newGoals: [Goal]) {
+		_goals = newGoals
 	}
 
 	private func persistGoals() {

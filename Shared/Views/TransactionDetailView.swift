@@ -3,7 +3,7 @@ import SwiftUI
 
 struct TransactionDetailView: View {
 	@EnvironmentObject var networkManager: NetworkManager
-	@EnvironmentObject var transactionRepo: TransactionRepository
+	@Environment(TransactionRepository.self) var transactionRepo
 	@Environment(\.colorScheme) var colorScheme
 
 	@Environment(\.dismiss) private var dismiss

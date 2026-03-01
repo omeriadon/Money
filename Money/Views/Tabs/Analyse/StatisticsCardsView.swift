@@ -16,7 +16,7 @@ struct StatCardData: Identifiable {
 }
 
 struct StatisticsCardsView: View {
-	@EnvironmentObject var transactionRepo: TransactionRepository
+	@Environment(TransactionRepository.self) var transactionRepo
 
 	var totalGained: Double {
 		transactionRepo.transactions

@@ -10,7 +10,7 @@
 import SwiftUI
 
 struct ListView: View {
-	@EnvironmentObject var transactionRepo: TransactionRepository
+	@Environment(TransactionRepository.self) var transactionRepo
 
 	@State private var isLoading = false
 	@State private var showSuccess = false

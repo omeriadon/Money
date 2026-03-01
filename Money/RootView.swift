@@ -33,8 +33,8 @@ struct RootView: View {
 			if let repo = repoHolder.repo, let goalRepo = repoHolder.goalRepo {
 				if networkManager.token != nil {
 					ContentView()
-						.environmentObject(repo)
-						.environmentObject(goalRepo)
+						.environment(repo)
+						.environment(goalRepo)
 						.transition(.opacity)
 				} else {
 					LoginSignupView()
@@ -45,15 +45,11 @@ struct RootView: View {
 		.animation(.easeInOut, value: networkManager.token)
 		.task {
 			if repoHolder.repo == nil {
-				repoHolder.repo = TransactionRepository(
-					network: networkManager
-				)
+				repoHolder.repo = TransactionRepository.shared
 			}
 
 			if repoHolder.goalRepo == nil {
-				repoHolder.goalRepo = GoalRepository(
-					network: networkManager
-				)
+				repoHolder.goalRepo = GoalRepository.shared
 			}
 		}
 		.fullScreenCover(isPresented: showIntroBinding) {
