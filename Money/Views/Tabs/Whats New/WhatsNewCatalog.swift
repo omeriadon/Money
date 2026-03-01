@@ -24,6 +24,11 @@ enum WhatsNewReleaseCatalog {
 				symbolName: "target"
 			),
 			WhatsNewItem(
+				title: "Watch Background",
+				description: "Watch app now has an animated background, matching iPhone.",
+				symbolName: "photo"
+			),
+			WhatsNewItem(
 				title: "Font style",
 				description: "You can now set the font style for iPhone and Apple Watch.",
 				symbolName: "fleuron"
@@ -34,19 +39,19 @@ enum WhatsNewReleaseCatalog {
 				symbolName: "hand.wave"
 			),
 			WhatsNewItem(
+				title: "Sheet Animations",
+				description: "Sheets now pop out of their buttons.",
+				symbolName: "rectangle.portrait"
+			),
+			WhatsNewItem(
 				title: "Tab Memory",
-				description: "Your last opened tab is now remembered across app launches.",
+				description: "Your last opened tab is now remembered across app launches. Changeable in settings.",
 				symbolName: "platter.filled.bottom.iphone"
 			),
 			WhatsNewItem(
 				title: "Upgraded Infrastructure",
 				description: "Including more secure account management, will require a re-sign in.",
 				symbolName: "person.crop.circle"
-			),
-			WhatsNewItem(
-				title: "Watch Background",
-				description: "Watch app now has an animated background, matching iPhone.",
-				symbolName: "photo"
 			),
 			WhatsNewItem(
 				title: "Widget Refinments",
