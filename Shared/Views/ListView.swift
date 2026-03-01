@@ -17,6 +17,8 @@ struct ListView: View {
 	@State private var errorMessage: String?
 	@State private var searchText = ""
 
+	@State private var showAddTransaction = false
+
 	@State private var keyboardVisible = false
 
 	private var filteredTransactions: [Transaction] {
@@ -94,10 +96,25 @@ struct ListView: View {
 				.animation(.easeInOut, value: filteredTransactions.count)
 				.transition(.blurReplace)
 			}
+			.sheet(isPresented: $showAddTransaction) {
+				TransactionDetailView(isNew: true)
+					.presentationDragIndicator(.hidden)
+			}
 			.animation(.easeInOut, value: filteredTransactions.isEmpty)
 			.toolbar { toolbarContent }
 			.toolbar {
 				#if os(iOS)
+
+					ToolbarItem(placement: .topBarTrailing) {
+						Button {
+							showAddTransaction = true
+						} label: {
+							Label("Add Transaction", systemImage: "plus")
+						}
+						.buttonStyle(.glassProminent)
+						.foregroundStyle(.black)
+					}
+
 					if !transactionRepo.transactions.isEmpty {
 						ToolbarItem(placement: .topBarTrailing) {
 							EditButton()

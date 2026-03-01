@@ -167,7 +167,6 @@ struct SettingsView: View {
 					}
 				}
 				.animation(.easeInOut, value: "\(canSave)\(isSaving)")
-
 			}
 			.toolbar {
 				ToolbarItem(placement: .principal) {
