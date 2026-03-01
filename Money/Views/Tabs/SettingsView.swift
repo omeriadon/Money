@@ -53,7 +53,7 @@ struct SettingsView: View {
 					}
 
 					Toggle(isOn: $rememberTab) {
-						Text("Remember Tab")
+						Text("Remember last opened tab")
 						Text("When disabled, home tab is always shown on launch.")
 					}
 				}
