@@ -9,6 +9,8 @@ struct GoalListView: View {
 	@State private var searchText = ""
 	@State private var showAddGoal = false
 
+	@Namespace private var namespace
+
 	private var hasNoItems: Bool {
 		goalRepo.goals.isEmpty
 	}
@@ -113,17 +115,18 @@ struct GoalListView: View {
 
 						ToolbarSpacer(placement: .topBarTrailing)
 					}
-				#endif // os(iOS)
 
-				ToolbarItem(placement: .topBarTrailing) {
-					Button {
-						showAddGoal = true
-					} label: {
-						Label("Add Goal", systemImage: "plus")
+					ToolbarItem(placement: .topBarTrailing) {
+						Button {
+							showAddGoal = true
+						} label: {
+							Label("Add Goal", systemImage: "plus")
+						}
+						.buttonStyle(.glassProminent)
+						.foregroundStyle(.black)
 					}
-					.buttonStyle(.glassProminent)
-					.foregroundStyle(.black)
-				}
+					.matchedTransitionSource(id: "unique_transition_id", in: namespace)
+				#endif // os(iOS)
 
 				ToolbarItem(placement: .topBarTrailing) {
 					RefreshButton(
@@ -137,6 +140,11 @@ struct GoalListView: View {
 			.sheet(isPresented: $showAddGoal) {
 				GoalDetailView(isNew: true)
 					.presentationDragIndicator(.hidden)
+				#if os(iOS)
+					.navigationTransition(
+						.zoom(sourceID: "unique_transition_id", in: namespace)
+					)
+				#endif
 			}
 			.task {
 				await refresh()

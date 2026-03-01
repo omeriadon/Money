@@ -19,6 +19,8 @@ struct ListView: View {
 
 	@State private var showAddTransaction = false
 
+	@Namespace private var namespace
+
 	@State private var keyboardVisible = false
 
 	private var filteredTransactions: [Transaction] {
@@ -99,6 +101,11 @@ struct ListView: View {
 			.sheet(isPresented: $showAddTransaction) {
 				TransactionDetailView(isNew: true)
 					.presentationDragIndicator(.hidden)
+				#if os(iOS)
+					.navigationTransition(
+						.zoom(sourceID: "unique_transition_id", in: namespace)
+					)
+				#endif
 			}
 			.animation(.easeInOut, value: filteredTransactions.isEmpty)
 			.toolbar { toolbarContent }
@@ -114,6 +121,7 @@ struct ListView: View {
 						.buttonStyle(.glassProminent)
 						.foregroundStyle(.black)
 					}
+					.matchedTransitionSource(id: "unique_transition_id", in: namespace)
 
 					if !transactionRepo.transactions.isEmpty {
 						ToolbarItem(placement: .topBarTrailing) {

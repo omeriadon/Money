@@ -43,7 +43,7 @@ extension Defaults.Keys {
 
 	static let transactions = Key<[Transaction]>("transactions", default: [], suite: appGroupSuite)
 	static let goals = Key<[Goal]>("goals", default: [], suite: appGroupSuite)
-	
+
 	static let tab = Key<String>("tab", default: "Home")
 
 	static let useNewGradient = Key<Bool>("useNewGradient", default: true)

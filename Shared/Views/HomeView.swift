@@ -23,6 +23,8 @@ struct HomeView: View {
 
 	@Default(.useNewGradient) var useNewGradient
 
+	@Namespace private var namespace
+
 	@State private var isLoading = false
 	@State private var showSuccess = false
 	@State private var errorMessage: String?
@@ -131,7 +133,7 @@ struct HomeView: View {
 			}
 			.toolbar { toolbarContent }
 			.toolbar {
-				if isiPhone() {
+				#if os(iOS)
 					ToolbarItem(placement: .topBarTrailing) {
 						Button {
 							showAddTransaction = true
@@ -141,7 +143,8 @@ struct HomeView: View {
 						.buttonStyle(.glassProminent)
 						.foregroundStyle(.black)
 					}
-				} else {
+					.matchedTransitionSource(id: "unique_transition_id", in: namespace)
+				#else
 					ToolbarItem(placement: .bottomBar) {
 						Button {
 							showAddTransaction = true
@@ -163,7 +166,7 @@ struct HomeView: View {
 						.foregroundStyle(.black)
 						.tint(.yellow)
 					}
-				}
+				#endif
 
 				#if os(iOS)
 					ToolbarSpacer(.fixed, placement: .topBarTrailing)
@@ -178,10 +181,20 @@ struct HomeView: View {
 			.sheet(isPresented: $showAddTransaction) {
 				TransactionDetailView(isNew: true)
 					.presentationDragIndicator(.hidden)
+				#if os(iOS)
+					.navigationTransition(
+						.zoom(sourceID: "unique_transition_id", in: namespace)
+					)
+				#endif
 			}
 			.sheet(isPresented: $showAddGoal) {
 				GoalDetailView(isNew: true)
 					.presentationDragIndicator(.hidden)
+				#if os(iOS)
+					.navigationTransition(
+						.zoom(sourceID: "unique_transition_id", in: namespace)
+					)
+				#endif
 			}
 		}
 		#if os(iOS)
