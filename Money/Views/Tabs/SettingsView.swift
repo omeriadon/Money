@@ -200,6 +200,7 @@ struct SettingsView: View {
 				WhatsNewSheetView(
 					release: release,
 					items: [],
+					showAll: true,
 					showSheet: $showAllReleasesSheet
 				)
 				.interactiveDismissDisabled(false)

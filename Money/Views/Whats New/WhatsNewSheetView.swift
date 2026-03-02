@@ -25,6 +25,26 @@ struct WhatsNewSheetView: View {
 
 	@State private var allReleases: [(WhatsNewRelease, [WhatsNewItem])] = []
 
+	init(
+		release: WhatsNewRelease,
+		items: [WhatsNewItem],
+		showAll: Bool = false,
+		showSheet: Binding<Bool>
+	) {
+		self.release = release
+		self.items = items
+		self.showAll = showAll
+		_showSheet = showSheet
+
+		let releases: [(WhatsNewRelease, [WhatsNewItem])] = WhatsNewReleaseCatalog.sortedReleases.reversed().compactMap { r in
+			guard let releaseItems = WhatsNewReleaseCatalog.items(for: r) else { return nil }
+			return (r, releaseItems)
+		}
+
+		_allReleases = State(initialValue: releases)
+		_scrolledRelease = State(initialValue: releases.first?.0)
+	}
+
 	var body: some View {
 		ZStack {
 			ColorfulView(
@@ -46,16 +66,9 @@ struct WhatsNewSheetView: View {
 			}
 		}
 		.ignoresSafeArea()
-		.onAppear {
-			allReleases = WhatsNewReleaseCatalog.sortedReleases.reversed().compactMap { r in
-				guard let i = WhatsNewReleaseCatalog.items(for: r) else { return nil }
-				return (r, i)
-			}
-			scrolledRelease = allReleases.first?.0
-		}
 
 		#if os(iOS)
-		.enableInjection()
+			.enableInjection()
 		#endif
 	}
 
@@ -81,20 +94,27 @@ struct WhatsNewSheetView: View {
 
 	var allReleasesView: some View {
 		ScrollView {
-			Spacer()
-				.frame(height: 50)
+			VStack(alignment: .leading, spacing: 0) {
+				Spacer()
+					.frame(height: 50)
 
-			if let r = scrolledRelease, let i = allReleases.first(where: { $0.0 == r })?.1 {
-				VStack(alignment: .leading, spacing: 14) {
-					itemList(i)
+				if let r = scrolledRelease, let i = allReleases.first(where: { $0.0 == r })?.1 {
+					VStack(alignment: .leading, spacing: 14) {
+						itemList(i)
+					}
+					.id(r.id)
+					.padding()
+					.frame(maxWidth: .infinity, alignment: .leading)
+					.transition(.asymmetric(
+						insertion: .move(edge: .trailing).combined(with: .opacity),
+						removal: .move(edge: .leading).combined(with: .opacity)
+					))
 				}
-				.padding()
-				.transition(.opacity)
 			}
+			.frame(maxWidth: .infinity, alignment: .leading)
 		}
 		.scrollBounceBehavior(.basedOnSize)
-		.animation(.easeInOut, value: scrolledRelease)
-		.onAppear { scrolledRelease = allReleases.first?.0 }
+		.animation(.easeInOut(duration: 0.18), value: scrolledRelease)
 		.safeAreaBar(edge: .top, alignment: .center) {
 			VStack(spacing: 15) {
 				Image("Logo")
@@ -116,41 +136,41 @@ struct WhatsNewSheetView: View {
 			.padding(.top, 30)
 		}
 		.safeAreaBar(edge: .bottom, alignment: .center) {
-			HStack(spacing: 12) {
-				Menu {
-					ForEach(allReleases, id: \.0.id) { r, _ in
-						Button {
-							scrolledRelease = r
-						} label: {
-							Label {
-								Text("v\(r.version) (\(r.build))")
-							} icon: {
-								Image("Logo")
-									.renderingMode(.template)
-									.resizable()
-									.aspectRatio(contentMode: .fit)
-							}
-							if r == scrolledRelease {
-								Image(systemName: "checkmark")
+			GlassEffectContainer(spacing: 1) {
+				HStack(spacing: 12) {
+					Menu {
+						ForEach(allReleases, id: \.0.id) { r, _ in
+							Button {
+								withAnimation(.easeInOut(duration: 0.18)) {
+									scrolledRelease = r
+								}
+							} label: {
+								Label {
+									Text("v\(r.version) (\(r.build))")
+								} icon: {
+									Image(systemName: r == scrolledRelease ? "checkmark.circle.fill" : "circle")
+								}
 							}
 						}
-					}
-				} label: {
-					Label {
-						if let r = scrolledRelease {
-							Text("v\(r.version) (\(r.build))")
+					} label: {
+						HStack(spacing: 6) {
+							Image("Logo")
+								.renderingMode(.template)
+								.resizable()
+								.aspectRatio(contentMode: .fit)
+								.frame(height: 20)
+							Text(scrolledRelease.map { "\($0.version) (\($0.build))" } ?? "Select Release")
+							Image(systemName: "chevron.up.chevron.down")
 						}
-					} icon: {
-						Image("Logo")
-							.renderingMode(.template)
-							.resizable()
-							.aspectRatio(contentMode: .fit)
+						.font(.title2)
+						.padding(8)
 					}
-				}
+					.glassEffect(.regular.interactive(), in: .capsule)
 
-				dismissButton
-					.frame(width: 20)
+					dismissButton
+				}
 			}
+			.padding(showAll ? 25 : 0)
 		}
 	}
 
@@ -189,6 +209,7 @@ struct WhatsNewSheetView: View {
 				}
 			}
 		}
+		.frame(maxWidth: .infinity, alignment: .leading)
 	}
 
 	var dismissButton: some View {
@@ -197,13 +218,12 @@ struct WhatsNewSheetView: View {
 		} label: {
 			Text("OK")
 				.font(.title2)
-				.padding(.vertical, 4)
 		}
 		.frame(maxWidth: .infinity)
 		.buttonStyle(.glassProminent)
 		.foregroundStyle(.black)
-		.buttonSizing(.flexible)
 		.buttonBorderShape(.capsule)
-		.padding(25)
+		.buttonSizing(.flexible)
+		.padding(showAll ? 0 : 25)
 	}
 }
