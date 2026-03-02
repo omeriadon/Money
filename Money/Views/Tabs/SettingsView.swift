@@ -35,6 +35,8 @@ struct SettingsView: View {
 	@Default(.whatsNewSeenState) var whatsNewSeenState
 	@Default(.rememberTab) var rememberTab
 
+	@State private var showAllReleasesSheet = false
+
 	var body: some View {
 		NavigationStack {
 			List {
@@ -74,7 +76,7 @@ struct SettingsView: View {
 					Button {
 						hasSeenIntroSplash = false
 					} label: {
-						Text("Show onboarding")
+						Text("Show onboarding again")
 					}
 
 					Button {
@@ -82,6 +84,22 @@ struct SettingsView: View {
 						print(whatsNewSeenState)
 					} label: {
 						Text("Show what's new again")
+					}
+
+					Button {
+						showAllReleasesSheet = true
+					} label: {
+						Text("View all past releases")
+					}
+					.sheet(isPresented: $showAllReleasesSheet) {
+						if let release = WhatsNewReleaseCatalog.currentRelease {
+							WhatsNewSheetView(
+								release: release,
+								items: [],
+								showSheet: $showAllReleasesSheet
+							)
+							.interactiveDismissDisabled(false)
+						}
 					}
 				}
 

@@ -8,9 +8,13 @@
 import Defaults
 import Foundation
 
-struct WhatsNewRelease: Codable, Hashable, Defaults.Serializable, Comparable {
+struct WhatsNewRelease: Codable, Hashable, Defaults.Serializable, Comparable, Identifiable {
 	let version: String
 	let build: Int
+
+	var id: String {
+		"\(version)\(build)"
+	}
 
 	static func < (lhs: WhatsNewRelease, rhs: WhatsNewRelease) -> Bool {
 		let lhsParts = lhs.version.split(separator: ".").map { Int($0) ?? 0 }

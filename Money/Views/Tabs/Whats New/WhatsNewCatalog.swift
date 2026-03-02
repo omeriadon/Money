@@ -14,6 +14,7 @@ enum WhatsNewReleaseCatalog {
 	static let releases: [WhatsNewRelease: [WhatsNewItem]] = [
 		WhatsNewRelease(version: "1.0", build: 8): r1_0__8,
 		WhatsNewRelease(version: "1.0", build: 9): r1_0__9,
+		WhatsNewRelease(version: "1.0", build: 10): r1_0__10,
 	]
 
 	static var sortedReleases: [WhatsNewRelease] {

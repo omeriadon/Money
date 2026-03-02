@@ -50,8 +50,9 @@ struct ContentView: View {
 					WhatsNewSheetView(
 						release: release,
 						items: items,
-						onDismiss: { showWhatsNewSheet = false }
+						showSheet: $showWhatsNewSheet
 					)
+					.interactiveDismissDisabled()
 					.presentationDetents([.large])
 				}
 			}
