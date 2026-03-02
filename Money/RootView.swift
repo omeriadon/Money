@@ -30,10 +30,10 @@ struct RootView: View {
 
 	var body: some View {
 		ZStack {
-			if let repo = repoHolder.repo, let goalRepo = repoHolder.goalRepo {
+			if let transactionRepo = repoHolder.transactionRepo, let goalRepo = repoHolder.goalRepo {
 				if networkManager.token != nil {
 					ContentView()
-						.environment(repo)
+						.environment(transactionRepo)
 						.environment(goalRepo)
 						.transition(.opacity)
 				} else {
@@ -44,8 +44,8 @@ struct RootView: View {
 		}
 		.animation(.easeInOut, value: networkManager.token)
 		.task {
-			if repoHolder.repo == nil {
-				repoHolder.repo = TransactionRepository.shared
+			if repoHolder.transactionRepo == nil {
+				repoHolder.transactionRepo = TransactionRepository.shared
 			}
 
 			if repoHolder.goalRepo == nil {

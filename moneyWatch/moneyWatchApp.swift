@@ -18,12 +18,12 @@ struct moneyWatch_Watch_AppApp: App {
 	var body: some Scene {
 		WindowGroup {
 			ZStack {
-				if let repo = repoHolder.repo, let goalRepo = repoHolder.goalRepo {
+				if let transactionRepo = repoHolder.transactionRepo, let goalRepo = repoHolder.goalRepo {
 					if networkManager.token != nil {
 						ContentView()
 							.environmentObject(session)
 							.environmentObject(networkManager)
-							.environment(repo)
+							.environment(transactionRepo)
 							.environment(goalRepo)
 							.transition(.opacity)
 					} else {
@@ -44,8 +44,8 @@ struct moneyWatch_Watch_AppApp: App {
 			.animation(.easeInOut, value: networkManager.token)
 			.task {
 				session.configure(networkManager: networkManager)
-				if repoHolder.repo == nil {
-					repoHolder.repo = TransactionRepository.shared
+				if repoHolder.transactionRepo == nil {
+					repoHolder.transactionRepo = TransactionRepository.shared
 				}
 				if repoHolder.goalRepo == nil {
 					repoHolder.goalRepo = GoalRepository.shared
