@@ -37,6 +37,14 @@ struct SettingsView: View {
 
 	@State private var showAllReleasesSheet = false
 
+	var version: String {
+		Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
+	}
+
+	var build: String {
+		Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "?"
+	}
+
 	var body: some View {
 		NavigationStack {
 			List {
@@ -149,6 +157,23 @@ struct SettingsView: View {
 						} label: { Text("Yes") }
 						Button(role: .cancel) {} label: { Text("No") }
 					} message: { Text("This will permanently delete all your transactions and goals.") }
+				}
+
+				Section("App") {
+					HStack {
+						Text("Version")
+							.foregroundStyle(.secondary)
+						Spacer()
+						Text(version)
+					}
+					HStack {
+						Text("Build")
+							.foregroundStyle(.secondary)
+
+						Spacer()
+						Text(build)
+					}
+					Text("© \(String(Calendar.current.component(.year, from: Date()))) Adon")
 				}
 			}
 			.safeAreaBar(edge: .bottom, alignment: .center, spacing: 10) {

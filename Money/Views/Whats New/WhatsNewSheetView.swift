@@ -3,27 +3,38 @@ import Defaults
 import Inject
 import SwiftUI
 
-struct WhatsNewBackground: View {
-	@State private var colourfulColors: [Color] = [.black, .yellow, .black, .yellow, .white]
-	@State private var colourfulSpeed: Double = 1.8
-	@State private var colourfulBias: Double = 0.015
-	@State private var colourfulNoise: Double = 50.0
-	@State private var colourfulTransition: Double = 10.0
+struct WhatsNewBackground: UIViewRepresentable {
+	func makeUIView(context _: Context) -> some UIView {
+		let host = UIHostingController(rootView: _BackgroundContent())
+		host.view.backgroundColor = .clear
+		return host.view
+	}
+
+	func updateUIView(_: UIViewType, context _: Context) {}
+}
+
+private struct _BackgroundContent: View {
+	@State private var colors: [Color] = [.black, .yellow, .black, .yellow, .white]
+	@State private var speed: Double = 1.8
+	@State private var bias: Double = 0.015
+	@State private var noise: Double = 50.0
+	@State private var transition: Double = 10.0
 	@State private var frameLimit: Int = 120
 	@State private var renderScale: Double = 1.0
 
 	var body: some View {
 		ColorfulView(
-			color: $colourfulColors,
-			speed: $colourfulSpeed,
-			bias: $colourfulBias,
-			noise: $colourfulNoise,
-			transitionSpeed: $colourfulTransition,
+			color: $colors,
+			speed: $speed,
+			bias: $bias,
+			noise: $noise,
+			transitionSpeed: $transition,
 			frameLimit: $frameLimit,
 			renderScale: $renderScale
 		)
 		.opacity(0.5)
 		.saturation(1.2)
+		.ignoresSafeArea()
 	}
 }
 
@@ -142,49 +153,37 @@ struct WhatsNewSheetView: View {
 			.padding(.top, 30)
 		}
 		.safeAreaBar(edge: .bottom, alignment: .center) {
-			GlassEffectContainer(spacing: 1) {
-				HStack(spacing: 12) {
-					Menu {
-						ForEach(allReleases, id: \.0.id) { r, _ in
-							Button {
-								withAnimation(.easeInOut(duration: 0.18)) {
-									scrolledRelease = r
-								}
-							} label: {
-								Label {
-									Text("\(r.version) (\(r.build))")
-								} icon: {
-									Image(systemName: r == scrolledRelease ? "checkmark.circle.fill" : "circle")
-								}
-								.foregroundStyle(Color(
-									red: Double.random(in: 0 ... 1),
-									green: Double.random(in: 0 ... 1),
-									blue: Double.random(in: 0 ... 1)
-								))
+			HStack(spacing: 12) {
+				Menu {
+					ForEach(allReleases, id: \.0.id) { r, _ in
+						Button {
+							withAnimation(.easeInOut(duration: 0.18)) {
+								scrolledRelease = r
+							}
+						} label: {
+							Label {
+								Text("\(r.version) (\(r.build))")
+							} icon: {
+								Image(systemName: r == scrolledRelease ? "checkmark.circle.fill" : "circle")
 							}
 						}
-					} label: {
-						HStack(spacing: 6) {
-							Image("Logo")
-								.renderingMode(.template)
-								.resizable()
-								.aspectRatio(contentMode: .fit)
-								.frame(height: 20)
-							Text(scrolledRelease.map { "\($0.version) (\($0.build))" } ?? "Select Release")
-							Image(systemName: "chevron.up.chevron.down")
-						}
-						.font(.title2)
-						.padding(8)
-						.border(Color(
-							red: Double.random(in: 0 ... 1),
-							green: Double.random(in: 0 ... 1),
-							blue: Double.random(in: 0 ... 1)
-						))
 					}
-					.glassEffect(.regular.interactive(), in: .capsule)
-
-					dismissButton
+				} label: {
+					HStack(spacing: 6) {
+						Image("Logo")
+							.renderingMode(.template)
+							.resizable()
+							.aspectRatio(contentMode: .fit)
+							.frame(height: 20)
+						Text(scrolledRelease.map { "\($0.version) (\($0.build))" } ?? "Select Release")
+						Image(systemName: "chevron.up.chevron.down")
+					}
+					.font(.title2)
+					.padding(8)
 				}
+				.glassEffect(.regular.interactive(), in: .capsule)
+
+				dismissButton
 			}
 			.padding(showAll ? 25 : 0)
 		}
