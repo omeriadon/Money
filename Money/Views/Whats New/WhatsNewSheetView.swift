@@ -164,6 +164,11 @@ struct WhatsNewSheetView: View {
 						}
 						.font(.title2)
 						.padding(8)
+						.border(Color(
+							red: Double.random(in: 0 ... 1),
+							green: Double.random(in: 0 ... 1),
+							blue: Double.random(in: 0 ... 1)
+						))
 					}
 					.glassEffect(.regular.interactive(), in: .capsule)
 
