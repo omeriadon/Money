@@ -97,13 +97,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-	A78C01C82F54997E00B05EA4 /* Exceptions for "MoneyWatch Widgets" folder in "Money Watch WidgetsExtension" target */ = {
-		isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-		membershipExceptions = (
-			Info.plist,
-		);
-		target = A737692F2F3E0A3C003FC757 /* Money Watch WidgetsExtension */;
-	};
 		A70133BF2F3DD7F50027A60C /* Exceptions for "Money" folder in "MoneyWatch" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -163,6 +156,13 @@
 			);
 			target = A7B9C9B62F1B905400529CE2 /* Money */;
 		};
+		A78C0C272F549E7B00B05EA4 /* Exceptions for "MoneyWatch Widgets" folder in "Money Watch WidgetsExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A737692F2F3E0A3C003FC757 /* Money Watch WidgetsExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -177,7 +177,7 @@
 		A73769332F3E0A3C003FC757 /* MoneyWatch Widgets */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				A78C01C82F54997E00B05EA4 /* Exceptions for "MoneyWatch Widgets" folder in "Money Watch WidgetsExtension" target */,
+				A78C0C272F549E7B00B05EA4 /* Exceptions for "MoneyWatch Widgets" folder in "Money Watch WidgetsExtension" target */,
 			);
 			path = "MoneyWatch Widgets";
 			sourceTree = "<group>";
@@ -556,6 +556,7 @@
 		A70133D62F3E01A70027A60C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_SHORTCUTS_ENABLE_FLEXIBLE_MATCHING = NO;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = Debug.entitlements;
@@ -592,6 +593,7 @@
 		A70133D72F3E01A70027A60C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_SHORTCUTS_ENABLE_FLEXIBLE_MATCHING = NO;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = Release.entitlements;
@@ -907,6 +909,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Money/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Money Debug";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
@@ -964,6 +967,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Money/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Money;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
