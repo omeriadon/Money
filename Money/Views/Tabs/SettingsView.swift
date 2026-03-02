@@ -91,16 +91,6 @@ struct SettingsView: View {
 					} label: {
 						Text("View all past releases")
 					}
-					.sheet(isPresented: $showAllReleasesSheet) {
-						if let release = WhatsNewReleaseCatalog.currentRelease {
-							WhatsNewSheetView(
-								release: release,
-								items: [],
-								showSheet: $showAllReleasesSheet
-							)
-							.interactiveDismissDisabled(false)
-						}
-					}
 				}
 
 				Section {
@@ -204,6 +194,16 @@ struct SettingsView: View {
 				Button("OK", role: .cancel) {}
 			} message: { Text("Your account has been updated.") }
 			.task { loadCurrentUser() }
+		}
+		.sheet(isPresented: $showAllReleasesSheet) {
+			if let release = WhatsNewReleaseCatalog.currentRelease {
+				WhatsNewSheetView(
+					release: release,
+					items: [],
+					showSheet: $showAllReleasesSheet
+				)
+				.interactiveDismissDisabled(false)
+			}
 		}
 		#if os(iOS)
 		.enableInjection()

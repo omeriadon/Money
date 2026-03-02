@@ -23,36 +23,37 @@ struct WhatsNewSheetView: View {
 	@State private var renderScale: Double = 1.0
 	@State private var scrolledRelease: WhatsNewRelease?
 
-	private var allReleases: [(WhatsNewRelease, [WhatsNewItem])] {
-		WhatsNewReleaseCatalog.sortedReleases.reversed().compactMap { r in
-			guard let i = WhatsNewReleaseCatalog.items(for: r) else { return nil }
-			return (r, i)
-		}
-	}
+	@State private var allReleases: [(WhatsNewRelease, [WhatsNewItem])] = []
 
 	var body: some View {
-		NavigationStack {
-			ZStack {
-				ColorfulView(
-					color: $colourfulColors,
-					speed: $colourfulSpeed,
-					bias: $colourfulBias,
-					noise: $colourfulNoise,
-					transitionSpeed: $colourfulTransition,
-					frameLimit: $frameLimit,
-					renderScale: $renderScale
-				)
-				.opacity(0.5)
-				.saturation(1.2)
+		ZStack {
+			ColorfulView(
+				color: $colourfulColors,
+				speed: $colourfulSpeed,
+				bias: $colourfulBias,
+				noise: $colourfulNoise,
+				transitionSpeed: $colourfulTransition,
+				frameLimit: $frameLimit,
+				renderScale: $renderScale
+			)
+			.opacity(0.5)
+			.saturation(1.2)
 
-				if showAll {
-					allReleasesView
-				} else {
-					singleReleaseView(release: release, items: items)
-				}
+			if showAll {
+				allReleasesView
+			} else {
+				singleReleaseView(release: release, items: items)
 			}
-			.ignoresSafeArea()
 		}
+		.ignoresSafeArea()
+		.onAppear {
+			allReleases = WhatsNewReleaseCatalog.sortedReleases.reversed().compactMap { r in
+				guard let i = WhatsNewReleaseCatalog.items(for: r) else { return nil }
+				return (r, i)
+			}
+			scrolledRelease = allReleases.first?.0
+		}
+
 		#if os(iOS)
 		.enableInjection()
 		#endif
@@ -79,79 +80,76 @@ struct WhatsNewSheetView: View {
 	// MARK: - All releases
 
 	var allReleasesView: some View {
-		NavigationStack {
-			ScrollView {
-				Spacer()
-					.frame(height: 50)
+		ScrollView {
+			Spacer()
+				.frame(height: 50)
 
-				if let r = scrolledRelease, let i = allReleases.first(where: { $0.0 == r })?.1 {
-					VStack(alignment: .leading, spacing: 14) {
-						itemList(i)
-					}
-					.padding()
-					.transition(.opacity)
+			if let r = scrolledRelease, let i = allReleases.first(where: { $0.0 == r })?.1 {
+				VStack(alignment: .leading, spacing: 14) {
+					itemList(i)
+				}
+				.padding()
+				.transition(.opacity)
+			}
+		}
+		.scrollBounceBehavior(.basedOnSize)
+		.animation(.easeInOut, value: scrolledRelease)
+		.onAppear { scrolledRelease = allReleases.first?.0 }
+		.safeAreaBar(edge: .top, alignment: .center) {
+			VStack(spacing: 15) {
+				Image("Logo")
+					.renderingMode(.template)
+					.resizable()
+					.aspectRatio(contentMode: .fit)
+					.foregroundStyle(.white)
+					.frame(maxWidth: 100)
+					.padding(24)
+					.glassEffect(.clear.interactive(), in: RoundedRectangle(cornerRadius: 35))
+
+				if let r = scrolledRelease {
+					Text("v\(r.version) (\(r.build))")
+						.font(.title2.bold())
+						.contentTransition(.numericText())
+						.animation(.spring(duration: 0.3), value: scrolledRelease)
 				}
 			}
-			.scrollBounceBehavior(.basedOnSize)
-			.animation(.easeInOut, value: scrolledRelease)
-			.onAppear { scrolledRelease = allReleases.first?.0 }
-			.safeAreaBar(edge: .top, alignment: .center) {
-				VStack(spacing: 15) {
-					Image("Logo")
-						.renderingMode(.template)
-						.resizable()
-						.aspectRatio(contentMode: .fit)
-						.foregroundStyle(.white)
-						.frame(maxWidth: 100)
-						.padding(24)
-						.glassEffect(.clear.interactive(), in: RoundedRectangle(cornerRadius: 35))
-
-					if let r = scrolledRelease {
-						Text("v\(r.version) (\(r.build))")
-							.font(.title2.bold())
-							.contentTransition(.numericText())
-							.animation(.spring(duration: 0.3), value: scrolledRelease)
-					}
-				}
-				.padding(.top, 30)
-			}
-			.toolbar {
-				ToolbarItem(placement: .status) {
-					HStack(spacing: 12) {
-						Menu {
-							ForEach(allReleases, id: \.0.id) { r, _ in
-								Button {
-									scrolledRelease = r
-								} label: {
-									Label {
-										Text("v\(r.version) (\(r.build))")
-									} icon: {
-										Image("Logo")
-											.renderingMode(.template)
-											.resizable()
-											.aspectRatio(contentMode: .fit)
-									}
-									if r == scrolledRelease {
-										Image(systemName: "checkmark")
-									}
-								}
-							}
+			.padding(.top, 30)
+		}
+		.safeAreaBar(edge: .bottom, alignment: .center) {
+			HStack(spacing: 12) {
+				Menu {
+					ForEach(allReleases, id: \.0.id) { r, _ in
+						Button {
+							scrolledRelease = r
 						} label: {
 							Label {
-								if let r = scrolledRelease {
-									Text("v\(r.version) (\(r.build))")
-								}
+								Text("v\(r.version) (\(r.build))")
 							} icon: {
 								Image("Logo")
 									.renderingMode(.template)
 									.resizable()
 									.aspectRatio(contentMode: .fit)
 							}
+							if r == scrolledRelease {
+								Image(systemName: "checkmark")
+							}
 						}
-
-						dismissButton
+					}
+				} label: {
+					Label {
+						if let r = scrolledRelease {
+							Text("v\(r.version) (\(r.build))")
+						}
+					} icon: {
+						Image("Logo")
+							.renderingMode(.template)
+							.resizable()
+							.aspectRatio(contentMode: .fit)
 					}
 				}
+
+				dismissButton
+					.frame(width: 20)
 			}
 		}
 	}
