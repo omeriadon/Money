@@ -27,7 +27,7 @@
             {
               "appearance" : "dark",
               "value" : {
-                "solid" : "extended-gray:1.00000,1.00000"
+                "solid" : "extended-srgb:1.00000,0.80000,0.00000,1.00000"
               }
             }
           ],
@@ -51,7 +51,7 @@
       },
       "translucency" : {
         "enabled" : true,
-        "value" : 1
+        "value" : 0.72
       }
     },
     {
