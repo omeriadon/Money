@@ -57,8 +57,6 @@ struct RootView: View {
 		}
 		.dynamicTypeSize(...DynamicTypeSize.large)
 		.fontDesign(appFontDesign)
-		.id(appFontDesign)
-		.animation(.easeInOut, value: appFontDesign)
 		#if os(iOS)
 			.enableInjection()
 		#endif
