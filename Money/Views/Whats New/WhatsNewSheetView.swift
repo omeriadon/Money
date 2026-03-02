@@ -154,34 +154,36 @@ struct WhatsNewSheetView: View {
 		}
 		.safeAreaBar(edge: .bottom, alignment: .center) {
 			HStack(spacing: 12) {
-				Menu {
-					ForEach(allReleases, id: \.0.id) { r, _ in
-						Button {
-							withAnimation(.easeInOut(duration: 0.18)) {
-								scrolledRelease = r
-							}
-						} label: {
-							Label {
-								Text("\(r.version) (\(r.build))")
-							} icon: {
-								Image(systemName: r == scrolledRelease ? "checkmark.circle.fill" : "circle")
-							}
-						}
-					}
-				} label: {
-					HStack(spacing: 6) {
-						Image("Logo")
-							.renderingMode(.template)
-							.resizable()
-							.aspectRatio(contentMode: .fit)
-							.frame(height: 20)
-						Text(scrolledRelease.map { "\($0.version) (\($0.build))" } ?? "Select Release")
-						Image(systemName: "chevron.up.chevron.down")
-					}
-					.font(.title2)
-					.padding(8)
-				}
-				.glassEffect(.regular.interactive(), in: .capsule)
+//				Menu {
+//					ForEach(allReleases, id: \.0.id) { r, _ in
+//						Button {
+//							withAnimation(.easeInOut(duration: 0.18)) {
+//								scrolledRelease = r
+//							}
+//						} label: {
+//							Label {
+//								Text("\(r.version) (\(r.build))")
+//							} icon: {
+//								Image(systemName: r == scrolledRelease ? "checkmark.circle.fill" : "circle")
+//							}
+//						}
+//					}
+//				} label: {
+//					HStack(spacing: 6) {
+//						Image("Logo")
+//							.renderingMode(.template)
+//							.resizable()
+//							.aspectRatio(contentMode: .fit)
+//							.frame(height: 20)
+//						Text(scrolledRelease.map { "\($0.version) (\($0.build))" } ?? "Select Release")
+//						Image(systemName: "chevron.up.chevron.down")
+//					}
+//					.font(.title2)
+//					.padding(8)
+//				}
+//				.glassEffect(.regular.interactive(), in: .capsule)
+				ReleasePickerButton(releases: allReleases, selectedRelease: $scrolledRelease)
+					.frame(height: 44)
 
 				dismissButton
 			}
