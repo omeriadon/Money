@@ -12,7 +12,7 @@ struct moneyWatch_Watch_AppApp: App {
 	@Default(.fontDesignStyle) private var fontDesignStyle
 
 	private var appFontDesign: Font.Design {
-		AppFontDesign(rawValue: fontDesignStyle)?.fontDesign ?? .monospaced
+		fontDesignStyle.fontDesign
 	}
 
 	var body: some Scene {

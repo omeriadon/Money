@@ -139,7 +139,7 @@ private enum AppearanceSync {
 	static func payload() -> [String: Any] {
 		[
 			"useNewGradient": Defaults[.useNewGradient],
-			"fontDesignStyle": Defaults[.fontDesignStyle],
+			"fontDesignStyle": Defaults[.fontDesignStyle].rawValue,
 			"showGoalsTab": Defaults[.showGoalsTab],
 		]
 	}

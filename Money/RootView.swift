@@ -25,7 +25,7 @@ struct RootView: View {
 	}
 
 	private var appFontDesign: Font.Design {
-		AppFontDesign(rawValue: fontDesignStyle)?.fontDesign ?? .monospaced
+		fontDesignStyle.fontDesign
 	}
 
 	var body: some View {

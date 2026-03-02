@@ -54,6 +54,5 @@ extension Defaults.Keys {
 	static let useNewGradient = Key<Bool>("useNewGradient", default: true)
 	static let showAnalyseTab = Key<Bool>("showAnalyseTab", default: true)
 	static let showGoalsTab = Key<Bool>("showGoalsTab", default: true)
-	static let useMonospacedFont = Key<Bool>("useMonospacedFont", default: true)
-	static let fontDesignStyle = Key<String>("fontDesignStyle", default: "monospaced")
+	static let fontDesignStyle = Key<AppFontDesign>("fontDesignStyle", default: .monospaced)
 }

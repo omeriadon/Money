@@ -5,15 +5,17 @@
 //  Created by Adon Omeri on 2/3/2026.
 //
 
+import Defaults
 import SwiftUI
 import UIKit
 
 struct ReleasePickerButton: View {
 	let releases: [(WhatsNewRelease, [WhatsNewItem])]
 	@Binding var selectedRelease: WhatsNewRelease?
+	@Default(.fontDesignStyle) var appFontDesign
 
 	var body: some View {
-		_MenuTrigger(releases: releases, selectedRelease: $selectedRelease)
+		_MenuTrigger(releases: releases, selectedRelease: $selectedRelease, font: appFontDesign.rawValue)
 			.fixedSize()
 	}
 }
@@ -30,6 +32,7 @@ private final class _GlassMenuButton: UIButton {
 private struct _MenuTrigger: UIViewRepresentable {
 	let releases: [(WhatsNewRelease, [WhatsNewItem])]
 	@Binding var selectedRelease: WhatsNewRelease?
+	let font: String
 
 	func makeUIView(context _: Context) -> _GlassMenuButton {
 		var config = UIButton.Configuration.plain()
@@ -58,9 +61,10 @@ private struct _MenuTrigger: UIViewRepresentable {
 		config?.image = UIImage(named: "Logo")?
 			.resized(to: CGSize(width: 20, height: 20))
 			.withRenderingMode(.alwaysTemplate)
+		let design = AppFontDesign(rawValue: font) ?? .monospaced
 		config?.attributedTitle = AttributedString(
 			selectedRelease.map { "\($0.version) (\($0.build))" } ?? "Select Release",
-			attributes: AttributeContainer([.font: UIFont.preferredFont(forTextStyle: .title2)])
+			attributes: AttributeContainer([.font: design.uiFont()])
 		)
 		button.configuration = config
 

@@ -131,9 +131,9 @@ private enum AppearanceSync {
 		}
 
 		if let fontDesignStyle = payload["fontDesignStyle"] as? String,
-		   AppFontDesign(rawValue: fontDesignStyle) != nil
+		   let design = AppFontDesign(rawValue: fontDesignStyle)
 		{
-			Defaults[.fontDesignStyle] = fontDesignStyle
+			Defaults[.fontDesignStyle] = design
 		}
 
 		if let showGoalsTab = payload["showGoalsTab"] as? Bool {

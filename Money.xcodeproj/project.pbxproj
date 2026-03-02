@@ -128,6 +128,7 @@
 				Backend/DTOs.swift,
 				Backend/Infrastructure/AppConfig.swift,
 				Backend/Models.swift,
+				Other/AppFontDesign.swift,
 			);
 			target = A70133C32F3E01A50027A60C /* Money_Widgets */;
 		};
@@ -139,6 +140,7 @@
 				Backend/DTOs.swift,
 				Backend/Infrastructure/AppConfig.swift,
 				Backend/Models.swift,
+				Other/AppFontDesign.swift,
 			);
 			target = A737692F2F3E0A3C003FC757 /* MoneyWatch_Widgets */;
 		};

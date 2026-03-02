@@ -53,7 +53,7 @@ struct SettingsView: View {
 						ForEach(AppFontDesign.allCases) { style in
 							Text(style.title)
 								.fontDesign(style.fontDesign)
-								.tag(style.rawValue)
+								.tag(style)
 						}
 					}
 
