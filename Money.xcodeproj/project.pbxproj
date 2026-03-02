@@ -9,12 +9,12 @@
 /* Begin PBXBuildFile section */
 		A70133C62F3E01A50027A60C /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A70133C52F3E01A50027A60C /* WidgetKit.framework */; };
 		A70133C82F3E01A50027A60C /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A70133C72F3E01A50027A60C /* SwiftUI.framework */; };
-		A70133D32F3E01A70027A60C /* Money WidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A70133C42F3E01A50027A60C /* Money WidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A70133D32F3E01A70027A60C /* Money_Widgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A70133C42F3E01A50027A60C /* Money_Widgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A719E4CC2F52CC8300A49E9D /* IrregularGradient in Frameworks */ = {isa = PBXBuildFile; productRef = A719E4CB2F52CC8300A49E9D /* IrregularGradient */; };
 		A73769282F3E05D0003FC757 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = A73769272F3E05D0003FC757 /* Defaults */; };
 		A73769312F3E0A3C003FC757 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A70133C52F3E01A50027A60C /* WidgetKit.framework */; };
 		A73769322F3E0A3C003FC757 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A70133C72F3E01A50027A60C /* SwiftUI.framework */; };
-		A737693D2F3E0A3D003FC757 /* Money Watch WidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A73769302F3E0A3C003FC757 /* Money Watch WidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A737693D2F3E0A3D003FC757 /* MoneyWatch_Widgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A73769302F3E0A3C003FC757 /* MoneyWatch_Widgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A737694A2F3E0B53003FC757 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = A73769492F3E0B53003FC757 /* Defaults */; };
 		A756305F2F20FE0000AA3CA5 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = A756305E2F20FE0000AA3CA5 /* Defaults */; settings = {ATTRIBUTES = (Required, ); }; };
 		A75630622F20FEA900AA3CA5 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = A75630612F20FEA900AA3CA5 /* Defaults */; };
@@ -56,7 +56,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				A70133D32F3E01A70027A60C /* Money WidgetsExtension.appex in Embed Foundation Extensions */,
+				A70133D32F3E01A70027A60C /* Money_Widgets.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -67,7 +67,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				A737693D2F3E0A3D003FC757 /* Money Watch WidgetsExtension.appex in Embed Foundation Extensions */,
+				A737693D2F3E0A3D003FC757 /* MoneyWatch_Widgets.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -86,11 +86,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		A70133C42F3E01A50027A60C /* Money WidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Money WidgetsExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A70133C42F3E01A50027A60C /* Money_Widgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Money_Widgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A70133C52F3E01A50027A60C /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		A70133C72F3E01A50027A60C /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		A737692B2F3E0889003FC757 /* Release.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Release.entitlements; sourceTree = "<group>"; };
-		A73769302F3E0A3C003FC757 /* Money Watch WidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Money Watch WidgetsExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A73769302F3E0A3C003FC757 /* MoneyWatch_Widgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MoneyWatch_Widgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A73769442F3E0A84003FC757 /* Debug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Debug.entitlements; sourceTree = "<group>"; };
 		A75824AB2F20B4AC00ADCD20 /* MoneyWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoneyWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7B9C9B72F1B905400529CE2 /* Money.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Money.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -113,14 +113,14 @@
 			);
 			target = A75824AA2F20B4AC00ADCD20 /* MoneyWatch */;
 		};
-		A70133D42F3E01A70027A60C /* Exceptions for "Money Widgets" folder in "Money WidgetsExtension" target */ = {
+		A70133D42F3E01A70027A60C /* Exceptions for "Money Widgets" folder in "Money_Widgets" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = A70133C32F3E01A50027A60C /* Money WidgetsExtension */;
+			target = A70133C32F3E01A50027A60C /* Money_Widgets */;
 		};
-		A73769242F3E04F5003FC757 /* Exceptions for "Shared" folder in "Money WidgetsExtension" target */ = {
+		A73769242F3E04F5003FC757 /* Exceptions for "Shared" folder in "Money_Widgets" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Backend/AppDeepLink.swift,
@@ -129,9 +129,9 @@
 				Backend/Infrastructure/AppConfig.swift,
 				Backend/Models.swift,
 			);
-			target = A70133C32F3E01A50027A60C /* Money WidgetsExtension */;
+			target = A70133C32F3E01A50027A60C /* Money_Widgets */;
 		};
-		A73769482F3E0AC4003FC757 /* Exceptions for "Shared" folder in "Money Watch WidgetsExtension" target */ = {
+		A73769482F3E0AC4003FC757 /* Exceptions for "Shared" folder in "MoneyWatch_Widgets" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Backend/AppDeepLink.swift,
@@ -140,7 +140,7 @@
 				Backend/Infrastructure/AppConfig.swift,
 				Backend/Models.swift,
 			);
-			target = A737692F2F3E0A3C003FC757 /* Money Watch WidgetsExtension */;
+			target = A737692F2F3E0A3C003FC757 /* MoneyWatch_Widgets */;
 		};
 		A7578F052F3758B90066A6C4 /* Exceptions for "Shared" folder in "MoneyWatch" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -156,12 +156,12 @@
 			);
 			target = A7B9C9B62F1B905400529CE2 /* Money */;
 		};
-		A78C0C272F549E7B00B05EA4 /* Exceptions for "MoneyWatch Widgets" folder in "Money Watch WidgetsExtension" target */ = {
+		A78C0C272F549E7B00B05EA4 /* Exceptions for "MoneyWatch Widgets" folder in "MoneyWatch_Widgets" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = A737692F2F3E0A3C003FC757 /* Money Watch WidgetsExtension */;
+			target = A737692F2F3E0A3C003FC757 /* MoneyWatch_Widgets */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -169,7 +169,7 @@
 		A70133C92F3E01A50027A60C /* Money Widgets */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				A70133D42F3E01A70027A60C /* Exceptions for "Money Widgets" folder in "Money WidgetsExtension" target */,
+				A70133D42F3E01A70027A60C /* Exceptions for "Money Widgets" folder in "Money_Widgets" target */,
 			);
 			path = "Money Widgets";
 			sourceTree = "<group>";
@@ -177,7 +177,7 @@
 		A73769332F3E0A3C003FC757 /* MoneyWatch Widgets */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				A78C0C272F549E7B00B05EA4 /* Exceptions for "MoneyWatch Widgets" folder in "Money Watch WidgetsExtension" target */,
+				A78C0C272F549E7B00B05EA4 /* Exceptions for "MoneyWatch Widgets" folder in "MoneyWatch_Widgets" target */,
 			);
 			path = "MoneyWatch Widgets";
 			sourceTree = "<group>";
@@ -186,8 +186,8 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				A7578F052F3758B90066A6C4 /* Exceptions for "Shared" folder in "MoneyWatch" target */,
-				A73769242F3E04F5003FC757 /* Exceptions for "Shared" folder in "Money WidgetsExtension" target */,
-				A73769482F3E0AC4003FC757 /* Exceptions for "Shared" folder in "Money Watch WidgetsExtension" target */,
+				A73769242F3E04F5003FC757 /* Exceptions for "Shared" folder in "Money_Widgets" target */,
+				A73769482F3E0AC4003FC757 /* Exceptions for "Shared" folder in "MoneyWatch_Widgets" target */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -282,8 +282,8 @@
 			children = (
 				A7B9C9B72F1B905400529CE2 /* Money.app */,
 				A75824AB2F20B4AC00ADCD20 /* MoneyWatch.app */,
-				A70133C42F3E01A50027A60C /* Money WidgetsExtension.appex */,
-				A73769302F3E0A3C003FC757 /* Money Watch WidgetsExtension.appex */,
+				A70133C42F3E01A50027A60C /* Money_Widgets.appex */,
+				A73769302F3E0A3C003FC757 /* MoneyWatch_Widgets.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -291,9 +291,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A70133C32F3E01A50027A60C /* Money WidgetsExtension */ = {
+		A70133C32F3E01A50027A60C /* Money_Widgets */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A70133D52F3E01A70027A60C /* Build configuration list for PBXNativeTarget "Money WidgetsExtension" */;
+			buildConfigurationList = A70133D52F3E01A70027A60C /* Build configuration list for PBXNativeTarget "Money_Widgets" */;
 			buildPhases = (
 				A70133C02F3E01A50027A60C /* Sources */,
 				A70133C12F3E01A50027A60C /* Frameworks */,
@@ -306,17 +306,17 @@
 			fileSystemSynchronizedGroups = (
 				A70133C92F3E01A50027A60C /* Money Widgets */,
 			);
-			name = "Money WidgetsExtension";
+			name = Money_Widgets;
 			packageProductDependencies = (
 				A73769272F3E05D0003FC757 /* Defaults */,
 			);
 			productName = "Money WidgetsExtension";
-			productReference = A70133C42F3E01A50027A60C /* Money WidgetsExtension.appex */;
+			productReference = A70133C42F3E01A50027A60C /* Money_Widgets.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		A737692F2F3E0A3C003FC757 /* Money Watch WidgetsExtension */ = {
+		A737692F2F3E0A3C003FC757 /* MoneyWatch_Widgets */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A737693E2F3E0A3D003FC757 /* Build configuration list for PBXNativeTarget "Money Watch WidgetsExtension" */;
+			buildConfigurationList = A737693E2F3E0A3D003FC757 /* Build configuration list for PBXNativeTarget "MoneyWatch_Widgets" */;
 			buildPhases = (
 				A737692C2F3E0A3C003FC757 /* Sources */,
 				A737692D2F3E0A3C003FC757 /* Frameworks */,
@@ -329,12 +329,12 @@
 			fileSystemSynchronizedGroups = (
 				A73769332F3E0A3C003FC757 /* MoneyWatch Widgets */,
 			);
-			name = "Money Watch WidgetsExtension";
+			name = MoneyWatch_Widgets;
 			packageProductDependencies = (
 				A73769492F3E0B53003FC757 /* Defaults */,
 			);
 			productName = "Money Watch WidgetsExtension";
-			productReference = A73769302F3E0A3C003FC757 /* Money Watch WidgetsExtension.appex */;
+			productReference = A73769302F3E0A3C003FC757 /* MoneyWatch_Widgets.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		A75824AA2F20B4AC00ADCD20 /* MoneyWatch */ = {
@@ -445,8 +445,8 @@
 			targets = (
 				A7B9C9B62F1B905400529CE2 /* Money */,
 				A75824AA2F20B4AC00ADCD20 /* MoneyWatch */,
-				A70133C32F3E01A50027A60C /* Money WidgetsExtension */,
-				A737692F2F3E0A3C003FC757 /* Money Watch WidgetsExtension */,
+				A70133C32F3E01A50027A60C /* Money_Widgets */,
+				A737692F2F3E0A3C003FC757 /* MoneyWatch_Widgets */,
 			);
 		};
 /* End PBXProject section */
@@ -537,12 +537,12 @@
 /* Begin PBXTargetDependency section */
 		A70133D22F3E01A70027A60C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A70133C32F3E01A50027A60C /* Money WidgetsExtension */;
+			target = A70133C32F3E01A50027A60C /* Money_Widgets */;
 			targetProxy = A70133D12F3E01A70027A60C /* PBXContainerItemProxy */;
 		};
 		A737693C2F3E0A3D003FC757 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A737692F2F3E0A3C003FC757 /* Money Watch WidgetsExtension */;
+			target = A737692F2F3E0A3C003FC757 /* MoneyWatch_Widgets */;
 			targetProxy = A737693B2F3E0A3D003FC757 /* PBXContainerItemProxy */;
 		};
 		A75824B42F20B4AE00ADCD20 /* PBXTargetDependency */ = {
@@ -1008,7 +1008,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A70133D52F3E01A70027A60C /* Build configuration list for PBXNativeTarget "Money WidgetsExtension" */ = {
+		A70133D52F3E01A70027A60C /* Build configuration list for PBXNativeTarget "Money_Widgets" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A70133D62F3E01A70027A60C /* Debug */,
@@ -1017,7 +1017,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A737693E2F3E0A3D003FC757 /* Build configuration list for PBXNativeTarget "Money Watch WidgetsExtension" */ = {
+		A737693E2F3E0A3D003FC757 /* Build configuration list for PBXNativeTarget "MoneyWatch_Widgets" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A737693F2F3E0A3D003FC757 /* Debug */,

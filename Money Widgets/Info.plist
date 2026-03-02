@@ -4,10 +4,14 @@
 <dict>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleExecutable</key>
+	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleName</key>
+	<string>Money Widgets</string>
 	<key>INIntentsSupported</key>
 	<array>
 		<string>GoalGaugeIntent</string>
