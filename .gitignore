@@ -3,6 +3,8 @@
 **/*.xcuserstate
 **/*.xcbkptlist
 
+**/*.DS_Store
+
 # Derived/build artifacts
 DerivedData/
 build/
