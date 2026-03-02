@@ -3,6 +3,30 @@ import Defaults
 import Inject
 import SwiftUI
 
+struct WhatsNewBackground: View {
+	@State private var colourfulColors: [Color] = [.black, .yellow, .black, .yellow, .white]
+	@State private var colourfulSpeed: Double = 1.8
+	@State private var colourfulBias: Double = 0.015
+	@State private var colourfulNoise: Double = 50.0
+	@State private var colourfulTransition: Double = 10.0
+	@State private var frameLimit: Int = 120
+	@State private var renderScale: Double = 1.0
+
+	var body: some View {
+		ColorfulView(
+			color: $colourfulColors,
+			speed: $colourfulSpeed,
+			bias: $colourfulBias,
+			noise: $colourfulNoise,
+			transitionSpeed: $colourfulTransition,
+			frameLimit: $frameLimit,
+			renderScale: $renderScale
+		)
+		.opacity(0.5)
+		.saturation(1.2)
+	}
+}
+
 struct WhatsNewSheetView: View {
 	@ObserveInjection var inject
 
@@ -14,16 +38,8 @@ struct WhatsNewSheetView: View {
 
 	@Binding var showSheet: Bool
 
-	@State private var colourfulColors: [Color] = [.black, .yellow, .black, .yellow, .white]
-	@State private var colourfulSpeed: Double = 1.8
-	@State private var colourfulBias: Double = 0.015
-	@State private var colourfulNoise: Double = 50.0
-	@State private var colourfulTransition: Double = 10.0
-	@State private var frameLimit: Int = 120
-	@State private var renderScale: Double = 1.0
-	@State private var scrolledRelease: WhatsNewRelease?
-
 	@State private var allReleases: [(WhatsNewRelease, [WhatsNewItem])] = []
+	@State private var scrolledRelease: WhatsNewRelease?
 
 	init(
 		release: WhatsNewRelease,
@@ -47,17 +63,7 @@ struct WhatsNewSheetView: View {
 
 	var body: some View {
 		ZStack {
-			ColorfulView(
-				color: $colourfulColors,
-				speed: $colourfulSpeed,
-				bias: $colourfulBias,
-				noise: $colourfulNoise,
-				transitionSpeed: $colourfulTransition,
-				frameLimit: $frameLimit,
-				renderScale: $renderScale
-			)
-			.opacity(0.5)
-			.saturation(1.2)
+			WhatsNewBackground()
 
 			if showAll {
 				allReleasesView
@@ -146,10 +152,15 @@ struct WhatsNewSheetView: View {
 								}
 							} label: {
 								Label {
-									Text("v\(r.version) (\(r.build))")
+									Text("\(r.version) (\(r.build))")
 								} icon: {
 									Image(systemName: r == scrolledRelease ? "checkmark.circle.fill" : "circle")
 								}
+								.foregroundStyle(Color(
+									red: Double.random(in: 0 ... 1),
+									green: Double.random(in: 0 ... 1),
+									blue: Double.random(in: 0 ... 1)
+								))
 							}
 						}
 					} label: {
