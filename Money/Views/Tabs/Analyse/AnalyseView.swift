@@ -23,8 +23,6 @@ struct ImportanceSlice: Identifiable, Equatable {
 }
 
 struct AnalyseView: View {
-	@Environment(TransactionRepository.self) var transactionRepo
-
 	var body: some View {
 		NavigationStack {
 			TabView {
@@ -50,13 +48,10 @@ struct AnalyseView: View {
 		switch tab {
 			case .tot:
 				TotalOverTimeView()
-					.environment(transactionRepo)
 			case .dt:
 				DifferentTypesView()
-					.environment(transactionRepo)
 			case .stats:
 				StatisticsCardsView()
-					.environment(transactionRepo)
 		}
 	}
 

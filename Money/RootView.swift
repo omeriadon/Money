@@ -31,8 +31,10 @@ struct RootView: View {
 	var body: some View {
 		ZStack {
 			if let transactionRepo = repoHolder.transactionRepo, let goalRepo = repoHolder.goalRepo {
+				let appRepositories = AppRepositories(transactionRepo: transactionRepo, goalRepo: goalRepo)
 				if networkManager.token != nil {
 					ContentView()
+						.environment(\.repositories, appRepositories)
 						.environment(transactionRepo)
 						.environment(goalRepo)
 						.transition(.opacity)

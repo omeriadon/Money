@@ -15,10 +15,10 @@ import Defaults
 import SwiftUI
 
 struct HomeView: View {
-	@Environment(TransactionRepository.self) var transactionRepo
+	@Environment(\.repositories) private var repositories
 
-	var total: Double {
-		transactionRepo.transactions.reduce(0) { $0 + $1.change }
+	private var transactionRepo: TransactionRepository {
+		repositories.transactionRepo
 	}
 
 	@Default(.useNewGradient) var useNewGradient
@@ -51,7 +51,7 @@ struct HomeView: View {
 	var body: some View {
 		NavigationStack {
 			VStack {
-				Text(total.formatted(.currency(code: "AUD")))
+				Text(transactionRepo.total.formatted(.currency(code: "AUD")))
 					.foregroundStyle(.white)
 				#if os(iOS)
 					.padding(.horizontal)

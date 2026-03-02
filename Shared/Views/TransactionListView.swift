@@ -10,8 +10,12 @@
 import SwiftUI
 
 struct TransactionListView: View {
-	@Environment(TransactionRepository.self) var transactionRepo
+	@Environment(\.repositories) private var repositories
 	@Environment(AppRouter.self) var appRouter
+
+	private var transactionRepo: TransactionRepository {
+		repositories.transactionRepo
+	}
 
 	@State private var isLoading = false
 	@State private var showSuccess = false

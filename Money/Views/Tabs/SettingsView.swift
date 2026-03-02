@@ -9,8 +9,11 @@ import Defaults
 import SwiftUI
 
 struct SettingsView: View {
-	@Environment(TransactionRepository.self) var transactionRepo
-	@Environment(GoalRepository.self) var goalRepo
+	@Environment(\.repositories) private var repositories
+
+	private var transactionRepo: TransactionRepository {
+		repositories.transactionRepo
+	}
 
 	@State private var showAlert = false
 	@State private var errorMessage = ""

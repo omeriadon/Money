@@ -1,8 +1,12 @@
 import SwiftUI
 
 struct GoalDetailView: View {
-	@Environment(GoalRepository.self) var goalRepo
+	@Environment(\.repositories) private var repositories
 	@Environment(\.dismiss) private var dismiss
+
+	private var goalRepo: GoalRepository {
+		repositories.goalRepo
+	}
 
 	@State private var name = ""
 	@State private var description = ""

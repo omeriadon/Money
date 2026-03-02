@@ -19,10 +19,12 @@ struct moneyWatch_Watch_AppApp: App {
 		WindowGroup {
 			ZStack {
 				if let transactionRepo = repoHolder.transactionRepo, let goalRepo = repoHolder.goalRepo {
+					let appRepositories = AppRepositories(transactionRepo: transactionRepo, goalRepo: goalRepo)
 					if networkManager.token != nil {
 						ContentView()
 							.environmentObject(session)
 							.environmentObject(networkManager)
+							.environment(\.repositories, appRepositories)
 							.environment(transactionRepo)
 							.environment(goalRepo)
 							.transition(.opacity)

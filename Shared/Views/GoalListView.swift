@@ -1,8 +1,12 @@
 import SwiftUI
 
 struct GoalListView: View {
-	@Environment(GoalRepository.self) var goalRepo
+	@Environment(\.repositories) private var repositories
 	@Environment(AppRouter.self) var appRouter
+
+	private var goalRepo: GoalRepository {
+		repositories.goalRepo
+	}
 
 	@State private var isLoading = false
 	@State private var showSuccess = false

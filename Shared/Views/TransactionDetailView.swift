@@ -3,10 +3,14 @@ import SwiftUI
 
 struct TransactionDetailView: View {
 	@EnvironmentObject var networkManager: NetworkManager
-	@Environment(TransactionRepository.self) var transactionRepo
+	@Environment(\.repositories) private var repositories
 	@Environment(\.colorScheme) var colorScheme
 
 	@Environment(\.dismiss) private var dismiss
+
+	private var transactionRepo: TransactionRepository {
+		repositories.transactionRepo
+	}
 
 	@State private var title = ""
 	@State private var description = ""

@@ -9,8 +9,12 @@ import Charts
 import SwiftUI
 
 struct TotalOverTimeView: View {
-	@Environment(TransactionRepository.self) var transactionRepo
+	@Environment(\.repositories) private var repositories
 	@Environment(\.calendar) private var calendar
+
+	private var transactionRepo: TransactionRepository {
+		repositories.transactionRepo
+	}
 
 	@State private var selectedRange: TimeRange = .month
 	@State private var rawSelectedDate: Date?

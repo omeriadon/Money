@@ -3,8 +3,15 @@ import SwiftUI
 import UIKit
 
 struct ContentView: View {
-	@Environment(TransactionRepository.self) var transactionRepo
-	@Environment(GoalRepository.self) var goalRepo
+	@Environment(\.repositories) private var repositories
+
+	private var transactionRepo: TransactionRepository {
+		repositories.transactionRepo
+	}
+
+	private var goalRepo: GoalRepository {
+		repositories.goalRepo
+	}
 
 	@State private var showWhatsNewSheet = false
 

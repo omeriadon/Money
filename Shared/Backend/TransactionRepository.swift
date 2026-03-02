@@ -13,6 +13,12 @@ final class TransactionRepository {
 		_transactions.sorted { $0.dateCreated > $1.dateCreated }
 	}
 
+	var total: Double {
+		_transactions.reduce(0) { first, second in
+			first + second.change
+		}
+	}
+
 	let network: NetworkManager
 
 	init(network: NetworkManager) {
