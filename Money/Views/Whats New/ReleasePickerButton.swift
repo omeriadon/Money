@@ -15,7 +15,7 @@ struct ReleasePickerButton: View {
 	@Default(.fontDesignStyle) var appFontDesign
 
 	var body: some View {
-		_MenuTrigger(releases: releases, selectedRelease: $selectedRelease, font: appFontDesign.rawValue)
+		_MenuTrigger(releases: releases, selectedRelease: $selectedRelease, fontDesign: appFontDesign)
 			.fixedSize()
 	}
 }
@@ -32,7 +32,7 @@ private final class _GlassMenuButton: UIButton {
 private struct _MenuTrigger: UIViewRepresentable {
 	let releases: [(WhatsNewRelease, [WhatsNewItem])]
 	@Binding var selectedRelease: WhatsNewRelease?
-	let font: String
+	let fontDesign: AppFontDesign
 
 	func makeUIView(context _: Context) -> _GlassMenuButton {
 		var config = UIButton.Configuration.plain()
@@ -57,25 +57,22 @@ private struct _MenuTrigger: UIViewRepresentable {
 	}
 
 	func updateUIView(_ button: _GlassMenuButton, context _: Context) {
+		let font = fontDesign.uiFont()
+
 		var config = button.configuration
 		config?.image = UIImage(named: "Logo")?
 			.resized(to: CGSize(width: 20, height: 20))
 			.withRenderingMode(.alwaysTemplate)
-		let design = AppFontDesign(rawValue: font) ?? .monospaced
 		config?.attributedTitle = AttributedString(
 			selectedRelease.map { "\($0.version) (\($0.build))" } ?? "Select Release",
-			attributes: AttributeContainer([.font: design.uiFont()])
+			attributes: AttributeContainer([.font: font])
 		)
 		button.configuration = config
 
-		let elements: [UIMenuElement] = releases.map { release, _ in
-			UIAction(
-				title: "\(release.version) (\(release.build))",
-				image: UIImage(named: "Logo")?
-					.resized(to: CGSize(width: 20, height: 20))
-					.withRenderingMode(.alwaysTemplate),
-				state: release == selectedRelease ? .on : .off
-			) { _ in
+		let elements: [UIMenuElement] = releases.compactMap { release, _ in
+			UIMenu.customViewElement {
+				ReleaseMenuItemView(release: release, isSelected: release == selectedRelease, font: font)
+			} primaryActionHandler: {
 				DispatchQueue.main.async {
 					withAnimation(.easeInOut(duration: 0.18)) {
 						selectedRelease = release
