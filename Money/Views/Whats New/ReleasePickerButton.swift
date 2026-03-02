@@ -13,43 +13,63 @@ struct ReleasePickerButton: View {
 	@Binding var selectedRelease: WhatsNewRelease?
 
 	var body: some View {
-		_ReleasePickerUIButton(releases: releases, selectedRelease: $selectedRelease)
-			.glassEffect(.regular.interactive(), in: .capsule)
+		_MenuTrigger(releases: releases, selectedRelease: $selectedRelease)
+			.fixedSize()
 	}
 }
 
-private struct _ReleasePickerUIButton: UIViewRepresentable {
+private final class _GlassMenuButton: UIButton {
+	override func layoutSubviews() {
+		super.layoutSubviews()
+		layer.cornerRadius = bounds.height / 2
+		layer.cornerCurve = .continuous
+		subviews.first?.layer.cornerRadius = bounds.height / 2
+	}
+}
+
+private struct _MenuTrigger: UIViewRepresentable {
 	let releases: [(WhatsNewRelease, [WhatsNewItem])]
 	@Binding var selectedRelease: WhatsNewRelease?
 
-	func makeUIView(context _: Context) -> UIButton {
+	func makeUIView(context _: Context) -> _GlassMenuButton {
 		var config = UIButton.Configuration.plain()
 		config.imagePadding = 6
 		config.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12)
 		config.imagePlacement = .leading
-		let button = UIButton(configuration: config)
+
+		let glassEffect = UIGlassEffect()
+		glassEffect.isInteractive = true
+		let effectView = UIVisualEffectView(effect: glassEffect)
+		effectView.clipsToBounds = true
+		effectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+
+		let button = _GlassMenuButton(configuration: config)
 		button.showsMenuAsPrimaryAction = true
 		button.backgroundColor = .clear
+		button.tintColor = .white
+		button.clipsToBounds = true
+		button.insertSubview(effectView, at: 0)
+
 		return button
 	}
 
-	func updateUIView(_ button: UIButton, context _: Context) {
+	func updateUIView(_ button: _GlassMenuButton, context _: Context) {
 		var config = button.configuration
 		config?.image = UIImage(named: "Logo")?
 			.resized(to: CGSize(width: 20, height: 20))
 			.withRenderingMode(.alwaysTemplate)
-		config?.baseForegroundColor = .white
 		config?.attributedTitle = AttributedString(
 			selectedRelease.map { "\($0.version) (\($0.build))" } ?? "Select Release",
 			attributes: AttributeContainer([.font: UIFont.preferredFont(forTextStyle: .title2)])
 		)
 		button.configuration = config
-		button.tintColor = .white
 
 		let elements: [UIMenuElement] = releases.map { release, _ in
 			UIAction(
 				title: "\(release.version) (\(release.build))",
-				image: UIImage(named: "Logo")?.withRenderingMode(.alwaysTemplate),
+				image: UIImage(named: "Logo")?
+					.resized(to: CGSize(width: 20, height: 20))
+					.withRenderingMode(.alwaysTemplate),
 				state: release == selectedRelease ? .on : .off
 			) { _ in
 				DispatchQueue.main.async {
