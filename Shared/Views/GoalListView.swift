@@ -120,6 +120,7 @@ struct GoalListView: View {
 			}
 			.sheet(isPresented: $showAddGoal) {
 				GoalDetailView(isNew: true)
+					.presentationDetents([.medium])
 					.presentationDragIndicator(.hidden)
 				#if os(iOS)
 					.navigationTransition(.zoom(sourceID: "unique_transition_id", in: namespace))

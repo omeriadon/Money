@@ -68,7 +68,7 @@ struct HomeView: View {
 			.containerBackground(for: .navigation) {
 				if useNewGradient {
 					#if os(iOS)
-						if total < 0 {
+						if transactionRepo.total < 0 {
 							ColorfulView(
 								color: $negativeColours,
 								speed: $negativeSpeed,
@@ -90,7 +90,7 @@ struct HomeView: View {
 							)
 						}
 					#else
-						if total < 0 {
+						if transactionRepo.total < 0 {
 							IrregularGradient(colors: [.red, .orange, .red, .red, .pink, .red], background: Color.clear, speed: 1, animate: true)
 						} else {
 							IrregularGradient(colors: [
@@ -119,7 +119,7 @@ struct HomeView: View {
 
 				} else {
 					Group {
-						if total < 0 {
+						if transactionRepo.total < 0 {
 							LinearGradient(
 								colors: [.red, .red.opacity(0.4)],
 								startPoint: .top,
@@ -131,7 +131,24 @@ struct HomeView: View {
 					}
 				}
 			}
-			.toolbar { toolbarContent }
+			#if os(iOS)
+			.expandedNavBar(height: 60) {
+				LinearGradient(
+					colors: [Color.yellow, Color.yellow.opacity(0.8)],
+					startPoint: .top,
+					endPoint: .bottom
+				)
+				.mask(
+					Image("Logo")
+						.renderingMode(.template)
+						.resizable()
+						.aspectRatio(contentMode: .fit)
+				)
+				.frame(width: 35, height: 35)
+				.padding(2)
+			}
+			#endif // os(iOS)
+//			.toolbar { toolbarContent }
 			.toolbar {
 				#if os(iOS)
 					ToolbarItem(placement: .topBarTrailing) {
@@ -180,6 +197,7 @@ struct HomeView: View {
 			}
 			.sheet(isPresented: $showAddTransaction) {
 				TransactionDetailView(isNew: true)
+					.presentationDetents([.medium])
 					.presentationDragIndicator(.hidden)
 				#if os(iOS)
 					.navigationTransition(
@@ -189,6 +207,7 @@ struct HomeView: View {
 			}
 			.sheet(isPresented: $showAddGoal) {
 				GoalDetailView(isNew: true)
+					.presentationDetents([.medium])
 					.presentationDragIndicator(.hidden)
 				#if os(iOS)
 					.navigationTransition(

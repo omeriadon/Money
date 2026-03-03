@@ -91,6 +91,7 @@ struct TransactionListView: View {
 			}
 			.sheet(isPresented: $showAddTransaction) {
 				TransactionDetailView(isNew: true)
+					.presentationDetents([.medium])
 					.presentationDragIndicator(.hidden)
 				#if os(iOS)
 					.navigationTransition(.zoom(sourceID: "unique_transition_id", in: namespace))

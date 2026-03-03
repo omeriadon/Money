@@ -1,5 +1,23 @@
 import SwiftUI
 
+struct GoalSubmitButton: View {
+	let isLoading: Bool
+	let isNew: Bool
+
+	var body: some View {
+		if isLoading {
+			ProgressView()
+				.transition(.blurReplace)
+		} else if isNew {
+			Label("Add", systemImage: "plus")
+				.transition(.blurReplace)
+		} else {
+			Label("Update", systemImage: "pencil")
+				.transition(.blurReplace)
+		}
+	}
+}
+
 struct GoalDetailView: View {
 	@Environment(\.repositories) private var repositories
 	@Environment(\.dismiss) private var dismiss
@@ -17,6 +35,8 @@ struct GoalDetailView: View {
 	@State private var showError = false
 
 	@FocusState private var focusedField: Field?
+
+	@State var animatedGoalAmount = 0.0
 
 	let isNew: Bool
 	let goal: Goal?
@@ -67,13 +87,9 @@ struct GoalDetailView: View {
 				Button {
 					Task { await submitGoal() }
 				} label: {
-					if isLoading {
-						ProgressView()
-					} else {
-						Label(isNew ? "Add" : "Update", systemImage: isNew ? "plus" : "pencil")
-							.labelStyle(.iconOnly)
-					}
+					GoalSubmitButton(isLoading: isLoading, isNew: isNew)
 				}
+				.animation(.easeInOut, value: "\(isLoading)\(isNew)")
 				.disabled(
 					isLoading ||
 						name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
@@ -84,7 +100,6 @@ struct GoalDetailView: View {
 							abs(goalAmount) == abs(goal!.goalAmount))
 				)
 				.buttonStyle(.glassProminent)
-				.buttonBorderShape(.circle)
 			}
 		}
 		.alert(isPresented: $showError) {
@@ -102,6 +117,31 @@ struct GoalDetailView: View {
 
 	private var form: some View {
 		List {
+			if !isNew {
+				Section("Progress") {
+					HStack {
+						Text("\(Text(repositories.transactionRepo.total, format: .currency(code: "AUD").precision(.significantDigits(2))))")
+
+						Gauge(
+							value: animatedGoalAmount
+						) {
+							EmptyView()
+						}
+						.gaugeStyle(.linearCapacity)
+
+						Text("\(Text(goalAmount, format: .currency(code: "AUD").precision(.significantDigits(2))))")
+					}
+					.onAppear {
+						Task {
+							try? await Task.sleep(nanoseconds: 200_000_000)
+							withAnimation(.easeInOut(duration: 0.5)) {
+								animatedGoalAmount = min(repositories.transactionRepo.total / goalAmount, 1)
+							}
+						}
+					}
+				}
+			}
+
 			Section {
 				TextField("Goal Name", text: $name)
 					.focused($focusedField, equals: .name)
@@ -174,7 +214,10 @@ struct GoalDetailView: View {
 			}
 
 			isLoading = false
-			dismiss()
+			if isNew {
+				dismiss()
+			}
+			focusedField = .none
 		} catch {
 			isLoading = false
 			errorMessage = error.localizedDescription

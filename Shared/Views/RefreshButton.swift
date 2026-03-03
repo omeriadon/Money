@@ -12,13 +12,6 @@ struct RefreshButton: View {
 	@Binding var showSuccess: Bool
 	let action: () async -> Void
 
-	private var iconName: String {
-		if showSuccess {
-			return "checkmark"
-		}
-		return "arrow.triangle.2.circlepath"
-	}
-
 	var body: some View {
 		Button {
 			Task { await action() }
