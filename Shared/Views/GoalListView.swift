@@ -89,20 +89,26 @@ struct GoalListView: View {
 									}
 								} preview: {
 									VStack(alignment: .leading, spacing: 12) {
-										Text(goal.title)
+										Text(goal.name)
 											.font(.title)
+											.padding(.bottom)
 
 										Text(goal.goalAmount, format: .currency(code: "AUD"))
 											.font(.title2.bold())
-											.tint(.yellow)
+											.foregroundStyle(.yellow)
 
-										Gauge(value: min(transactionRepo.total / abs(goal.goalAmount), 1.0))
-											.tint(.yellow)
+										Gauge(value: min(transactionRepo.total / goal.goalAmount, 1.0)) {
+											EmptyView()
+										}
+										.tint(.yellow)
 
 										Text(transactionRepo.total / abs(goal.goalAmount), format: .percent.precision(.fractionLength(0)))
+											.font(.title2)
+											.foregroundStyle(.yellow)
 									}
 									.padding()
 									.fontDesign(fontDesignStyle.fontDesign)
+									.frame(minWidth: 100)
 								}
 								#endif
 								.transition(.blurReplace)
