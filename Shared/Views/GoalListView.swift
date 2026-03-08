@@ -98,7 +98,7 @@ struct GoalListView: View {
 			.toolbar {
 				#if os(iOS)
 					if !goalRepo.goals.isEmpty {
-						ToolbarItem(placement: .topBarTrailing) { EditButton() }
+						ToolbarItem(placement: .topBarTrailing) { CustomEditButton() }
 						ToolbarSpacer(placement: .topBarTrailing)
 					}
 

@@ -111,7 +111,7 @@ struct TransactionListView: View {
 					.matchedTransitionSource(id: "unique_transition_id", in: namespace)
 
 					if !transactionRepo.transactions.isEmpty {
-						ToolbarItem(placement: .topBarTrailing) { EditButton() }
+						ToolbarItem(placement: .topBarTrailing) { CustomEditButton() }
 						ToolbarSpacer(placement: .topBarTrailing)
 					}
 				#endif
