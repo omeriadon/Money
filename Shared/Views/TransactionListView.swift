@@ -65,6 +65,23 @@ struct TransactionListView: View {
 										.minimumScaleFactor(0.01)
 								}
 							}
+							#if os(iOS)
+							.contextMenu {
+								// Actions
+							} preview: {
+								VStack(alignment: .leading, spacing: 8) {
+									Text(transaction.title)
+										.font(.headline)
+									Label(transaction.importance.title, systemImage: transaction.importance.symbol)
+										.font(.subheadline)
+										.foregroundStyle(.secondary)
+									Text(transaction.change, format: .currency(code: "AUD"))
+										.font(.title2.bold())
+										.foregroundStyle(transaction.change > 0 ? .green : .red)
+								}
+								.padding()
+							}
+							#endif
 							.transition(.blurReplace)
 						}
 						.onDelete { indexSet in

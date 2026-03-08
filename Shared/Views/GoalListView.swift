@@ -8,6 +8,10 @@ struct GoalListView: View {
 		repositories.goalRepo
 	}
 
+	private var transactionRepo: TransactionRepository {
+		repositories.transactionRepo
+	}
+
 	@State private var isLoading = false
 	@State private var showSuccess = false
 	@State private var errorMessage: String?
@@ -69,6 +73,26 @@ struct GoalListView: View {
 											.minimumScaleFactor(0.01)
 									}
 								}
+								#if os(iOS)
+								.contextMenu {
+									// Actions
+								} preview: {
+									VStack(alignment: .leading, spacing: 8) {
+										Text(goal.name)
+											.font(.headline)
+										Text(abs(goal.goalAmount), format: .currency(code: "AUD"))
+											.font(.title2.bold())
+											.foregroundStyle(.green)
+										Gauge(value: min(transactionRepo.total / abs(goal.goalAmount), 1.0)) {
+											Text("Progress")
+										} currentValueLabel: {
+											Text(transactionRepo.total / abs(goal.goalAmount), format: .percent.precision(.fractionLength(0)))
+										}
+										.tint(.green)
+									}
+									.padding()
+								}
+								#endif
 								.transition(.blurReplace)
 							}
 							.onDelete { indexSet in
