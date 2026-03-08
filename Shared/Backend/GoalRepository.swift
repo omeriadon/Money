@@ -22,9 +22,19 @@ final class GoalRepository {
 		migrateGoalsIfNeeded()
 	}
 
-	func setGoalStatus(id: UUID, status: Goal.GoalStatus) {
-		guard let index = _goals.firstIndex(where: { $0.id == id }) else { return }
-		_goals[index].status = status
+	func setGoalStatus(id: UUID, status: Goal.GoalStatus) async throws {
+		let remote = try await network.updateGoal(id: id, status: status)
+		let updated = Goal(from: remote)
+		updated.goalAmount = abs(updated.goalAmount)
+
+		if let index = _goals.firstIndex(where: { $0.id == id }) {
+			_goals[index] = updated
+		} else {
+			var appendedGoals = _goals
+			appendedGoals.append(updated)
+			replaceGoals(appendedGoals)
+		}
+
 		persistGoals()
 	}
 
@@ -65,7 +75,6 @@ final class GoalRepository {
 
 		var updatedGoals = _goals
 		if let index = updatedGoals.firstIndex(where: { $0.id == remote.id }) {
-			g.status = updatedGoals[index].status
 			updatedGoals[index] = g
 		} else {
 			updatedGoals.append(g)
@@ -81,11 +90,9 @@ final class GoalRepository {
 	}
 
 	private func applyRemoteGoals(_ remote: [GoalDTO]) {
-		let localStatusByID = Dictionary(uniqueKeysWithValues: _goals.map { ($0.id, $0.status) })
 		replaceGoals(remote.map {
 			let goal = Goal(from: $0)
 			goal.goalAmount = abs(goal.goalAmount)
-			goal.status = localStatusByID[goal.id] ?? .active
 			return goal
 		})
 		persistGoals()

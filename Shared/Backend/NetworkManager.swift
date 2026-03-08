@@ -186,12 +186,14 @@ final class NetworkManager: ObservableObject {
 		id: UUID,
 		name: String? = nil,
 		description: String? = nil,
-		goalAmount: Double? = nil
+		goalAmount: Double? = nil,
+		status: Goal.GoalStatus? = nil
 	) async throws -> GoalDTO {
 		var body: [String: Any] = [:]
 		if let name { body["name"] = name }
 		if let description { body["description"] = description }
 		if let goalAmount { body["goalAmount"] = abs(goalAmount) }
+		if let status { body["status"] = status.rawValue }
 		guard !body.isEmpty else { throw APIError.invalidRequestBody }
 
 		let request = try makeRequest(

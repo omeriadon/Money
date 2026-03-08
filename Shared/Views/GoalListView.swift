@@ -46,8 +46,12 @@ struct GoalListView: View {
 	}
 
 	private func setGoalStatus(_ goal: Goal, status: Goal.GoalStatus) {
-		withAnimation(.smooth) {
-			goalRepo.setGoalStatus(id: goal.id, status: status)
+		Task {
+			do {
+				try await goalRepo.setGoalStatus(id: goal.id, status: status)
+			} catch {
+				errorMessage = error.localizedDescription
+			}
 		}
 	}
 

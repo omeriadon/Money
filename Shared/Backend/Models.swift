@@ -231,6 +231,7 @@ final class Goal: Equatable, Identifiable, Codable, Defaults.Serializable {
 			name: dto.name,
 			desc: dto.description,
 			goalAmount: dto.goalAmount,
+			status: dto.status ?? .active,
 			dateCreated: dto.dateCreated,
 			dateUpdated: dto.dateUpdated
 		)
@@ -240,6 +241,7 @@ final class Goal: Equatable, Identifiable, Codable, Defaults.Serializable {
 		name = dto.name
 		desc = dto.description
 		goalAmount = dto.goalAmount
+		status = dto.status ?? .active
 		dateCreated = dto.dateCreated
 		dateUpdated = dto.dateUpdated
 	}
