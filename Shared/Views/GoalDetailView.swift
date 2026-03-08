@@ -174,16 +174,20 @@ struct GoalDetailView: View {
 			}
 
 			Section("Status") {
-				Picker("Status", selection: $status) {
+				ValuePicker("Status", selection: $status) {
+					HStack {
+						Image(systemName: status.symbol)
+						Text(status.title)
+							.padding(.trailing, 10)
+						Image(systemName: "chevron.up.chevron.down")
+					}
+				} content: {
 					ForEach(Goal.GoalStatus.allCases, id: \.self) { goalStatus in
 						Label(goalStatus.title, systemImage: goalStatus.symbol)
 							.labelIconToTitleSpacing(12)
-							.tag(goalStatus)
+							.pickerTag(goalStatus)
 					}
 				}
-				#if os(iOS)
-				.pickerStyle(.menu)
-				#endif
 				#if os(iOS)
 				.listRowBackground(Color(uiColor: .quaternarySystemFill))
 				#endif
