@@ -91,7 +91,7 @@ struct SignupView: View {
 				}
 			}, message: { Text(alertMessage) })
 			.blur(radius: isLoading ? 10 : 0)
-			.animation(.easeInOut, value: isLoading)
+			.animation(.smooth, value: isLoading)
 			.safeAreaBar(edge: .bottom, alignment: .center, spacing: 30) {
 				Button {
 					dismissKeyboard()
@@ -132,18 +132,18 @@ struct SignupView: View {
 					progressView
 				}
 			}
-			.animation(.easeInOut, value: "\(signUpDetails.firstName)\(signUpDetails.email)\(signUpDetails.password)\(confirmPassword)")
-			.toolbar {
-				ToolbarItem(placement: .title) {
-					Text("Sign Up")
-						.fontDesign(.monospaced)
-				}
-				ToolbarItem(placement: .topBarTrailing) {
-					Button(role: .close) {
-						dismiss()
+			\t \ t \ t.animation(.smooth, value: "\(signUpDetails.firstName)\(signUpDetails.email)\(signUpDetails.password)\(confirmPassword)")
+				.toolbar {
+					ToolbarItem(placement: .title) {
+						Text("Sign Up")
+							.fontDesign(.monospaced)
+					}
+					ToolbarItem(placement: .topBarTrailing) {
+						Button(role: .close) {
+							dismiss()
+						}
 					}
 				}
-			}
 		}
 		#if os(iOS)
 		.enableInjection()

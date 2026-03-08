@@ -79,7 +79,7 @@ struct GoalListView: View {
 					.searchable(text: $searchText, prompt: isiPhone() ? "Search goals" : "Search")
 					.tint(.secondary)
 //					.refreshable { Task { await refresh() } }
-					.animation(.easeInOut, value: filteredGoals.count)
+					.animation(.smooth, value: filteredGoals.count)
 					.transition(.blurReplace)
 				}
 			}
@@ -93,7 +93,7 @@ struct GoalListView: View {
 						}
 				}
 			}
-			.animation(.easeInOut, value: filteredGoals.isEmpty)
+			.animation(.smooth, value: filteredGoals.isEmpty)
 			.toolbar { toolbarContent }
 			.toolbar {
 				#if os(iOS)

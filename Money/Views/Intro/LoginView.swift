@@ -63,7 +63,7 @@ struct LoginView: View {
 				Button("OK") {}
 			}, message: { Text(alertMessage) })
 			.blur(radius: isLoading ? 20 : 0)
-			.animation(.easeInOut, value: isLoading)
+			.animation(.smooth, value: isLoading)
 			.safeAreaBar(edge: .bottom, alignment: .center, spacing: 30) {
 				Button {
 					attemptLogin()
@@ -76,13 +76,13 @@ struct LoginView: View {
 				.buttonStyle(.glassProminent)
 				.padding(.bottom)
 				.blur(radius: isLoading ? 20 : 0)
-				.animation(.easeInOut, value: isLoading)
+				.animation(.smooth, value: isLoading)
 				.disabled(!canSubmit)
 			}
 			.overlay(alignment: .center) {
 				if isLoading { progressView }
 			}
-			.animation(.easeInOut, value: "\(loginDetails.email)\(loginDetails.password)")
+			.animation(.smooth, value: "\(loginDetails.email)\(loginDetails.password)")
 			.toolbar {
 				ToolbarItem(placement: .title) {
 					Text("Log In")

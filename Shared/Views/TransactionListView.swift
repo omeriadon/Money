@@ -76,7 +76,7 @@ struct TransactionListView: View {
 				.searchable(text: $searchText, prompt: isiPhone() ? "Search transactions" : "Search")
 				.tint(.secondary)
 				.refreshable { Task { await refresh() } }
-				.animation(.easeInOut, value: filteredTransactions.count)
+				.animation(.smooth, value: filteredTransactions.count)
 				.transition(.blurReplace)
 			}
 			.navigationDestination(for: TransactionRoute.self) { route in
@@ -97,7 +97,7 @@ struct TransactionListView: View {
 					.navigationTransition(.zoom(sourceID: "unique_transition_id", in: namespace))
 				#endif
 			}
-			.animation(.easeInOut, value: filteredTransactions.isEmpty)
+			.animation(.smooth, value: filteredTransactions.isEmpty)
 			.toolbar { toolbarContent }
 			.toolbar {
 				#if os(iOS)
@@ -122,7 +122,7 @@ struct TransactionListView: View {
 					}
 				}
 			}
-			.animation(.easeInOut, value: keyboardVisible)
+			.animation(.smooth, value: keyboardVisible)
 		}
 		#if os(iOS)
 		.overlay(alignment: .top) {
