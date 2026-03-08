@@ -75,7 +75,8 @@ struct GoalListView: View {
 								}
 								#if os(iOS)
 								.contextMenu {
-									// Actions
+									Button("Coming Soon") {}
+										.disabled(true)
 								} preview: {
 									VStack(alignment: .leading, spacing: 8) {
 										Text(goal.name)
