@@ -26,6 +26,8 @@ struct TransactionListView: View {
 	@State private var isLoading = false
 	@State private var showSuccess = false
 	@State private var errorMessage: String?
+	@State private var showDeleteConfirmation = false
+	@State private var pendingDeleteTransactionID: UUID?
 	@State private var searchText = ""
 	@State private var showAddTransaction = false
 
@@ -71,10 +73,8 @@ struct TransactionListView: View {
 							#if os(iOS)
 							.contextMenu {
 								Button(role: .destructive) {
-									Task {
-										do { try await transactionRepo.delete(ids: [transaction.id]) }
-										catch { errorMessage = error.localizedDescription }
-									}
+									pendingDeleteTransactionID = transaction.id
+									showDeleteConfirmation = true
 								} label: {
 									Label("Delete", systemImage: "trash")
 										.tint(.red)
@@ -133,6 +133,28 @@ struct TransactionListView: View {
 				#if os(iOS)
 					.navigationTransition(.zoom(sourceID: "unique_transition_id", in: namespace))
 				#endif
+			}
+			.confirmationDialog(
+				"Delete transaction?",
+				isPresented: $showDeleteConfirmation,
+				titleVisibility: .visible
+			) {
+				Button("Delete", role: .destructive) {
+					guard let pendingDeleteTransactionID else { return }
+					Task {
+						do {
+							try await transactionRepo.delete(ids: [pendingDeleteTransactionID])
+							self.pendingDeleteTransactionID = nil
+						} catch {
+							errorMessage = error.localizedDescription
+						}
+					}
+				}
+				Button("Cancel", role: .cancel) {
+					pendingDeleteTransactionID = nil
+				}
+			} message: {
+				Text("This action cannot be undone.")
 			}
 			.animation(.smooth, value: filteredTransactions.isEmpty)
 			.toolbar { toolbarContent }

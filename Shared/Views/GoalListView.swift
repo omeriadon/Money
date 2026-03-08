@@ -18,6 +18,8 @@ struct GoalListView: View {
 	@State private var isLoading = false
 	@State private var showSuccess = false
 	@State private var errorMessage: String?
+	@State private var showDeleteConfirmation = false
+	@State private var pendingDeleteGoalID: UUID?
 	@State private var searchText = ""
 	@State private var showAddGoal = false
 
@@ -79,10 +81,8 @@ struct GoalListView: View {
 								#if os(iOS)
 								.contextMenu {
 									Button(role: .destructive) {
-										Task {
-											do { try await goalRepo.delete(ids: [goal.id]) }
-											catch { errorMessage = error.localizedDescription }
-										}
+										pendingDeleteGoalID = goal.id
+										showDeleteConfirmation = true
 									} label: {
 										Label("Delete", systemImage: "trash")
 											.tint(.red)
@@ -176,6 +176,28 @@ struct GoalListView: View {
 				#if os(iOS)
 					.navigationTransition(.zoom(sourceID: "unique_transition_id", in: namespace))
 				#endif
+			}
+			.confirmationDialog(
+				"Delete goal?",
+				isPresented: $showDeleteConfirmation,
+				titleVisibility: .visible
+			) {
+				Button("Delete", role: .destructive) {
+					guard let pendingDeleteGoalID else { return }
+					Task {
+						do {
+							try await goalRepo.delete(ids: [pendingDeleteGoalID])
+							self.pendingDeleteGoalID = nil
+						} catch {
+							errorMessage = error.localizedDescription
+						}
+					}
+				}
+				Button("Cancel", role: .cancel) {
+					pendingDeleteGoalID = nil
+				}
+			} message: {
+				Text("This action cannot be undone.")
 			}
 			.task { await refresh() }
 		}
