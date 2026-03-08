@@ -78,22 +78,6 @@ struct TransactionDetailView: View {
 			}
 		}
 		.toolbar {
-			#if os(iOS)
-				ToolbarItem(placement: .keyboard) {
-					Button {
-						focusedField = .none
-					} label: {
-						Label("Done", systemImage: "checkmark")
-					}
-					.labelStyle(.titleOnly)
-					.buttonStyle(.glassProminent)
-					.transition(.blurReplace)
-					.padding(10)
-
-					Spacer()
-				}
-			#endif // os(iOS)
-
 			if isNew {
 				ToolbarItem(placement: .topBarLeading) {
 					Button(role: .cancel) { dismiss() }

@@ -14,47 +14,6 @@
   },
   "groups" : [
     {
-      "blur-material" : 0.59,
-      "layers" : [
-        {
-          "blend-mode" : "darken",
-          "fill-specializations" : [
-            {
-              "value" : {
-                "solid" : "extended-gray:1.00000,1.00000"
-              }
-            },
-            {
-              "appearance" : "dark",
-              "value" : {
-                "solid" : "extended-srgb:1.00000,0.80000,0.00000,1.00000"
-              }
-            }
-          ],
-          "hidden" : false,
-          "image-name" : "flask.fill@3x.png",
-          "name" : "flask.fill@3x",
-          "position" : {
-            "scale" : 5.18,
-            "translation-in-points" : [
-              169.36073028399755,
-              177.1829499999999
-            ]
-          }
-        }
-      ],
-      "lighting" : "individual",
-      "name" : "debugoverlay",
-      "shadow" : {
-        "kind" : "neutral",
-        "opacity" : 0.5
-      },
-      "translucency" : {
-        "enabled" : true,
-        "value" : 0.72
-      }
-    },
-    {
       "blur-material" : 0.91,
       "layers" : [
         {
@@ -110,6 +69,26 @@
       "translucency" : {
         "enabled" : true,
         "value" : 0.52
+      }
+    },
+    {
+      "layers" : [
+        {
+          "fill" : {
+            "solid" : "extended-gray:1.00000,1.00000"
+          },
+          "image-name" : "Grid (Do not export).png",
+          "name" : "Grid (Do not export)"
+        }
+      ],
+      "name" : "bottom",
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
       }
     }
   ],
