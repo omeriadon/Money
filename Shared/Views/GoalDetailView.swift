@@ -29,6 +29,7 @@ struct GoalDetailView: View {
 	@State private var name = ""
 	@State private var description = ""
 	@State private var goalAmount: Double = 100
+	@State private var status: Goal.GoalStatus = .active
 
 	@State private var isLoading = false
 	@State private var errorMessage = ""
@@ -74,6 +75,7 @@ struct GoalDetailView: View {
 				name = goal.name
 				description = goal.desc
 				goalAmount = abs(goal.goalAmount)
+				status = goal.status
 			}
 		}
 		.toolbar {
@@ -97,7 +99,8 @@ struct GoalDetailView: View {
 						(goal != nil &&
 							name == goal!.name &&
 							description == goal!.desc &&
-							abs(goalAmount) == abs(goal!.goalAmount))
+							abs(goalAmount) == abs(goal!.goalAmount) &&
+							status == goal!.status)
 				)
 				.buttonStyle(.glassProminent)
 			}
@@ -170,6 +173,21 @@ struct GoalDetailView: View {
 				#endif
 			}
 
+			Section("Status") {
+				Picker("Status", selection: $status) {
+					ForEach(Goal.GoalStatus.allCases, id: \.self) { goalStatus in
+						Label(goalStatus.title, systemImage: goalStatus.symbol)
+							.tag(goalStatus)
+					}
+				}
+				#if os(iOS)
+				.pickerStyle(.menu)
+				#endif
+				#if os(iOS)
+				.listRowBackground(Color(uiColor: .quaternarySystemFill))
+				#endif
+			}
+
 			if let dateCreated = goal?.dateCreated {
 				Section("Created") {
 					Text(dateCreated, format: .dateTime.minute().hour().day().month().year())
@@ -202,14 +220,16 @@ struct GoalDetailView: View {
 				try await goalRepo.createGoal(
 					name: name,
 					description: description,
-					goalAmount: cleanedAmount
+					goalAmount: cleanedAmount,
+					status: status
 				)
 			} else if let goal {
 				try await goalRepo.updateGoal(
 					id: goal.id,
 					name: name != goal.name ? name : nil,
 					description: description != goal.desc ? description : nil,
-					goalAmount: cleanedAmount != abs(goal.goalAmount) ? cleanedAmount : nil
+					goalAmount: cleanedAmount != abs(goal.goalAmount) ? cleanedAmount : nil,
+					status: status != goal.status ? status : nil
 				)
 			}
 

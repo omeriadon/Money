@@ -84,13 +84,11 @@ struct GoalListView: View {
 							ForEach(filteredGoals) { goal in
 								NavigationLink(value: GoalRoute.detail(goal.id)) {
 									HStack {
-										Image(systemName: goal.status.symbol)
-											.foregroundStyle(goal.status == .completed ? Color.green : Color.primary)
+										Image(systemName: "target")
 										Text(goal.name)
-											.strikethrough(goal.status == .completed)
 										Spacer()
 										Text(abs(goal.goalAmount), format: .currency(code: "AUD"))
-											.foregroundStyle(goal.status == .completed ? Color.secondary : Color.green)
+											.foregroundStyle(.green)
 											.font(.title3)
 											.lineLimit(1)
 											.minimumScaleFactor(0.01)

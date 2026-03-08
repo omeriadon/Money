@@ -163,12 +163,14 @@ final class NetworkManager: ObservableObject {
 	func createGoal(
 		name: String,
 		description: String,
-		goalAmount: Double
+		goalAmount: Double,
+		status: Goal.GoalStatus = .active
 	) async throws -> [GoalDTO] {
 		let body: [String: Any] = [
 			"name": name,
 			"description": description,
 			"goalAmount": abs(goalAmount),
+			"status": status.rawValue,
 		]
 
 		let request = try makeRequest(

@@ -46,12 +46,14 @@ final class GoalRepository {
 	func createGoal(
 		name: String,
 		description: String,
-		goalAmount: Double
+		goalAmount: Double,
+		status: Goal.GoalStatus = .active
 	) async throws {
 		let remote = try await network.createGoal(
 			name: name,
 			description: description,
-			goalAmount: abs(goalAmount)
+			goalAmount: abs(goalAmount),
+			status: status
 		)
 
 		applyRemoteGoals(remote)
@@ -61,13 +63,15 @@ final class GoalRepository {
 		id: UUID,
 		name: String? = nil,
 		description: String? = nil,
-		goalAmount: Double? = nil
+		goalAmount: Double? = nil,
+		status: Goal.GoalStatus? = nil
 	) async throws {
 		let remote = try await network.updateGoal(
 			id: id,
 			name: name,
 			description: description,
-			goalAmount: goalAmount.map(abs)
+			goalAmount: goalAmount.map(abs),
+			status: status
 		)
 
 		let g = Goal(from: remote)
