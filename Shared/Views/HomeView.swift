@@ -131,24 +131,7 @@ struct HomeView: View {
 					}
 				}
 			}
-			#if os(iOS)
-			.expandedNavBar(height: 60) {
-				LinearGradient(
-					colors: [Color.yellow, Color.yellow.opacity(0.8)],
-					startPoint: .top,
-					endPoint: .bottom
-				)
-				.mask(
-					Image("Logo")
-						.renderingMode(.template)
-						.resizable()
-						.aspectRatio(contentMode: .fit)
-				)
-				.frame(width: 35, height: 35)
-				.padding(2)
-			}
-			#endif // os(iOS)
-//			.toolbar { toolbarContent }
+			.toolbar { toolbarContent }
 			.toolbar {
 				#if os(iOS)
 					ToolbarItem(placement: .topBarTrailing) {

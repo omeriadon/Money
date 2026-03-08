@@ -10,21 +10,12 @@ import SwiftUI
 @ToolbarContentBuilder
 var toolbarContent: some ToolbarContent {
 	ToolbarItem(placement: .topBarLeading) {
-		HStack {
-			LinearGradient(
-				colors: [Color.yellow, Color.yellow.opacity(0.8)],
-				startPoint: .top,
-				endPoint: .bottom
-			)
-			.mask(
-				Image("Logo")
-					.renderingMode(.template)
-					.resizable()
-					.aspectRatio(contentMode: .fit)
-			)
-			.frame(width: 35, height: 35)
-		}
-		.padding(2)
+		Image("Logo")
+			.renderingMode(.template)
+			.resizable()
+			.aspectRatio(contentMode: .fit)
+			.foregroundStyle(.yellow.gradient)
+			.scaleEffect(1.3)
 	}
 	#if os(iOS)
 	.sharedBackgroundVisibility(.hidden)
