@@ -132,18 +132,18 @@ struct SignupView: View {
 					progressView
 				}
 			}
-			\t \ t \ t.animation(.smooth, value: "\(signUpDetails.firstName)\(signUpDetails.email)\(signUpDetails.password)\(confirmPassword)")
-				.toolbar {
-					ToolbarItem(placement: .title) {
-						Text("Sign Up")
-							.fontDesign(.monospaced)
-					}
-					ToolbarItem(placement: .topBarTrailing) {
-						Button(role: .close) {
-							dismiss()
-						}
+			.animation(.smooth, value: "\(signUpDetails.firstName)\(signUpDetails.email)\(signUpDetails.password)\(confirmPassword)")
+			.toolbar {
+				ToolbarItem(placement: .title) {
+					Text("Sign Up")
+						.fontDesign(.monospaced)
+				}
+				ToolbarItem(placement: .topBarTrailing) {
+					Button(role: .close) {
+						dismiss()
 					}
 				}
+			}
 		}
 		#if os(iOS)
 		.enableInjection()
