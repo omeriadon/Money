@@ -16,6 +16,10 @@ struct GoalListView: View {
 
 	@Namespace private var namespace
 
+	#if os(iOS)
+		@State private var editMode: EditMode = .inactive
+	#endif
+
 	private var hasNoItems: Bool {
 		goalRepo.goals.isEmpty
 	}
@@ -79,8 +83,11 @@ struct GoalListView: View {
 					.searchable(text: $searchText, prompt: isiPhone() ? "Search goals" : "Search")
 					.tint(.secondary)
 //					.refreshable { Task { await refresh() } }
-					.animation(.smooth, value: filteredGoals.count)
-					.transition(.blurReplace)
+					#if os(iOS)
+						.environment(\.editMode, $editMode)
+					#endif
+						.animation(.smooth, value: filteredGoals.count)
+						.transition(.blurReplace)
 				}
 			}
 			.navigationDestination(for: GoalRoute.self) { route in
@@ -98,18 +105,20 @@ struct GoalListView: View {
 			.toolbar {
 				#if os(iOS)
 					if !goalRepo.goals.isEmpty {
-						ToolbarItem(placement: .topBarTrailing) { CustomEditButton() }
+						ToolbarItem(placement: .topBarTrailing) { CustomEditButton(editMode: $editMode) }
 						ToolbarSpacer(placement: .topBarTrailing)
 					}
 
-					ToolbarItem(placement: .topBarTrailing) {
-						Button { showAddGoal = true } label: {
-							Label("Add Goal", systemImage: "plus")
+					if !editMode.isEditing {
+						ToolbarItem(placement: .topBarTrailing) {
+							Button { showAddGoal = true } label: {
+								Label("Add Goal", systemImage: "plus")
+							}
+							.buttonStyle(.glassProminent)
+							.foregroundStyle(.black)
 						}
-						.buttonStyle(.glassProminent)
-						.foregroundStyle(.black)
+						.matchedTransitionSource(id: "unique_transition_id", in: namespace)
 					}
-					.matchedTransitionSource(id: "unique_transition_id", in: namespace)
 				#endif
 
 				ToolbarItem(placement: .topBarTrailing) {

@@ -12,6 +12,9 @@ import SwiftUI
 struct TransactionListView: View {
 	@Environment(\.repositories) private var repositories
 	@Environment(AppRouter.self) var appRouter
+	#if os(iOS)
+		@State private var editMode: EditMode = .inactive
+	#endif
 
 	private var transactionRepo: TransactionRepository {
 		repositories.transactionRepo
@@ -76,8 +79,11 @@ struct TransactionListView: View {
 				.searchable(text: $searchText, prompt: isiPhone() ? "Search transactions" : "Search")
 				.tint(.secondary)
 				.refreshable { Task { await refresh() } }
-				.animation(.smooth, value: filteredTransactions.count)
-				.transition(.blurReplace)
+				#if os(iOS)
+					.environment(\.editMode, $editMode)
+				#endif
+					.animation(.smooth, value: filteredTransactions.count)
+					.transition(.blurReplace)
 			}
 			.navigationDestination(for: TransactionRoute.self) { route in
 				switch route {
@@ -101,18 +107,21 @@ struct TransactionListView: View {
 			.toolbar { toolbarContent }
 			.toolbar {
 				#if os(iOS)
-					ToolbarItem(placement: .topBarTrailing) {
-						Button { showAddTransaction = true } label: {
-							Label("Add Transaction", systemImage: "plus")
-						}
-						.buttonStyle(.glassProminent)
-						.foregroundStyle(.black)
-					}
-					.matchedTransitionSource(id: "unique_transition_id", in: namespace)
 
 					if !transactionRepo.transactions.isEmpty {
-						ToolbarItem(placement: .topBarTrailing) { CustomEditButton() }
+						ToolbarItem(placement: .topBarTrailing) { CustomEditButton(editMode: $editMode) }
 						ToolbarSpacer(placement: .topBarTrailing)
+					}
+
+					if !editMode.isEditing {
+						ToolbarItem(placement: .topBarTrailing) {
+							Button { showAddTransaction = true } label: {
+								Label("Add Transaction", systemImage: "plus")
+							}
+							.buttonStyle(.glassProminent)
+							.foregroundStyle(.black)
+						}
+						.matchedTransitionSource(id: "unique_transition_id", in: namespace)
 					}
 				#endif
 

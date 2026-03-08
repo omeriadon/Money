@@ -9,25 +9,24 @@ import SwiftUI
 
 #if !os(watchOS)
 	struct CustomEditButton: View {
-		@Environment(\.editMode) var editMode
+		@Binding var editMode: EditMode
 
 		private var isEditing: Bool {
-			editMode?.wrappedValue.isEditing == true
+			editMode.isEditing
 		}
 
 		var body: some View {
 			Button {
 				withAnimation(.smooth) {
-					editMode?.wrappedValue = isEditing ? .inactive : .active
+					editMode = isEditing ? .inactive : .active
 				}
 			} label: {
 				Image(systemName: isEditing ? "checkmark" : "pencil")
-					.contentTransition(.symbolEffect(.replace))
 			}
 			.if(isEditing) { view in
 				view.buttonStyle(.glassProminent)
 			} elseApply: { view in
-				view.buttonStyle(.glass)
+				view.buttonStyle(.automatic)
 			}
 			.animation(.smooth, value: isEditing)
 		}
