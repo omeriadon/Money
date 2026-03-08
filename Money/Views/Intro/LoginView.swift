@@ -135,7 +135,7 @@ struct LoginView: View {
 					isSuccess = true
 				}
 
-				try await Task.sleep(nanoseconds: 1_000_000_000)
+				try await Task.sleep(for: .seconds(1.5))
 				isLoading = false
 				dismiss()
 

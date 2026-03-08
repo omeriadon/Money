@@ -106,14 +106,11 @@ struct SignupView: View {
 								password: signUpDetails.password
 							)
 
-							try await Task.sleep(nanoseconds: 1_000_000_000)
-							isLoading = false
-							dismiss()
+							withAnimation {
+								isSuccess = true
+							}
 
-						} catch {
-							isLoading = false
-							alertTitle = "Error creating account"
-							alertMessage = error.localizedDescription
+							try await Task.sleep(for: .seconds(1.5))
 							showAlert = true
 						}
 					}
