@@ -94,6 +94,8 @@ struct TransactionListView: View {
 								}
 								.padding()
 								.fontDesign(fontDesignStyle.fontDesign)
+								.frame(width: 160, alignment: .leading)
+								.fixedSize(horizontal: true, vertical: false)
 							}
 							#endif
 							.transition(.blurReplace)

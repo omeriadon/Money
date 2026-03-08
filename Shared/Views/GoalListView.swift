@@ -84,8 +84,8 @@ struct GoalListView: View {
 							ForEach(filteredGoals) { goal in
 								NavigationLink(value: GoalRoute.detail(goal.id)) {
 									HStack {
-										Image(systemName: "target")
 										Text(goal.name)
+										Image(systemName: goal.status.symbol)
 										Spacer()
 										Text(abs(goal.goalAmount), format: .currency(code: "AUD"))
 											.foregroundStyle(.green)
@@ -140,10 +140,10 @@ struct GoalListView: View {
 										let progress = progressForGoal(goal)
 										Text(goal.name)
 											.font(.title)
-											.padding(.bottom)
 
 										Label(goal.status.title, systemImage: goal.status.symbol)
 											.foregroundStyle(.secondary)
+											.padding(.bottom)
 
 										Text(goal.goalAmount, format: .currency(code: "AUD"))
 											.font(.title2.bold())
@@ -160,7 +160,8 @@ struct GoalListView: View {
 									}
 									.padding()
 									.fontDesign(fontDesignStyle.fontDesign)
-									.frame(minWidth: 100)
+									.frame(width: 160, alignment: .leading)
+									.fixedSize(horizontal: true, vertical: false)
 								}
 								#endif
 								.transition(.blurReplace)

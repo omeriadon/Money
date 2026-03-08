@@ -177,6 +177,7 @@ struct GoalDetailView: View {
 				Picker("Status", selection: $status) {
 					ForEach(Goal.GoalStatus.allCases, id: \.self) { goalStatus in
 						Label(goalStatus.title, systemImage: goalStatus.symbol)
+							.labelIconToTitleSpacing(12)
 							.tag(goalStatus)
 					}
 				}
