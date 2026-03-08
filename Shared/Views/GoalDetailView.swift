@@ -1,3 +1,11 @@
+#if os(iOS)
+	#if canImport(ColorfulX)
+		import ColorfulX
+	#endif
+	#if canImport(ConfettiSwiftUI)
+		import ConfettiSwiftUI
+	#endif
+#endif
 import SwiftUI
 
 struct GoalSubmitButton: View {
@@ -30,6 +38,7 @@ struct GoalDetailView: View {
 	@State private var description = ""
 	@State private var goalAmount: Double = 100
 	@State private var status: Goal.GoalStatus = .active
+	@State private var confettiCounter = 0
 
 	@State private var isLoading = false
 	@State private var errorMessage = ""
@@ -38,6 +47,16 @@ struct GoalDetailView: View {
 	@FocusState private var focusedField: Field?
 
 	@State var animatedGoalAmount = 0.0
+
+	#if os(iOS) && canImport(ColorfulX)
+		@State private var frameLimit: Int = 120
+		@State private var renderScale: Double = 1.0
+		@State private var completedColors: [Color] = [.yellow, .green, .red, .blue, .yellow]
+		@State private var completedSpeed: Double = 1.7
+		@State private var completedBias: Double = 0.01
+		@State private var completedNoise: Double = 20.0
+		@State private var completedTransition: Double = 10
+	#endif
 
 	let isNew: Bool
 	let goal: Goal?
@@ -61,6 +80,22 @@ struct GoalDetailView: View {
 				formContent
 			}
 		}
+		#if os(iOS) && canImport(ConfettiSwiftUI)
+		.confettiCannon(
+			trigger: $confettiCounter,
+			num: 32,
+			confettis: [
+				.sfSymbol(symbolName: "dollarsign.circle.fill"),
+				.sfSymbol(symbolName: "target"),
+				.sfSymbol(symbolName: "trophy.fill"),
+				.sfSymbol(symbolName: "star.circle.fill"),
+			],
+			colors: [.yellow, .green, .red, .blue],
+			openingAngle: .degrees(90),
+			closingAngle: .degrees(135),
+			radius: 280
+		)
+		#endif
 		#if os(iOS)
 		.enableInjection()
 		#endif
@@ -70,12 +105,41 @@ struct GoalDetailView: View {
 		VStack {
 			form
 		}
+		.background {
+			#if os(iOS) && canImport(ColorfulX)
+				if status == .completed {
+					ColorfulView(
+						color: $completedColors,
+						speed: $completedSpeed,
+						bias: $completedBias,
+						noise: $completedNoise,
+						transitionSpeed: $completedTransition,
+						frameLimit: $frameLimit,
+						renderScale: $renderScale
+					)
+					.opacity(0.8)
+					.saturation(1.2)
+					.ignoresSafeArea()
+				}
+			#endif
+		}
 		.onAppear {
 			if let goal {
 				name = goal.name
 				description = goal.desc
 				goalAmount = abs(goal.goalAmount)
 				status = goal.status
+				if goal.status == .completed {
+					Task {
+						try? await Task.sleep(nanoseconds: 200_000_000)
+						confettiCounter += 1
+					}
+				}
+			}
+		}
+		.onChange(of: status) { _, newStatus in
+			if newStatus == .completed {
+				confettiCounter += 1
 			}
 		}
 		.toolbar {
@@ -150,14 +214,18 @@ struct GoalDetailView: View {
 					.focused($focusedField, equals: .name)
 					.onSubmit { focusedField = .description }
 				#if os(iOS)
-					.listRowBackground(Color(uiColor: .quaternarySystemFill))
+					.if(status == .completed) { view in
+						view.listRowBackground(Rectangle().fill(.thinMaterial))
+					}
 				#endif
 
 				TextField("Description", text: $description)
 					.focused($focusedField, equals: .description)
 					.onSubmit { focusedField = .amount }
 				#if os(iOS)
-					.listRowBackground(Color(uiColor: .quaternarySystemFill))
+					.if(status == .completed) { view in
+						view.listRowBackground(Rectangle().fill(.thinMaterial))
+					}
 				#endif
 
 				TextField("Goal Amount", value: $goalAmount, format: .currency(code: "AUD"))
@@ -168,7 +236,9 @@ struct GoalDetailView: View {
 						goalAmount = abs(goalAmount)
 					}
 				#if os(iOS)
-					.listRowBackground(Color(uiColor: .quaternarySystemFill))
+					.if(status == .completed) { view in
+						view.listRowBackground(Rectangle().fill(.thinMaterial))
+					}
 					.keyboardType(.decimalPad)
 				#endif
 			}
@@ -189,7 +259,9 @@ struct GoalDetailView: View {
 					}
 				}
 				#if os(iOS)
-				.listRowBackground(Color(uiColor: .quaternarySystemFill))
+				.if(status == .completed) { view in
+					view.listRowBackground(Rectangle().fill(.thinMaterial))
+				}
 				#endif
 			}
 
@@ -197,7 +269,9 @@ struct GoalDetailView: View {
 				Section("Created") {
 					Text(dateCreated, format: .dateTime.minute().hour().day().month().year())
 					#if os(iOS)
-						.listRowBackground(Color(uiColor: .quaternarySystemFill))
+						.if(status == .completed) { view in
+							view.listRowBackground(Rectangle().fill(.thinMaterial))
+						}
 					#endif
 				}
 			}
@@ -206,7 +280,9 @@ struct GoalDetailView: View {
 					Section("Updated") {
 						Text(dateUpdated, format: .dateTime.minute().hour().day().month().year())
 						#if os(iOS)
-							.listRowBackground(Color(uiColor: .quaternarySystemFill))
+							.if(status == .completed) { view in
+								view.listRowBackground(Rectangle().fill(.thinMaterial))
+							}
 						#endif
 					}
 				}

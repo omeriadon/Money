@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2A8721A72F5DA8B700A3BB00 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 2A8721A62F5DA8B700A3BB00 /* ConfettiSwiftUI */; };
 		A70133C62F3E01A50027A60C /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A70133C52F3E01A50027A60C /* WidgetKit.framework */; };
 		A70133C82F3E01A50027A60C /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A70133C72F3E01A50027A60C /* SwiftUI.framework */; };
 		A70133D32F3E01A70027A60C /* Money_Widgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A70133C42F3E01A50027A60C /* Money_Widgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -244,6 +245,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A8721A72F5DA8B700A3BB00 /* ConfettiSwiftUI in Frameworks */,
 				A756305F2F20FE0000AA3CA5 /* Defaults in Frameworks */,
 				A7B54CC12F3374B400910001 /* ColorfulX in Frameworks */,
 				A78C01742F533D5F00B05EA4 /* InjectionNext in Frameworks */,
@@ -394,6 +396,7 @@
 				A7B54CC52F337A2E00910001 /* Glur */,
 				A78B90962F5326950074A35E /* Inject */,
 				A78C01732F533D5F00B05EA4 /* InjectionNext */,
+				2A8721A62F5DA8B700A3BB00 /* ConfettiSwiftUI */,
 			);
 			productName = Money;
 			productReference = A7B9C9B72F1B905400529CE2 /* Money.app */;
@@ -439,6 +442,7 @@
 				A719E4CA2F52CC8300A49E9D /* XCRemoteSwiftPackageReference "IrregularGradient" */,
 				A78B90952F5326950074A35E /* XCRemoteSwiftPackageReference "Inject" */,
 				A78C01722F533D5F00B05EA4 /* XCRemoteSwiftPackageReference "InjectionNext" */,
+				2A8721A52F5DA8B700A3BB00 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A7B9C9B82F1B905400529CE2 /* Products */;
@@ -1058,6 +1062,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		2A8721A52F5DA8B700A3BB00 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/simibac/ConfettiSwiftUI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
 		A719E4CA2F52CC8300A49E9D /* XCRemoteSwiftPackageReference "IrregularGradient" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/joogps/IrregularGradient";
@@ -1109,6 +1121,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		2A8721A62F5DA8B700A3BB00 /* ConfettiSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A8721A52F5DA8B700A3BB00 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */;
+			productName = ConfettiSwiftUI;
+		};
 		A719E4CB2F52CC8300A49E9D /* IrregularGradient */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A719E4CA2F52CC8300A49E9D /* XCRemoteSwiftPackageReference "IrregularGradient" */;

@@ -1,4 +1,10 @@
 import Defaults
+
+#if os(iOS)
+	#if canImport(ColorfulX)
+		import ColorfulX
+	#endif
+#endif
 import SwiftUI
 
 struct GoalListView: View {
@@ -22,6 +28,17 @@ struct GoalListView: View {
 	@State private var pendingDeleteGoalID: UUID?
 	@State private var searchText = ""
 	@State private var showAddGoal = false
+	@State private var pressedGoalID: UUID?
+
+	#if os(iOS) && canImport(ColorfulX)
+		@State private var frameLimit: Int = 120
+		@State private var renderScale: Double = 1.0
+		@State private var completedColors: [Color] = [.yellow, .green, .red, .blue, .yellow]
+		@State private var completedSpeed: Double = 1.7
+		@State private var completedBias: Double = 0.01
+		@State private var completedNoise: Double = 20.0
+		@State private var completedTransition: Double = 10
+	#endif
 
 	@Namespace private var namespace
 
@@ -61,6 +78,25 @@ struct GoalListView: View {
 		return min(transactionRepo.total / amount, 1.0)
 	}
 
+	@ViewBuilder
+	private func completedRowBackground() -> some View {
+		#if os(iOS) && canImport(ColorfulX)
+			ColorfulView(
+				color: $completedColors,
+				speed: $completedSpeed,
+				bias: $completedBias,
+				noise: $completedNoise,
+				transitionSpeed: $completedTransition,
+				frameLimit: $frameLimit,
+				renderScale: $renderScale
+			)
+			.opacity(0.8)
+			.saturation(1.2)
+		#else
+			Color.yellow.opacity(0.8).saturation(1.2)
+		#endif
+	}
+
 	var body: some View {
 		NavigationStack(path: Bindable(appRouter).goalPath) {
 			ZStack {
@@ -85,7 +121,9 @@ struct GoalListView: View {
 								NavigationLink(value: GoalRoute.detail(goal.id)) {
 									HStack {
 										Text(goal.name)
+											.foregroundStyle(pressedGoalID == goal.id ? .white : .primary)
 										Image(systemName: goal.status.symbol)
+											.foregroundStyle(pressedGoalID == goal.id ? .white : .primary)
 										Spacer()
 										Text(abs(goal.goalAmount), format: .currency(code: "AUD"))
 											.foregroundStyle(.green)
@@ -93,6 +131,18 @@ struct GoalListView: View {
 											.lineLimit(1)
 											.minimumScaleFactor(0.01)
 									}
+									.simultaneousGesture(
+										DragGesture(minimumDistance: 0)
+											.onChanged { _ in
+												pressedGoalID = goal.id
+											}
+											.onEnded { _ in
+												pressedGoalID = nil
+											}
+									)
+								}
+								.if(goal.status == .completed) { view in
+									view.listRowBackground(completedRowBackground())
 								}
 								#if os(iOS)
 								.contextMenu {
