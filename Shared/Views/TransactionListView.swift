@@ -7,6 +7,7 @@
 #if canImport(Glur)
 	import Glur
 #endif
+import Defaults
 import SwiftUI
 
 struct TransactionListView: View {
@@ -19,6 +20,8 @@ struct TransactionListView: View {
 	private var transactionRepo: TransactionRepository {
 		repositories.transactionRepo
 	}
+
+	@Default(.fontDesignStyle) var fontDesignStyle
 
 	@State private var isLoading = false
 	@State private var showSuccess = false
@@ -67,20 +70,30 @@ struct TransactionListView: View {
 							}
 							#if os(iOS)
 							.contextMenu {
-								Button("Coming Soon") {}
-									.disabled(true)
+								Button(role: .destructive) {
+									Task {
+										do { try await transactionRepo.delete(ids: [transaction.id]) }
+										catch { errorMessage = error.localizedDescription }
+									}
+								} label: {
+									Label("Delete", systemImage: "trash")
+										.tint(.red)
+								}
 							} preview: {
 								VStack(alignment: .leading, spacing: 8) {
 									Text(transaction.title)
-										.font(.headline)
+										.font(.title)
 									Label(transaction.importance.title, systemImage: transaction.importance.symbol)
-										.font(.subheadline)
+										.font(.title3)
 										.foregroundStyle(.secondary)
+										.padding(.bottom)
+										.labelIconToTitleSpacing(12)
 									Text(transaction.change, format: .currency(code: "AUD"))
 										.font(.title2.bold())
 										.foregroundStyle(transaction.change > 0 ? .green : .red)
 								}
 								.padding()
+								.fontDesign(fontDesignStyle.fontDesign)
 							}
 							#endif
 							.transition(.blurReplace)

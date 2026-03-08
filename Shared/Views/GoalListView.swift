@@ -1,3 +1,4 @@
+import Defaults
 import SwiftUI
 
 struct GoalListView: View {
@@ -11,6 +12,8 @@ struct GoalListView: View {
 	private var transactionRepo: TransactionRepository {
 		repositories.transactionRepo
 	}
+
+	@Default(.fontDesignStyle) var fontDesignStyle
 
 	@State private var isLoading = false
 	@State private var showSuccess = false
@@ -75,23 +78,31 @@ struct GoalListView: View {
 								}
 								#if os(iOS)
 								.contextMenu {
-									Button("Coming Soon") {}
-										.disabled(true)
-								} preview: {
-									VStack(alignment: .leading, spacing: 8) {
-										Text(goal.name)
-											.font(.headline)
-										Text(abs(goal.goalAmount), format: .currency(code: "AUD"))
-											.font(.title2.bold())
-											.foregroundStyle(.green)
-										Gauge(value: min(transactionRepo.total / abs(goal.goalAmount), 1.0)) {
-											Text("Progress")
-										} currentValueLabel: {
-											Text(transactionRepo.total / abs(goal.goalAmount), format: .percent.precision(.fractionLength(0)))
+									Button(role: .destructive) {
+										Task {
+											do { try await goalRepo.delete(ids: [goal.id]) }
+											catch { errorMessage = error.localizedDescription }
 										}
-										.tint(.green)
+									} label: {
+										Label("Delete", systemImage: "trash")
+											.tint(.red)
+									}
+								} preview: {
+									VStack(alignment: .leading, spacing: 12) {
+										Text(goal.title)
+											.font(.title)
+
+										Text(goal.goalAmount, format: .currency(code: "AUD"))
+											.font(.title2.bold())
+											.tint(.yellow)
+
+										Gauge(value: min(transactionRepo.total / abs(goal.goalAmount), 1.0))
+											.tint(.yellow)
+
+										Text(transactionRepo.total / abs(goal.goalAmount), format: .percent.precision(.fractionLength(0)))
 									}
 									.padding()
+									.fontDesign(fontDesignStyle.fontDesign)
 								}
 								#endif
 								.transition(.blurReplace)
