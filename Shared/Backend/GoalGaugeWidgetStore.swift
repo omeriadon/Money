@@ -11,6 +11,8 @@ enum GoalGaugeWidgetStore {
 		let name: String
 		let description: String
 		let goalAmount: Double
+		let status: String
+		let isArchived: Bool
 	}
 
 	struct WidgetTransaction: Codable, Identifiable {
@@ -24,7 +26,9 @@ enum GoalGaugeWidgetStore {
 				id: $0.id,
 				name: $0.name,
 				description: $0.desc,
-				goalAmount: abs($0.goalAmount)
+				goalAmount: abs($0.goalAmount),
+				status: $0.status.rawValue,
+				isArchived: $0.isArchived
 			)
 		}
 

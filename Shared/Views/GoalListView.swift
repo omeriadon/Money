@@ -28,7 +28,6 @@ struct GoalListView: View {
 	@State private var pendingDeleteGoalID: UUID?
 	@State private var searchText = ""
 	@State private var showAddGoal = false
-	@State private var pressedGoalID: UUID?
 
 	#if os(iOS) && canImport(ColorfulX)
 		@State private var frameLimit: Int = 120
@@ -66,6 +65,16 @@ struct GoalListView: View {
 		Task {
 			do {
 				try await goalRepo.setGoalStatus(id: goal.id, status: status)
+			} catch {
+				errorMessage = error.localizedDescription
+			}
+		}
+	}
+
+	private func setGoalArchived(_ goal: Goal, isArchived: Bool) {
+		Task {
+			do {
+				try await goalRepo.setGoalArchived(id: goal.id, isArchived: isArchived)
 			} catch {
 				errorMessage = error.localizedDescription
 			}
@@ -121,9 +130,9 @@ struct GoalListView: View {
 								NavigationLink(value: GoalRoute.detail(goal.id)) {
 									HStack {
 										Text(goal.name)
-											.foregroundStyle(pressedGoalID == goal.id ? .white : .primary)
+											.foregroundStyle(.primary)
 										Image(systemName: goal.status.symbol)
-											.foregroundStyle(pressedGoalID == goal.id ? .white : .primary)
+											.foregroundStyle(.primary)
 										Spacer()
 										Text(abs(goal.goalAmount), format: .currency(code: "AUD"))
 											.foregroundStyle(.green)
@@ -131,18 +140,16 @@ struct GoalListView: View {
 											.lineLimit(1)
 											.minimumScaleFactor(0.01)
 									}
-									.simultaneousGesture(
-										DragGesture(minimumDistance: 0)
-											.onChanged { _ in
-												pressedGoalID = goal.id
-											}
-											.onEnded { _ in
-												pressedGoalID = nil
-											}
-									)
+									.contentShape(Rectangle())
 								}
 								.if(goal.status == .completed) { view in
-									view.listRowBackground(completedRowBackground())
+									#if os(iOS)
+										view
+											.listRowBackground(completedRowBackground())
+											.listRowSeparator(.hidden)
+									#else
+										view.listRowBackground(completedRowBackground())
+									#endif
 								}
 								#if os(iOS)
 								.contextMenu {
@@ -167,15 +174,14 @@ struct GoalListView: View {
 											Label("Completed", systemImage: Goal.GoalStatus.completed.symbol)
 										}
 										.disabled(goal.status == .completed)
-
-										Button {
-											setGoalStatus(goal, status: .archived)
-										} label: {
-											Label("Archived", systemImage: Goal.GoalStatus.archived.symbol)
-										}
-										.disabled(goal.status == .archived)
 									} label: {
 										Label("Status", systemImage: "flag")
+									}
+
+									Button {
+										setGoalArchived(goal, isArchived: !goal.isArchived)
+									} label: {
+										Label(goal.isArchived ? "Unarchive" : "Archive", systemImage: goal.isArchived ? "archivebox.fill" : "archivebox")
 									}
 
 									Button(role: .destructive) {
@@ -186,32 +192,42 @@ struct GoalListView: View {
 											.tint(.red)
 									}
 								} preview: {
-									VStack(alignment: .leading, spacing: 12) {
-										let progress = progressForGoal(goal)
-										Text(goal.name)
-											.font(.title)
+									ZStack {
+										RoundedRectangle(cornerRadius: 20, style: .continuous)
+											.fill(.regularMaterial)
+											.overlay {
+												RoundedRectangle(cornerRadius: 20, style: .continuous)
+													.stroke(.white.opacity(0.14), lineWidth: 1)
+											}
 
-										Label(goal.status.title, systemImage: goal.status.symbol)
-											.foregroundStyle(.secondary)
-											.padding(.bottom)
+										VStack(alignment: .leading, spacing: 12) {
+											let progress = progressForGoal(goal)
+											Text(goal.name)
+												.font(.title)
 
-										Text(goal.goalAmount, format: .currency(code: "AUD"))
-											.font(.title2.bold())
-											.foregroundStyle(.yellow)
+											Label(goal.status.title, systemImage: goal.status.symbol)
+												.foregroundStyle(.secondary)
+												.padding(.bottom)
 
-										Gauge(value: progress) {
-											EmptyView()
+											Text(goal.goalAmount, format: .currency(code: "AUD"))
+												.font(.title2.bold())
+												.foregroundStyle(.yellow)
+
+											Gauge(value: progress) {
+												EmptyView()
+											}
+											.tint(.yellow)
+
+											Text(progress, format: .percent.precision(.fractionLength(0)))
+												.font(.title2)
+												.foregroundStyle(.yellow)
 										}
-										.tint(.yellow)
-
-										Text(progress, format: .percent.precision(.fractionLength(0)))
-											.font(.title2)
-											.foregroundStyle(.yellow)
+										.padding()
+										.fontDesign(fontDesignStyle.fontDesign)
+										.frame(width: 200, alignment: .leading)
+										.fixedSize(horizontal: true, vertical: false)
 									}
-									.padding()
-									.fontDesign(fontDesignStyle.fontDesign)
-									.frame(width: 160, alignment: .leading)
-									.fixedSize(horizontal: true, vertical: false)
+									.padding(4)
 								}
 								#endif
 								.transition(.blurReplace)

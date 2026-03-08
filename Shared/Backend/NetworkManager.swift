@@ -164,13 +164,15 @@ final class NetworkManager: ObservableObject {
 		name: String,
 		description: String,
 		goalAmount: Double,
-		status: Goal.GoalStatus = .active
+		status: Goal.GoalStatus = .active,
+		isArchived: Bool = false
 	) async throws -> [GoalDTO] {
 		let body: [String: Any] = [
 			"name": name,
 			"description": description,
 			"goalAmount": abs(goalAmount),
 			"status": status.rawValue,
+			"isArchived": isArchived,
 		]
 
 		let request = try makeRequest(
@@ -189,13 +191,15 @@ final class NetworkManager: ObservableObject {
 		name: String? = nil,
 		description: String? = nil,
 		goalAmount: Double? = nil,
-		status: Goal.GoalStatus? = nil
+		status: Goal.GoalStatus? = nil,
+		isArchived: Bool? = nil
 	) async throws -> GoalDTO {
 		var body: [String: Any] = [:]
 		if let name { body["name"] = name }
 		if let description { body["description"] = description }
 		if let goalAmount { body["goalAmount"] = abs(goalAmount) }
 		if let status { body["status"] = status.rawValue }
+		if let isArchived { body["isArchived"] = isArchived }
 		guard !body.isEmpty else { throw APIError.invalidRequestBody }
 
 		let request = try makeRequest(

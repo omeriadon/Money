@@ -28,6 +28,7 @@ struct GoalDTO: Codable, Identifiable {
 	let description: String
 	let goalAmount: Double
 	let status: Goal.GoalStatus?
+	let isArchived: Bool?
 	let userID: UUID
 	let dateCreated: Date
 	let dateUpdated: Date

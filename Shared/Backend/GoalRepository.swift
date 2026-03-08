@@ -7,7 +7,7 @@ import Observation
 final class GoalRepository {
 	static let shared = GoalRepository(network: NetworkManager.shared)
 
-	private static let currentGoalsSchemaVersion = 2
+	private static let currentGoalsSchemaVersion = 3
 
 	private var _goals: [Goal] = Defaults[.goals]
 
@@ -38,6 +38,22 @@ final class GoalRepository {
 		persistGoals()
 	}
 
+	func setGoalArchived(id: UUID, isArchived: Bool) async throws {
+		let remote = try await network.updateGoal(id: id, isArchived: isArchived)
+		let updated = Goal(from: remote)
+		updated.goalAmount = abs(updated.goalAmount)
+
+		if let index = _goals.firstIndex(where: { $0.id == id }) {
+			_goals[index] = updated
+		} else {
+			var appendedGoals = _goals
+			appendedGoals.append(updated)
+			replaceGoals(appendedGoals)
+		}
+
+		persistGoals()
+	}
+
 	func syncGoals() async throws {
 		let remote = try await network.fetchGoals()
 		applyRemoteGoals(remote)
@@ -47,13 +63,15 @@ final class GoalRepository {
 		name: String,
 		description: String,
 		goalAmount: Double,
-		status: Goal.GoalStatus = .active
+		status: Goal.GoalStatus = .active,
+		isArchived: Bool = false
 	) async throws {
 		let remote = try await network.createGoal(
 			name: name,
 			description: description,
 			goalAmount: abs(goalAmount),
-			status: status
+			status: status,
+			isArchived: isArchived
 		)
 
 		applyRemoteGoals(remote)
@@ -64,14 +82,16 @@ final class GoalRepository {
 		name: String? = nil,
 		description: String? = nil,
 		goalAmount: Double? = nil,
-		status: Goal.GoalStatus? = nil
+		status: Goal.GoalStatus? = nil,
+		isArchived: Bool? = nil
 	) async throws {
 		let remote = try await network.updateGoal(
 			id: id,
 			name: name,
 			description: description,
 			goalAmount: goalAmount.map(abs),
-			status: status
+			status: status,
+			isArchived: isArchived
 		)
 
 		let g = Goal(from: remote)
@@ -118,6 +138,11 @@ final class GoalRepository {
 		for goal in _goals {
 			if goal.status == .completed, goal.goalAmount == 0 {
 				goal.goalAmount = 1
+			}
+
+			if goal.status == .archived {
+				goal.status = .active
+				goal.isArchived = true
 			}
 		}
 

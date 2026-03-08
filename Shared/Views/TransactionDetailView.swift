@@ -22,6 +22,7 @@ struct TransactionDetailView: View {
 	@State private var isLoading = false
 	@State private var errorMessage = ""
 	@State private var showError = false
+	@State private var didSubmitThisSession = false
 
 	@FocusState private var focusedField: Field?
 
@@ -76,6 +77,16 @@ struct TransactionDetailView: View {
 			if let change = transaction?.change {
 				isPositive = change > 0.0
 			}
+		}
+		.onDisappear {
+			guard !isNew,
+			      !didSubmitThisSession,
+			      !isLoading,
+			      canSubmit
+			else { return }
+
+			didSubmitThisSession = true
+			Task { await submitTransaction() }
 		}
 		.toolbar {
 			if isNew {
@@ -146,7 +157,12 @@ struct TransactionDetailView: View {
 		TextField("Amount", value: $amount, format: .currency(code: "AUD"))
 			.multilineTextAlignment(.trailing)
 			.focused($focusedField, equals: .amount)
-			.onSubmit { focusedField = nil }
+			.onSubmit {
+				focusedField = nil
+				guard !isLoading, canSubmit else { return }
+				didSubmitThisSession = true
+				Task { await submitTransaction() }
+			}
 			.onChange(of: amount) { updateChange() }
 		#if os(iOS)
 			.frame(maxWidth: 150)
@@ -261,6 +277,27 @@ struct TransactionDetailView: View {
 
 	private func updateChange() {
 		change = isPositive ? amount : -amount
+	}
+
+	private var canSubmit: Bool {
+		let hasTitle = !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+		let nonZero = change != 0.0
+
+		if isNew {
+			return hasTitle && nonZero
+		}
+
+		guard let transaction else {
+			return hasTitle && nonZero
+		}
+
+		let isDifferent =
+			title != transaction.title ||
+			description != transaction.desc ||
+			change != transaction.change ||
+			importance != transaction.importance
+
+		return hasTitle && nonZero && isDifferent
 	}
 
 	func submitTransaction() async {

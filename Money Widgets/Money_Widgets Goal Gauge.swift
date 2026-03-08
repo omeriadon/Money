@@ -9,6 +9,8 @@ struct WidgetGoal: Codable, Identifiable {
 	let name: String
 	let description: String
 	let goalAmount: Double
+	let status: String?
+	let isArchived: Bool?
 }
 
 struct WidgetTransaction: Codable, Identifiable {
@@ -95,6 +97,7 @@ struct GoalGaugeEntry: TimelineEntry {
 	let goalName: String
 	let goalAmount: Double
 	let currentAmount: Double
+	let isCompleted: Bool
 
 	var progress: Double {
 		guard hasGoal, goalAmount > 0 else { return 0 }
@@ -112,7 +115,8 @@ struct GoalGaugeProvider: AppIntentTimelineProvider {
 			goalID: UUID(),
 			goalName: "Emergency Fund",
 			goalAmount: 10000,
-			currentAmount: 4200
+			currentAmount: 4200,
+			isCompleted: false
 		)
 	}
 
@@ -143,7 +147,8 @@ struct GoalGaugeProvider: AppIntentTimelineProvider {
 			goalID: selectedGoal?.id,
 			goalName: selectedGoal?.name ?? "No Goal",
 			goalAmount: selectedGoal?.goalAmount ?? 0,
-			currentAmount: totalSaved
+			currentAmount: totalSaved,
+			isCompleted: selectedGoal?.status == "completed"
 		)
 	}
 }
@@ -216,6 +221,19 @@ struct Money_WidgetsGoalGaugeEntryView: View {
 			}
 		}
 	}
+
+	@ViewBuilder
+	var completedWidgetBackground: some View {
+		if entry.isCompleted {
+			LinearGradient(
+				colors: [.yellow.opacity(0.9), .green.opacity(0.8), .blue.opacity(0.7), .red.opacity(0.7)],
+				startPoint: .topLeading,
+				endPoint: .bottomTrailing
+			)
+		} else {
+			Color.primary.colorInvert()
+		}
+	}
 }
 
 // MARK: - Widget
@@ -231,7 +249,7 @@ struct Money_WidgetsGoalGauge: Widget {
 		) { entry in
 			Money_WidgetsGoalGaugeEntryView(entry: entry)
 				.containerBackground(for: .widget) {
-					Color.primary.colorInvert()
+					Money_WidgetsGoalGaugeEntryView(entry: entry).completedWidgetBackground
 				}
 				.widgetURL(AppDeepLink.goal(entry.goalID))
 		}

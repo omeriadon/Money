@@ -32,6 +32,8 @@ struct WatchWidgetGoal: Codable, Identifiable {
 	let name: String
 	let description: String
 	let goalAmount: Double
+	let status: String?
+	let isArchived: Bool?
 }
 
 struct WatchWidgetTransaction: Codable, Identifiable {
@@ -89,6 +91,7 @@ struct WatchGoalGaugeEntry: TimelineEntry {
 	let goalName: String
 	let goalAmount: Double
 	let currentAmount: Double
+	let isCompleted: Bool
 
 	var progress: Double {
 		guard hasGoal, goalAmount > 0 else { return 0 }
@@ -100,7 +103,7 @@ struct WatchGoalGaugeEntry: TimelineEntry {
 
 struct WatchGoalGaugeProvider: AppIntentTimelineProvider {
 	func placeholder(in _: Context) -> WatchGoalGaugeEntry {
-		WatchGoalGaugeEntry(date: .now, hasGoal: true, goalID: UUID(), goalName: "Emergency Fund", goalAmount: 10000, currentAmount: 4200)
+		WatchGoalGaugeEntry(date: .now, hasGoal: true, goalID: UUID(), goalName: "Emergency Fund", goalAmount: 10000, currentAmount: 4200, isCompleted: false)
 	}
 
 	func snapshot(for configuration: WatchGoalGaugeIntent, in _: Context) async -> WatchGoalGaugeEntry {
@@ -137,7 +140,8 @@ struct WatchGoalGaugeProvider: AppIntentTimelineProvider {
 			goalID: selected?.id,
 			goalName: selected?.name ?? "No Goal",
 			goalAmount: abs(selected?.goalAmount ?? 0),
-			currentAmount: total
+			currentAmount: total,
+			isCompleted: selected?.status == "completed"
 		)
 	}
 }
@@ -220,7 +224,17 @@ struct Money_Watch_WidgetsGoalGauge: Widget {
 			provider: WatchGoalGaugeProvider()
 		) { entry in
 			Money_Watch_WidgetsGoalGaugeEntryView(entry: entry)
-				.containerBackground(.black, for: .widget)
+				.containerBackground(for: .widget) {
+					if entry.isCompleted {
+						LinearGradient(
+							colors: [.yellow.opacity(0.8), .green.opacity(0.8), .blue.opacity(0.7), .red.opacity(0.65)],
+							startPoint: .topLeading,
+							endPoint: .bottomTrailing
+						)
+					} else {
+						Color.black
+					}
+				}
 				.widgetURL(AppDeepLink.goal(entry.goalID))
 		}
 		.contentMarginsDisabled()

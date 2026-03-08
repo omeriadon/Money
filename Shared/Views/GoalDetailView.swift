@@ -38,7 +38,9 @@ struct GoalDetailView: View {
 	@State private var description = ""
 	@State private var goalAmount: Double = 100
 	@State private var status: Goal.GoalStatus = .active
+	@State private var isArchived = false
 	@State private var confettiCounter = 0
+	@State private var showCompletedBackground = false
 
 	@State private var isLoading = false
 	@State private var errorMessage = ""
@@ -52,9 +54,9 @@ struct GoalDetailView: View {
 		@State private var frameLimit: Int = 120
 		@State private var renderScale: Double = 1.0
 		@State private var completedColors: [Color] = [.yellow, .green, .red, .blue, .yellow]
-		@State private var completedSpeed: Double = 1.7
+		@State private var completedSpeed: Double = 1
 		@State private var completedBias: Double = 0.01
-		@State private var completedNoise: Double = 20.0
+		@State private var completedNoise: Double = 60
 		@State private var completedTransition: Double = 10
 	#endif
 
@@ -83,19 +85,21 @@ struct GoalDetailView: View {
 		#if os(iOS) && canImport(ConfettiSwiftUI)
 		.confettiCannon(
 			trigger: $confettiCounter,
-			num: 32,
+			num: 60,
 			confettis: [
 				.sfSymbol(symbolName: "dollarsign.circle.fill"),
 				.sfSymbol(symbolName: "target"),
 				.sfSymbol(symbolName: "trophy.fill"),
 				.sfSymbol(symbolName: "star.circle.fill"),
+				.sfSymbol(symbolName: "checkmark.circle.fill"),
 			],
 			colors: [.yellow, .green, .red, .blue],
-			openingAngle: .degrees(90),
-			closingAngle: .degrees(135),
-			radius: 280
+			rainHeight: 600,
+			openingAngle: .degrees(30),
+			closingAngle: .degrees(150),
+			radius: 400
 		)
-		#endif
+		#endif // os(iOS) && canImport(ConfettiSwiftUI)
 		#if os(iOS)
 		.enableInjection()
 		#endif
@@ -107,7 +111,7 @@ struct GoalDetailView: View {
 		}
 		.background {
 			#if os(iOS) && canImport(ColorfulX)
-				if status == .completed {
+				if showCompletedBackground {
 					ColorfulView(
 						color: $completedColors,
 						speed: $completedSpeed,
@@ -119,16 +123,20 @@ struct GoalDetailView: View {
 					)
 					.opacity(0.8)
 					.saturation(1.2)
+					.transition(.opacity.animation(.easeInOut(duration: 0.35)))
 					.ignoresSafeArea()
 				}
 			#endif
 		}
+		.animation(.easeInOut(duration: 0.35), value: showCompletedBackground)
 		.onAppear {
 			if let goal {
 				name = goal.name
 				description = goal.desc
 				goalAmount = abs(goal.goalAmount)
 				status = goal.status
+				showCompletedBackground = goal.status == .completed
+				isArchived = goal.isArchived
 				if goal.status == .completed {
 					Task {
 						try? await Task.sleep(nanoseconds: 200_000_000)
@@ -138,6 +146,7 @@ struct GoalDetailView: View {
 			}
 		}
 		.onChange(of: status) { _, newStatus in
+			showCompletedBackground = newStatus == .completed
 			if newStatus == .completed {
 				confettiCounter += 1
 			}
@@ -164,7 +173,8 @@ struct GoalDetailView: View {
 							name == goal!.name &&
 							description == goal!.desc &&
 							abs(goalAmount) == abs(goal!.goalAmount) &&
-							status == goal!.status)
+							status == goal!.status &&
+							isArchived == goal!.isArchived)
 				)
 				.buttonStyle(.glassProminent)
 			}
@@ -206,6 +216,11 @@ struct GoalDetailView: View {
 							}
 						}
 					}
+					#if os(iOS)
+					.if(status == .completed) { view in
+						view.listRowBackground(Rectangle().fill(.thinMaterial))
+					}
+					#endif
 				}
 			}
 
@@ -252,7 +267,7 @@ struct GoalDetailView: View {
 						Image(systemName: "chevron.up.chevron.down")
 					}
 				} content: {
-					ForEach(Goal.GoalStatus.allCases, id: \.self) { goalStatus in
+					ForEach(Goal.GoalStatus.allCases.filter { $0 != .archived }, id: \.self) { goalStatus in
 						Label(goalStatus.title, systemImage: goalStatus.symbol)
 							.labelIconToTitleSpacing(12)
 							.pickerTag(goalStatus)
@@ -263,6 +278,18 @@ struct GoalDetailView: View {
 					view.listRowBackground(Rectangle().fill(.thinMaterial))
 				}
 				#endif
+			}
+			if !isNew {
+				Section("Archive") {
+					Toggle(isOn: $isArchived) {
+						Label("Archived", systemImage: isArchived ? "archivebox.fill" : "archivebox")
+					}
+					#if os(iOS)
+					.if(status == .completed) { view in
+						view.listRowBackground(Rectangle().fill(.thinMaterial))
+					}
+					#endif
+				}
 			}
 
 			if let dateCreated = goal?.dateCreated {
@@ -302,7 +329,8 @@ struct GoalDetailView: View {
 					name: name,
 					description: description,
 					goalAmount: cleanedAmount,
-					status: status
+					status: status,
+					isArchived: isArchived
 				)
 			} else if let goal {
 				try await goalRepo.updateGoal(
@@ -310,14 +338,13 @@ struct GoalDetailView: View {
 					name: name != goal.name ? name : nil,
 					description: description != goal.desc ? description : nil,
 					goalAmount: cleanedAmount != abs(goal.goalAmount) ? cleanedAmount : nil,
-					status: status != goal.status ? status : nil
+					status: status != goal.status ? status : nil,
+					isArchived: isArchived != goal.isArchived ? isArchived : nil
 				)
 			}
 
 			isLoading = false
-			if isNew {
-				dismiss()
-			}
+			dismiss()
 			focusedField = .none
 		} catch {
 			isLoading = false

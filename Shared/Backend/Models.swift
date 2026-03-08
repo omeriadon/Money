@@ -190,6 +190,7 @@ final class Goal: Equatable, Identifiable, Codable, Defaults.Serializable {
 		case name
 		case desc
 		case goalAmount
+		case isArchived
 		case dateCreated
 		case dateUpdated
 		case status
@@ -203,6 +204,7 @@ final class Goal: Equatable, Identifiable, Codable, Defaults.Serializable {
 	var name: String
 	var desc: String
 	var goalAmount: Double
+	var isArchived: Bool
 	var status: GoalStatus
 	var dateCreated: Date
 	var dateUpdated: Date
@@ -212,6 +214,7 @@ final class Goal: Equatable, Identifiable, Codable, Defaults.Serializable {
 		name: String,
 		desc: String,
 		goalAmount: Double,
+		isArchived: Bool = false,
 		status: GoalStatus = .active,
 		dateCreated: Date = Date(),
 		dateUpdated: Date = Date()
@@ -220,6 +223,7 @@ final class Goal: Equatable, Identifiable, Codable, Defaults.Serializable {
 		self.name = name
 		self.desc = desc
 		self.goalAmount = goalAmount
+		self.isArchived = isArchived
 		self.status = status
 		self.dateCreated = dateCreated
 		self.dateUpdated = dateUpdated
@@ -231,17 +235,28 @@ final class Goal: Equatable, Identifiable, Codable, Defaults.Serializable {
 			name: dto.name,
 			desc: dto.description,
 			goalAmount: dto.goalAmount,
+			isArchived: dto.isArchived ?? false,
 			status: dto.status ?? .active,
 			dateCreated: dto.dateCreated,
 			dateUpdated: dto.dateUpdated
 		)
+
+		if status == .archived {
+			status = .active
+			isArchived = true
+		}
 	}
 
 	func update(from dto: GoalDTO) {
 		name = dto.name
 		desc = dto.description
 		goalAmount = dto.goalAmount
+		isArchived = dto.isArchived ?? false
 		status = dto.status ?? .active
+		if status == .archived {
+			status = .active
+			isArchived = true
+		}
 		dateCreated = dto.dateCreated
 		dateUpdated = dto.dateUpdated
 	}
@@ -252,7 +267,12 @@ final class Goal: Equatable, Identifiable, Codable, Defaults.Serializable {
 		name = try container.decode(String.self, forKey: .name)
 		desc = try container.decode(String.self, forKey: .desc)
 		goalAmount = try container.decode(Double.self, forKey: .goalAmount)
+		isArchived = try container.decodeIfPresent(Bool.self, forKey: .isArchived) ?? false
 		status = try container.decodeIfPresent(GoalStatus.self, forKey: .status) ?? .active
+		if status == .archived {
+			status = .active
+			isArchived = true
+		}
 		dateCreated = try container.decode(Date.self, forKey: .dateCreated)
 		dateUpdated = try container.decode(Date.self, forKey: .dateUpdated)
 	}
@@ -263,6 +283,7 @@ final class Goal: Equatable, Identifiable, Codable, Defaults.Serializable {
 		try container.encode(name, forKey: .name)
 		try container.encode(desc, forKey: .desc)
 		try container.encode(goalAmount, forKey: .goalAmount)
+		try container.encode(isArchived, forKey: .isArchived)
 		try container.encode(status, forKey: .status)
 		try container.encode(dateCreated, forKey: .dateCreated)
 		try container.encode(dateUpdated, forKey: .dateUpdated)

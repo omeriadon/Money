@@ -80,22 +80,32 @@ struct TransactionListView: View {
 										.tint(.red)
 								}
 							} preview: {
-								VStack(alignment: .leading, spacing: 8) {
-									Text(transaction.title)
-										.font(.title)
-									Label(transaction.importance.title, systemImage: transaction.importance.symbol)
-										.font(.title3)
-										.foregroundStyle(.secondary)
-										.padding(.bottom)
-										.labelIconToTitleSpacing(12)
-									Text(transaction.change, format: .currency(code: "AUD"))
-										.font(.title2.bold())
-										.foregroundStyle(transaction.change > 0 ? .green : .red)
+								ZStack {
+									RoundedRectangle(cornerRadius: 20, style: .continuous)
+										.fill(.regularMaterial)
+										.overlay {
+											RoundedRectangle(cornerRadius: 20, style: .continuous)
+												.stroke(.white.opacity(0.14), lineWidth: 1)
+										}
+
+									VStack(alignment: .leading, spacing: 8) {
+										Text(transaction.title)
+											.font(.title)
+										Label(transaction.importance.title, systemImage: transaction.importance.symbol)
+											.font(.title3)
+											.foregroundStyle(.secondary)
+											.padding(.bottom)
+											.labelIconToTitleSpacing(12)
+										Text(transaction.change, format: .currency(code: "AUD"))
+											.font(.title2.bold())
+											.foregroundStyle(transaction.change > 0 ? .green : .red)
+									}
+									.padding()
+									.fontDesign(fontDesignStyle.fontDesign)
+									.frame(width: 200, alignment: .leading)
+									.fixedSize(horizontal: true, vertical: false)
 								}
-								.padding()
-								.fontDesign(fontDesignStyle.fontDesign)
-								.frame(width: 160, alignment: .leading)
-								.fixedSize(horizontal: true, vertical: false)
+								.padding(4)
 							}
 							#endif
 							.transition(.blurReplace)
@@ -190,7 +200,7 @@ struct TransactionListView: View {
 		}
 		#if os(iOS)
 		.overlay(alignment: .top) {
-			if keyboardVisible {
+			if keyboardVisible, appRouter.transactionPath.isEmpty, !showAddTransaction {
 				ZStack {
 					VariableBlurView(maxBlurRadius: 1.2, direction: .blurredTopClearBottom)
 					LinearGradient(
