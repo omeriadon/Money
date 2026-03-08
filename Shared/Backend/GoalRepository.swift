@@ -7,6 +7,8 @@ import Observation
 final class GoalRepository {
 	static let shared = GoalRepository(network: NetworkManager.shared)
 
+	private static let currentGoalsSchemaVersion = 2
+
 	private var _goals: [Goal] = Defaults[.goals]
 
 	var goals: [Goal] {
@@ -17,6 +19,13 @@ final class GoalRepository {
 
 	init(network: NetworkManager) {
 		self.network = network
+		migrateGoalsIfNeeded()
+	}
+
+	func setGoalStatus(id: UUID, status: Goal.GoalStatus) {
+		guard let index = _goals.firstIndex(where: { $0.id == id }) else { return }
+		_goals[index].status = status
+		persistGoals()
 	}
 
 	func syncGoals() async throws {
@@ -56,6 +65,7 @@ final class GoalRepository {
 
 		var updatedGoals = _goals
 		if let index = updatedGoals.firstIndex(where: { $0.id == remote.id }) {
+			g.status = updatedGoals[index].status
 			updatedGoals[index] = g
 		} else {
 			updatedGoals.append(g)
@@ -71,9 +81,11 @@ final class GoalRepository {
 	}
 
 	private func applyRemoteGoals(_ remote: [GoalDTO]) {
+		let localStatusByID = Dictionary(uniqueKeysWithValues: _goals.map { ($0.id, $0.status) })
 		replaceGoals(remote.map {
 			let goal = Goal(from: $0)
 			goal.goalAmount = abs(goal.goalAmount)
+			goal.status = localStatusByID[goal.id] ?? .active
 			return goal
 		})
 		persistGoals()
@@ -86,5 +98,19 @@ final class GoalRepository {
 	private func persistGoals() {
 		Defaults[.goals] = _goals
 		GoalGaugeWidgetStore.saveGoals(_goals)
+	}
+
+	private func migrateGoalsIfNeeded() {
+		let schemaVersion = Defaults[.goalsSchemaVersion]
+		guard schemaVersion < Self.currentGoalsSchemaVersion else { return }
+
+		for goal in _goals {
+			if goal.status == .completed, goal.goalAmount == 0 {
+				goal.goalAmount = 1
+			}
+		}
+
+		Defaults[.goalsSchemaVersion] = Self.currentGoalsSchemaVersion
+		persistGoals()
 	}
 }

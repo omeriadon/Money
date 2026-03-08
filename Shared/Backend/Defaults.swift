@@ -47,6 +47,7 @@ extension Defaults.Keys {
 
 	static let transactions = Key<[Transaction]>("transactions", default: [], suite: appGroupSuite)
 	static let goals = Key<[Goal]>("goals", default: [], suite: appGroupSuite)
+	static let goalsSchemaVersion = Key<Int>("goalsSchemaVersion", default: 1, suite: appGroupSuite)
 
 	static let tab = Key<String>("tab", default: "Home")
 	static let rememberTab = Key<Bool>("rememberTab", default: true)

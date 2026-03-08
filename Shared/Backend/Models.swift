@@ -152,6 +152,49 @@ final class Transaction: Equatable, Identifiable, Codable, Defaults.Serializable
 }
 
 final class Goal: Equatable, Identifiable, Codable, Defaults.Serializable {
+	enum GoalStatus: String, Codable, CaseIterable, Defaults.Serializable {
+		case active
+		case paused
+		case completed
+		case archived
+
+		var title: String {
+			switch self {
+				case .active:
+					"Active"
+				case .paused:
+					"Paused"
+				case .completed:
+					"Completed"
+				case .archived:
+					"Archived"
+			}
+		}
+
+		var symbol: String {
+			switch self {
+				case .active:
+					"play.circle"
+				case .paused:
+					"pause.circle"
+				case .completed:
+					"checkmark.circle.fill"
+				case .archived:
+					"archivebox"
+			}
+		}
+	}
+
+	private enum CodingKeys: String, CodingKey {
+		case id
+		case name
+		case desc
+		case goalAmount
+		case dateCreated
+		case dateUpdated
+		case status
+	}
+
 	static func == (lhs: Goal, rhs: Goal) -> Bool {
 		lhs.id == rhs.id
 	}
@@ -160,6 +203,7 @@ final class Goal: Equatable, Identifiable, Codable, Defaults.Serializable {
 	var name: String
 	var desc: String
 	var goalAmount: Double
+	var status: GoalStatus
 	var dateCreated: Date
 	var dateUpdated: Date
 
@@ -168,6 +212,7 @@ final class Goal: Equatable, Identifiable, Codable, Defaults.Serializable {
 		name: String,
 		desc: String,
 		goalAmount: Double,
+		status: GoalStatus = .active,
 		dateCreated: Date = Date(),
 		dateUpdated: Date = Date()
 	) {
@@ -175,6 +220,7 @@ final class Goal: Equatable, Identifiable, Codable, Defaults.Serializable {
 		self.name = name
 		self.desc = desc
 		self.goalAmount = goalAmount
+		self.status = status
 		self.dateCreated = dateCreated
 		self.dateUpdated = dateUpdated
 	}
@@ -196,5 +242,27 @@ final class Goal: Equatable, Identifiable, Codable, Defaults.Serializable {
 		goalAmount = dto.goalAmount
 		dateCreated = dto.dateCreated
 		dateUpdated = dto.dateUpdated
+	}
+
+	required init(from decoder: any Decoder) throws {
+		let container = try decoder.container(keyedBy: CodingKeys.self)
+		id = try container.decode(UUID.self, forKey: .id)
+		name = try container.decode(String.self, forKey: .name)
+		desc = try container.decode(String.self, forKey: .desc)
+		goalAmount = try container.decode(Double.self, forKey: .goalAmount)
+		status = try container.decodeIfPresent(GoalStatus.self, forKey: .status) ?? .active
+		dateCreated = try container.decode(Date.self, forKey: .dateCreated)
+		dateUpdated = try container.decode(Date.self, forKey: .dateUpdated)
+	}
+
+	func encode(to encoder: any Encoder) throws {
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encode(id, forKey: .id)
+		try container.encode(name, forKey: .name)
+		try container.encode(desc, forKey: .desc)
+		try container.encode(goalAmount, forKey: .goalAmount)
+		try container.encode(status, forKey: .status)
+		try container.encode(dateCreated, forKey: .dateCreated)
+		try container.encode(dateUpdated, forKey: .dateUpdated)
 	}
 }

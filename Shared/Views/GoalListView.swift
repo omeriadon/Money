@@ -45,6 +45,18 @@ struct GoalListView: View {
 		}
 	}
 
+	private func setGoalStatus(_ goal: Goal, status: Goal.GoalStatus) {
+		withAnimation(.smooth) {
+			goalRepo.setGoalStatus(id: goal.id, status: status)
+		}
+	}
+
+	private func progressForGoal(_ goal: Goal) -> Double {
+		let amount = abs(goal.goalAmount)
+		guard amount > 0 else { return 0 }
+		return min(transactionRepo.total / amount, 1.0)
+	}
+
 	var body: some View {
 		NavigationStack(path: Bindable(appRouter).goalPath) {
 			ZStack {
@@ -68,11 +80,13 @@ struct GoalListView: View {
 							ForEach(filteredGoals) { goal in
 								NavigationLink(value: GoalRoute.detail(goal.id)) {
 									HStack {
-										Image(systemName: "target")
+										Image(systemName: goal.status.symbol)
+											.foregroundStyle(goal.status == .completed ? Color.green : Color.primary)
 										Text(goal.name)
+											.strikethrough(goal.status == .completed)
 										Spacer()
 										Text(abs(goal.goalAmount), format: .currency(code: "AUD"))
-											.foregroundStyle(.green)
+											.foregroundStyle(goal.status == .completed ? Color.secondary : Color.green)
 											.font(.title3)
 											.lineLimit(1)
 											.minimumScaleFactor(0.01)
@@ -80,6 +94,38 @@ struct GoalListView: View {
 								}
 								#if os(iOS)
 								.contextMenu {
+									Menu {
+										Button {
+											setGoalStatus(goal, status: .active)
+										} label: {
+											Label("Active", systemImage: Goal.GoalStatus.active.symbol)
+										}
+										.disabled(goal.status == .active)
+
+										Button {
+											setGoalStatus(goal, status: .paused)
+										} label: {
+											Label("Paused", systemImage: Goal.GoalStatus.paused.symbol)
+										}
+										.disabled(goal.status == .paused)
+
+										Button {
+											setGoalStatus(goal, status: .completed)
+										} label: {
+											Label("Completed", systemImage: Goal.GoalStatus.completed.symbol)
+										}
+										.disabled(goal.status == .completed)
+
+										Button {
+											setGoalStatus(goal, status: .archived)
+										} label: {
+											Label("Archived", systemImage: Goal.GoalStatus.archived.symbol)
+										}
+										.disabled(goal.status == .archived)
+									} label: {
+										Label("Status", systemImage: "flag")
+									}
+
 									Button(role: .destructive) {
 										pendingDeleteGoalID = goal.id
 										showDeleteConfirmation = true
@@ -89,20 +135,24 @@ struct GoalListView: View {
 									}
 								} preview: {
 									VStack(alignment: .leading, spacing: 12) {
+										let progress = progressForGoal(goal)
 										Text(goal.name)
 											.font(.title)
 											.padding(.bottom)
+
+										Label(goal.status.title, systemImage: goal.status.symbol)
+											.foregroundStyle(.secondary)
 
 										Text(goal.goalAmount, format: .currency(code: "AUD"))
 											.font(.title2.bold())
 											.foregroundStyle(.yellow)
 
-										Gauge(value: min(transactionRepo.total / goal.goalAmount, 1.0)) {
+										Gauge(value: progress) {
 											EmptyView()
 										}
 										.tint(.yellow)
 
-										Text(transactionRepo.total / abs(goal.goalAmount), format: .percent.precision(.fractionLength(0)))
+										Text(progress, format: .percent.precision(.fractionLength(0)))
 											.font(.title2)
 											.foregroundStyle(.yellow)
 									}
