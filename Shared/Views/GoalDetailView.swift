@@ -216,11 +216,7 @@ struct GoalDetailView: View {
 							}
 						}
 					}
-					#if os(iOS)
-					.if(status == .completed) { view in
-						view.listRowBackground(Rectangle().fill(.thinMaterial))
-					}
-					#endif
+					.listRowBackground(Rectangle().fill(.thinMaterial))
 				}
 			}
 
@@ -228,20 +224,12 @@ struct GoalDetailView: View {
 				TextField("Goal Name", text: $name)
 					.focused($focusedField, equals: .name)
 					.onSubmit { focusedField = .description }
-				#if os(iOS)
-					.if(status == .completed) { view in
-						view.listRowBackground(Rectangle().fill(.thinMaterial))
-					}
-				#endif
+					.listRowBackground(Rectangle().fill(.thinMaterial))
 
 				TextField("Description", text: $description)
 					.focused($focusedField, equals: .description)
 					.onSubmit { focusedField = .amount }
-				#if os(iOS)
-					.if(status == .completed) { view in
-						view.listRowBackground(Rectangle().fill(.thinMaterial))
-					}
-				#endif
+					.listRowBackground(Rectangle().fill(.thinMaterial))
 
 				TextField("Goal Amount", value: $goalAmount, format: .currency(code: "AUD"))
 					.multilineTextAlignment(.trailing)
@@ -251,11 +239,9 @@ struct GoalDetailView: View {
 						goalAmount = abs(goalAmount)
 					}
 				#if os(iOS)
-					.if(status == .completed) { view in
-						view.listRowBackground(Rectangle().fill(.thinMaterial))
-					}
 					.keyboardType(.decimalPad)
 				#endif
+					.listRowBackground(Rectangle().fill(.thinMaterial))
 			}
 
 			Section("Status") {
@@ -273,44 +259,35 @@ struct GoalDetailView: View {
 							.pickerTag(goalStatus)
 					}
 				}
-				#if os(iOS)
-				.if(status == .completed) { view in
-					view.listRowBackground(Rectangle().fill(.thinMaterial))
-				}
-				#endif
+				.listRowBackground(Rectangle().fill(.thinMaterial))
 			}
 			if !isNew {
 				Section("Archive") {
 					Toggle(isOn: $isArchived) {
-						Label("Archived", systemImage: isArchived ? "archivebox.fill" : "archivebox")
+						if isArchived {
+							Label("Archived", systemImage: "archivebox.fill")
+								.transition(.blurReplace)
+						} else {
+							Label("Archived", systemImage: "archivebox")
+								.transition(.blurReplace)
+						}
 					}
-					#if os(iOS)
-					.if(status == .completed) { view in
-						view.listRowBackground(Rectangle().fill(.thinMaterial))
-					}
-					#endif
+					.animation(.easeInOut, value: isArchived)
+					.listRowBackground(Rectangle().fill(.thinMaterial))
 				}
 			}
 
 			if let dateCreated = goal?.dateCreated {
 				Section("Created") {
 					Text(dateCreated, format: .dateTime.minute().hour().day().month().year())
-					#if os(iOS)
-						.if(status == .completed) { view in
-							view.listRowBackground(Rectangle().fill(.thinMaterial))
-						}
-					#endif
+						.listRowBackground(Rectangle().fill(.thinMaterial))
 				}
 			}
 			if let dateUpdated = goal?.dateUpdated {
 				if dateUpdated != goal?.dateCreated {
 					Section("Updated") {
 						Text(dateUpdated, format: .dateTime.minute().hour().day().month().year())
-						#if os(iOS)
-							.if(status == .completed) { view in
-								view.listRowBackground(Rectangle().fill(.thinMaterial))
-							}
-						#endif
+							.listRowBackground(Rectangle().fill(.thinMaterial))
 					}
 				}
 			}
